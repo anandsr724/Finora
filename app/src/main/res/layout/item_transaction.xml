@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Row: Amount and Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/amountText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="₹500"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_green_dark" />
+
+            <ImageButton
+                android:id="@+id/editButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Edit transaction" />
+
+            <ImageButton
+                android:id="@+id/deleteButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Delete transaction"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <!-- Recipient -->
+        <TextView
+            android:id="@+id/recipientText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="To: John Doe"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp" />
+
+        <!-- Category (NEW) -->
+        <TextView
+            android:id="@+id/categoryText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🍔 Food &amp; Dining"
+            android:textSize="14sp"
+            android:textColor="@color/primary_color"
+            android:layout_marginTop="4dp" />
+
+        <!-- Date/Time -->
+        <TextView
+            android:id="@+id/dateTimeText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="13 Sep 2025, 02:40 PM"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginTop="4dp" />
+
+        <!-- Note (Optional) -->
+        <TextView
+            android:id="@+id/noteText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📝 Dinner payment"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+        <!-- Bank (Optional) -->
+        <TextView
+            android:id="@+id/bankText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏦 ICICI Bank"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
