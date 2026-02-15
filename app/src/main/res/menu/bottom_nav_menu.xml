@@ -9,10 +9,6 @@
         android:icon="@android:drawable/ic_menu_recent_history"
         android:title="History" />
     <item
-        android:id="@+id/nav_add"
-        android:icon="@android:drawable/ic_menu_add"
-        android:title="New" />
-    <item
         android:id="@+id/nav_analytics"
         android:icon="@android:drawable/ic_menu_gallery"
         android:title="Analytics" />

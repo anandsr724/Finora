@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.CSVManager
 import com.example.expensetracker.CategoryManager
+import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
 import com.google.android.material.button.MaterialButton
@@ -32,6 +33,7 @@ class HomeFragment : Fragment() {
 
     companion object {
         private const val PICK_IMAGE_REQUEST = 1004
+        private const val EDIT_REQUEST_CODE = 1001
     }
 
     override fun onCreateView(
@@ -56,16 +58,16 @@ class HomeFragment : Fragment() {
             openFilePicker()
         }
 
-        // Manual Entry button - navigates to add form
+        // Manual Entry button - opens edit form directly
         val manualEntryButton = view.findViewById<MaterialButton>(R.id.manualEntryButton)
         manualEntryButton.setOnClickListener {
-            findNavController().navigate(R.id.nav_add)
+            openManualEntryForm()
         }
 
-        // FAB - shows both options in AddFragment
+        // FAB - opens manual entry form directly
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
-            findNavController().navigate(R.id.nav_add)
+            openManualEntryForm()
         }
 
         // View All button
@@ -155,6 +157,20 @@ class HomeFragment : Fragment() {
         startActivityForResult(intent, PICK_IMAGE_REQUEST)
     }
 
+    private fun openManualEntryForm() {
+        val intent = Intent(requireContext(), EditPaymentActivity::class.java).apply {
+            putExtra("amount", "")
+            putExtra("recipient", "")
+            putExtra("note", "")
+            putExtra("dateTime", "")
+            putExtra("transactionId", "")
+            putExtra("bankInfo", "")
+            putExtra("category", "cat_other")
+            putExtra("isManualEntry", true)
+        }
+        startActivityForResult(intent, EDIT_REQUEST_CODE)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         
@@ -164,6 +180,11 @@ class HomeFragment : Fragment() {
             val bundle = android.os.Bundle()
             bundle.putString("imageUri", imageUri.toString())
             findNavController().navigate(R.id.nav_add, bundle)
+        }
+
+        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            // Refresh data when transaction is saved
+            view?.let { loadData(it) }
         }
     }
 }

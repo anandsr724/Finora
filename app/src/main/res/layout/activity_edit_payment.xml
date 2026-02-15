@@ -72,10 +72,12 @@
             android:layout_height="wrap_content"
             android:minHeight="48dp"
             android:padding="12dp"
-            android:hint="dd MMM yyyy, hh:mm AM/PM"
+            android:hint="Tap to select date and time"
             android:background="@drawable/editable_field_background"
-            android:inputType="text"
+            android:inputType="none"
             android:maxLines="1"
+            android:drawableEnd="@android:drawable/ic_menu_today"
+            android:drawablePadding="8dp"
             android:layout_marginBottom="16dp" />
 
         <!-- Transaction ID (Editable) -->

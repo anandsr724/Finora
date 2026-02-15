@@ -1,5 +1,7 @@
 package com.example.expensetracker
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,6 +12,8 @@ import android.widget.ArrayAdapter
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditPaymentActivity : AppCompatActivity() {
 
@@ -27,6 +31,9 @@ class EditPaymentActivity : AppCompatActivity() {
     private lateinit var categoryManager: CategoryManager
     private var categories = listOf<Category>()
     private var selectedCategoryId = "cat_other"
+    
+    private var selectedDate: Calendar = Calendar.getInstance()
+    private var selectedTime: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +70,13 @@ class EditPaymentActivity : AppCompatActivity() {
         addCategoryButton = findViewById(R.id.addCategoryButton)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+        
+        // Make dateTimeEditText non-editable and clickable
+        dateTimeEditText.isFocusable = false
+        dateTimeEditText.isClickable = true
+        dateTimeEditText.setOnClickListener {
+            showDateTimePicker()
+        }
     }
 
     private fun loadCategories() {
@@ -93,10 +107,18 @@ class EditPaymentActivity : AppCompatActivity() {
         // Populate all editable fields
         amountEditText.setText(amount)
         recipientEditText.setText(recipient)
-        dateTimeEditText.setText(dateTime)
-        transactionIdEditText.setText(transactionId)
         noteEditText.setText(note)
+        transactionIdEditText.setText(transactionId)
         bankEditText.setText(bankInfo)
+
+        // Parse and set date/time
+        if (dateTime.isNotEmpty()) {
+            dateTimeEditText.setText(dateTime)
+            parseDateTimeString(dateTime)
+        } else {
+            // Set current date/time as default
+            updateDateTimeField()
+        }
 
         // Set category spinner selection
         val categoryIndex = categories.indexOfFirst { it.id == selectedCategoryId }
@@ -213,5 +235,80 @@ class EditPaymentActivity : AppCompatActivity() {
                 finish()
             }
         })
+    }
+
+    private fun showDateTimePicker() {
+        // First show date picker
+        showDatePicker()
+    }
+
+    private fun showDatePicker() {
+        val year = selectedDate.get(Calendar.YEAR)
+        val month = selectedDate.get(Calendar.MONTH)
+        val day = selectedDate.get(Calendar.DAY_OF_MONTH)
+
+        val datePickerDialog = DatePickerDialog(
+            this,
+            { _, selectedYear, selectedMonth, selectedDay ->
+                selectedDate.set(selectedYear, selectedMonth, selectedDay)
+                // After date selection, show time picker
+                showTimePicker()
+            },
+            year, month, day
+        )
+        datePickerDialog.show()
+    }
+
+    private fun showTimePicker() {
+        val hour = selectedTime.get(Calendar.HOUR_OF_DAY)
+        val minute = selectedTime.get(Calendar.MINUTE)
+
+        val timePickerDialog = TimePickerDialog(
+            this,
+            { _, selectedHour, selectedMinute ->
+                selectedTime.set(Calendar.HOUR_OF_DAY, selectedHour)
+                selectedTime.set(Calendar.MINUTE, selectedMinute)
+                updateDateTimeField()
+            },
+            hour, minute,
+            false // 12-hour format
+        )
+        timePickerDialog.show()
+    }
+
+    private fun updateDateTimeField() {
+        // Combine date and time
+        val calendar = Calendar.getInstance()
+        calendar.set(
+            selectedDate.get(Calendar.YEAR),
+            selectedDate.get(Calendar.MONTH),
+            selectedDate.get(Calendar.DAY_OF_MONTH),
+            selectedTime.get(Calendar.HOUR_OF_DAY),
+            selectedTime.get(Calendar.MINUTE)
+        )
+
+        val dateTimeFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        dateTimeEditText.setText(dateTimeFormat.format(calendar.time))
+    }
+
+    private fun parseDateTimeString(dateTimeString: String) {
+        try {
+            val dateTimeFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+            val parsedDate = dateTimeFormat.parse(dateTimeString)
+            
+            if (parsedDate != null) {
+                val calendar = Calendar.getInstance()
+                calendar.time = parsedDate
+                
+                selectedDate.set(Calendar.YEAR, calendar.get(Calendar.YEAR))
+                selectedDate.set(Calendar.MONTH, calendar.get(Calendar.MONTH))
+                selectedDate.set(Calendar.DAY_OF_MONTH, calendar.get(Calendar.DAY_OF_MONTH))
+                
+                selectedTime.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY))
+                selectedTime.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE))
+            }
+        } catch (e: Exception) {
+            // If parsing fails, keep default current date/time
+        }
     }
 }
