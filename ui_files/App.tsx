@@ -178,8 +178,8 @@ function AppContent() {
                       };
                       setEditingTransaction(newTransaction);
                     }}
-                    onEditTransaction={handleEditTransaction}
-                    onManualEntry={() => {
+                    onAddManual={() => {
+                      // Create a blank transaction for manual entry
                       const newTransaction: Transaction = {
                         id: Date.now().toString(),
                         amount: 0,
@@ -193,6 +193,7 @@ function AppContent() {
                       };
                       setEditingTransaction(newTransaction);
                     }}
+                    onEditTransaction={handleEditTransaction}
                   />
                 )}
                 {currentScreen === 'history' && (

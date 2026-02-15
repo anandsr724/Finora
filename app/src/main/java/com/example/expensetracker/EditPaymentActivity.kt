@@ -4,11 +4,15 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import android.widget.Spinner
 import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
+import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,11 +26,11 @@ class EditPaymentActivity : AppCompatActivity() {
     private lateinit var dateTimeEditText: EditText
     private lateinit var transactionIdEditText: EditText
     private lateinit var noteEditText: EditText
-    private lateinit var bankEditText: EditText
-    private lateinit var categorySpinner: Spinner
-    private lateinit var addCategoryButton: Button
+    private lateinit var bankEditText: Spinner
+    private lateinit var categoryEditText: AutoCompleteTextView
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var backButton: ImageButton
 
     private lateinit var categoryManager: CategoryManager
     private var categories = listOf<Category>()
@@ -46,7 +50,7 @@ class EditPaymentActivity : AppCompatActivity() {
         // Initialize views
         initializeViews()
 
-        // Load categories and setup spinner
+        // Load categories and setup autocomplete
         loadCategories()
 
         // Populate fields with data from intent
@@ -66,10 +70,22 @@ class EditPaymentActivity : AppCompatActivity() {
         transactionIdEditText = findViewById(R.id.transactionIdEditText)
         noteEditText = findViewById(R.id.noteEditText)
         bankEditText = findViewById(R.id.bankEditText)
-        categorySpinner = findViewById(R.id.categorySpinner)
-        addCategoryButton = findViewById(R.id.addCategoryButton)
+        categoryEditText = findViewById(R.id.categoryEditText)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
+        backButton = findViewById(R.id.backButton)
+        
+        // Set up payment method spinner
+        val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paymentMethods)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        bankEditText.adapter = adapter
+        
+        // Set back button listener
+        backButton.setOnClickListener {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
         
         // Make dateTimeEditText non-editable and clickable
         dateTimeEditText.isFocusable = false
@@ -81,17 +97,93 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun loadCategories() {
         categories = categoryManager.getAllCategories()
-
-        val categoryNames = categories.map { "${it.emoji} ${it.name}" }
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, categoryNames)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        categorySpinner.adapter = adapter
-
-        // Set selection based on current category
-        val currentCategoryIndex = categories.indexOfFirst { it.id == selectedCategoryId }
-        if (currentCategoryIndex != -1) {
-            categorySpinner.setSelection(currentCategoryIndex)
+        if (categories.isNotEmpty()) {
+            setupCategoryAutocomplete()
         }
+    }
+
+    private fun setupCategoryAutocomplete() {
+        try {
+            val categoryNames = categories.map { "${it.emoji} ${it.name}" }.toMutableList()
+            
+            val adapter = CategoryArrayAdapter(
+                this,
+                android.R.layout.simple_list_item_1,
+                categoryNames,
+                categories
+            )
+            
+            categoryEditText.setAdapter(adapter)
+            categoryEditText.threshold = 1
+            
+            categoryEditText.setOnItemClickListener { _, view, position, _ ->
+                val textView = view as? android.widget.TextView
+                val selectedText = textView?.text?.toString() ?: ""
+                
+                when {
+                    selectedText.contains("➕") -> {
+                        // Add new category option - extract just the user's input
+                        val prefix = "➕ Add new category: "
+                        val userInput = if (selectedText.startsWith(prefix)) {
+                            selectedText.substringAfter(prefix).trim()
+                        } else {
+                            selectedText.trim()
+                        }
+                        if (userInput.isNotEmpty()) {
+                            showAddNewCategoryDialog(userInput)
+                        }
+                    }
+                    else -> {
+                        // Regular category selected
+                        val selectedCategory = categories.firstOrNull { 
+                            selectedText.trim() == "${it.emoji} ${it.name}"
+                        }
+                        if (selectedCategory != null) {
+                            selectedCategoryId = selectedCategory.id
+                            categoryEditText.setText(selectedText, false)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun showAddNewCategoryDialog(categoryName: String) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_category, null)
+        val categoryNameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
+        val emojiInput = dialogView.findViewById<EditText>(R.id.emojiInput)
+        
+        // Pre-fill the category name from the search
+        categoryNameInput.setText(categoryName)
+        emojiInput.setText("📁")
+
+        AlertDialog.Builder(this)
+            .setTitle("Add New Category")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val finalCategoryName = categoryNameInput.text.toString().trim()
+                val emoji = emojiInput.text.toString().trim().ifEmpty { "📁" }
+
+                if (finalCategoryName.isNotEmpty()) {
+                    val success = categoryManager.addCategory(finalCategoryName, emoji)
+                    if (success) {
+                        Toast.makeText(this, "Category added!", Toast.LENGTH_SHORT).show()
+                        loadCategories() // Reload categories and adapter
+                        val newCategory = categories.last()
+                        selectedCategoryId = newCategory.id
+                        categoryEditText.setText("${newCategory.emoji} ${newCategory.name}")
+                    } else {
+                        Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun populateFields() {
@@ -109,7 +201,19 @@ class EditPaymentActivity : AppCompatActivity() {
         recipientEditText.setText(recipient)
         noteEditText.setText(note)
         transactionIdEditText.setText(transactionId)
-        bankEditText.setText(bankInfo)
+
+        // Set payment method spinner selection
+        val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
+        val paymentIndex = paymentMethods.indexOf(bankInfo)
+        if (paymentIndex != -1) {
+            bankEditText.setSelection(paymentIndex)
+        }
+
+        // Set category field
+        val selectedCategory = categories.find { it.id == selectedCategoryId }
+        if (selectedCategory != null) {
+            categoryEditText.setText("${selectedCategory.emoji} ${selectedCategory.name}")
+        }
 
         // Parse and set date/time
         if (dateTime.isNotEmpty()) {
@@ -118,12 +222,6 @@ class EditPaymentActivity : AppCompatActivity() {
         } else {
             // Set current date/time as default
             updateDateTimeField()
-        }
-
-        // Set category spinner selection
-        val categoryIndex = categories.indexOfFirst { it.id == selectedCategoryId }
-        if (categoryIndex != -1) {
-            categorySpinner.setSelection(categoryIndex)
         }
     }
 
@@ -136,41 +234,6 @@ class EditPaymentActivity : AppCompatActivity() {
             setResult(RESULT_CANCELED)
             finish()
         }
-
-        addCategoryButton.setOnClickListener {
-            showAddCategoryDialog()
-        }
-    }
-
-    private fun showAddCategoryDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_category, null)
-        val categoryNameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
-        val emojiInput = dialogView.findViewById<EditText>(R.id.emojiInput)
-
-        AlertDialog.Builder(this)
-            .setTitle("Add New Category")
-            .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
-                val categoryName = categoryNameInput.text.toString().trim()
-                val emoji = emojiInput.text.toString().trim().ifEmpty { "📁" }
-
-                if (categoryName.isNotEmpty()) {
-                    val success = categoryManager.addCategory(categoryName, emoji)
-                    if (success) {
-                        Toast.makeText(this, "Category added!", Toast.LENGTH_SHORT).show()
-                        loadCategories() // Reload categories
-                        // Select the newly added category
-                        val newCategoryIndex = categories.size - 1
-                        categorySpinner.setSelection(newCategoryIndex)
-                    } else {
-                        Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show()
-                    }
-                } else {
-                    Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT).show()
-                }
-            }
-            .setNegativeButton("Cancel", null)
-            .show()
     }
 
     private fun saveAndReturn() {
@@ -180,15 +243,12 @@ class EditPaymentActivity : AppCompatActivity() {
         val updatedDateTime = dateTimeEditText.text.toString().trim()
         val updatedTransactionId = transactionIdEditText.text.toString().trim()
         val updatedNote = noteEditText.text.toString().trim()
-        val updatedBankInfo = bankEditText.text.toString().trim()
+        
+        // Get selected payment method from spinner
+        val updatedBankInfo = bankEditText.selectedItem.toString()
 
-        // Get selected category
-        val selectedPosition = categorySpinner.selectedItemPosition
-        val updatedCategory = if (selectedPosition >= 0 && selectedPosition < categories.size) {
-            categories[selectedPosition].id
-        } else {
-            "cat_other"
-        }
+        // Use selected category from grid
+        val updatedCategory = selectedCategoryId
 
         // Validate required fields
         if (updatedAmount.isEmpty()) {
@@ -221,7 +281,7 @@ class EditPaymentActivity : AppCompatActivity() {
         }
 
         // Show success message
-        Toast.makeText(this, "Payment details updated successfully!", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Payment details saved!", Toast.LENGTH_SHORT).show()
 
         // Return the result
         setResult(RESULT_OK, resultIntent)
