@@ -54,6 +54,11 @@ dependencies {
     implementation("androidx.cardview:cardview:1.0.0")
     // ML Kit Text Recognition instead of Tesseract
     implementation("com.google.mlkit:text-recognition:16.0.0")
+    // Navigation
+    implementation("androidx.navigation:navigation-fragment-ktx:2.9.6")
+    implementation("androidx.navigation:navigation-ui-ktx:2.9.6")
+    // Charting library
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     // Compose support (for future upgrades)
     implementation(libs.androidx.core.ktx)

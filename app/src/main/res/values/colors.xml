@@ -1,12 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_color">#2196F3</color>
-    <color name="save_color">#4CAF50</color>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Primary Colors -->
+    <color name="primary_indigo">#4F46E5</color>
+    <color name="primary_indigo_light">#6C63FF</color>
+    <color name="primary_indigo_dark">#4338CA</color>
+    
+    <!-- Gradient Colors -->
+    <color name="gradient_start">#4F46E5</color>
+    <color name="gradient_end">#6C63FF</color>
+    
+    <!-- Accent Colors -->
+    <color name="emerald_500">#10B981</color>
+    <color name="emerald_600">#059669</color>
+    <color name="teal_500">#14B8A6</color>
+    <color name="amber_500">#F59E0B</color>
+    <color name="orange_500">#F97316</color>
+    <color name="purple_500">#A855F7</color>
+    <color name="pink_500">#EC4899</color>
+    
+    <!-- Background Colors -->
+    <color name="background_light">#FFFFFF</color>
+    <color name="background_dark">#18181B</color>
+    <color name="card_background_light">#FFFFFF</color>
+    <color name="card_background_dark">#27272A</color>
+    <color name="card_background_dark_secondary">#3F3F46</color>
+    
+    <!-- Text Colors -->
+    <color name="text_primary_light">#18181B</color>
+    <color name="text_primary_dark">#FAFAFA</color>
+    <color name="text_secondary_light">#71717A</color>
+    <color name="text_secondary_dark">#A1A1AA</color>
+    <color name="text_tertiary_light">#A1A1AA</color>
+    <color name="text_tertiary_dark">#71717A</color>
+    
+    <!-- Border Colors -->
+    <color name="border_light">#E4E4E7</color>
+    <color name="border_dark">#3F3F46</color>
+    
+    <!-- Legacy Colors (for compatibility) -->
+    <color name="primary_color">#4F46E5</color>
+    <color name="save_color">#10B981</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Chart Colors -->
+    <color name="chart_color_1">#4F46E5</color>
+    <color name="chart_color_2">#6C63FF</color>
+    <color name="chart_color_3">#10B981</color>
+    <color name="chart_color_4">#F59E0B</color>
+    <color name="chart_color_5">#EF4444</color>
+    <color name="chart_color_6">#8B5CF6</color>
+    <color name="chart_color_7">#EC4899</color>
+    <color name="chart_color_8">#06B6D4</color>
 </resources>

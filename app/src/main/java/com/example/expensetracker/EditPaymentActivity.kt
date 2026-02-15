@@ -7,6 +7,7 @@ import android.widget.EditText
 import android.widget.Toast
 import android.widget.Spinner
 import android.widget.ArrayAdapter
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 
@@ -46,6 +47,9 @@ class EditPaymentActivity : AppCompatActivity() {
 
         // Set up button listeners
         setupButtonListeners()
+        
+        // Handle back button press
+        setupBackPressHandler()
     }
 
     private fun initializeViews() {
@@ -202,8 +206,12 @@ class EditPaymentActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onBackPressed() {
-        setResult(RESULT_CANCELED)
-        super.onBackPressed()
+    private fun setupBackPressHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                setResult(RESULT_CANCELED)
+                finish()
+            }
+        })
     }
 }

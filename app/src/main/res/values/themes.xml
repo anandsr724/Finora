@@ -1,5 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <style name="Theme.ExpenseTracker" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Base theme -->
+    <style name="Theme.ExpenseTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_indigo</item>
+        <item name="colorPrimaryVariant">@color/primary_indigo_dark</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/primary_indigo_light</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <!-- Material color compatibility attributes used in layouts -->
+        <item name="colorSurface">@color/card_background_light</item>
+        <item name="colorOnSurface">@color/text_primary_light</item>
+        <item name="colorSurfaceVariant">@color/card_background_light</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_light</item>
+        <item name="colorOnBackground">@color/text_primary_light</item>
+        <item name="colorOutline">@color/border_light</item>
+        <item name="selectableItemBackgroundBorderless">?attr/selectableItemBackground</item>
+    </style>
 </resources>

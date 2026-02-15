@@ -183,13 +183,15 @@ class CategoryManager(private val context: Context) {
         return getAllCategories().find { it.id == categoryId }
     }
 
-    // Get category name with emoji
+    // Get category display name (just the name)
     fun getCategoryDisplayName(categoryId: String): String {
         val category = getCategoryById(categoryId)
-        return if (category != null) {
-            "${category.emoji} ${category.name}"
-        } else {
-            "Uncategorized"
-        }
+        return category?.name ?: "Uncategorized"
+    }
+
+    // Get category emoji
+    fun getCategoryEmoji(categoryId: String): String {
+        val category = getCategoryById(categoryId)
+        return category?.emoji ?: "📁"
     }
 }
