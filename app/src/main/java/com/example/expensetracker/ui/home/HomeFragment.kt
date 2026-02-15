@@ -183,6 +183,43 @@ class HomeFragment : Fragment() {
         }
 
         if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            // Save the transaction data returned from EditPaymentActivity
+            val amount = data.getStringExtra("amount") ?: ""
+            val recipient = data.getStringExtra("recipient") ?: ""
+            val dateTime = data.getStringExtra("dateTime") ?: ""
+            val transactionId = data.getStringExtra("transactionId") ?: ""
+            val note = data.getStringExtra("note") ?: ""
+            val bankInfo = data.getStringExtra("bankInfo") ?: ""
+            val category = data.getStringExtra("category") ?: "cat_other"
+            val editingId = data.getStringExtra("editingId")
+
+            if (editingId != null) {
+                // Update existing transaction
+                val updatedTransaction = com.example.expensetracker.PaymentTransaction(
+                    id = editingId,
+                    amount = amount,
+                    recipient = recipient,
+                    note = note,
+                    dateTime = dateTime,
+                    transactionId = transactionId,
+                    bankInfo = bankInfo,
+                    category = category
+                )
+                csvManager.updateTransaction(updatedTransaction)
+            } else {
+                // Save new transaction
+                val transaction = com.example.expensetracker.PaymentTransaction(
+                    amount = amount,
+                    recipient = recipient,
+                    note = note,
+                    dateTime = dateTime,
+                    transactionId = transactionId,
+                    bankInfo = bankInfo,
+                    category = category
+                )
+                csvManager.saveTransaction(transaction)
+            }
+            
             // Refresh data when transaction is saved
             view?.let { loadData(it) }
         }

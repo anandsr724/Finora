@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
         // Define top-level destinations to prevent the Up button from showing on these screens.
         val appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_home, R.id.nav_history, R.id.nav_add, R.id.nav_analytics, R.id.nav_settings))
+            R.id.nav_home, R.id.nav_history, R.id.nav_analytics, R.id.nav_settings))
 
         // Set up the Toolbar with the NavController directly. This is safer than setSupportActionBar().
         toolbar.setupWithNavController(navController, appBarConfiguration)

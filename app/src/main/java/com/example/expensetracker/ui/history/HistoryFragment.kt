@@ -1,5 +1,6 @@
 package com.example.expensetracker.ui.history
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
@@ -212,8 +213,44 @@ class HistoryFragment : Fragment() {
         intent.putExtra("bankInfo", transaction.bankInfo)
         intent.putExtra("category", transaction.category)
         intent.putExtra("transactionId", transaction.transactionId)
-        intent.putExtra("id", transaction.id)
-        startActivity(intent)
+        intent.putExtra("editingId", transaction.id)
+        startActivityForResult(intent, EDIT_REQUEST_CODE)
+    }
+
+    companion object {
+        private const val EDIT_REQUEST_CODE = 1001
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            // Update the transaction in CSV
+            val editingId = data.getStringExtra("editingId")
+            if (editingId != null) {
+                val amount = data.getStringExtra("amount") ?: ""
+                val recipient = data.getStringExtra("recipient") ?: ""
+                val dateTime = data.getStringExtra("dateTime") ?: ""
+                val transactionId = data.getStringExtra("transactionId") ?: ""
+                val note = data.getStringExtra("note") ?: ""
+                val bankInfo = data.getStringExtra("bankInfo") ?: ""
+                val category = data.getStringExtra("category") ?: "cat_other"
+
+                val updatedTransaction = PaymentTransaction(
+                    id = editingId,
+                    amount = amount,
+                    recipient = recipient,
+                    note = note,
+                    dateTime = dateTime,
+                    transactionId = transactionId,
+                    bankInfo = bankInfo,
+                    category = category
+                )
+                csvManager.updateTransaction(updatedTransaction)
+                Toast.makeText(requireContext(), "Transaction updated", Toast.LENGTH_SHORT).show()
+                loadTransactions()
+            }
+        }
     }
 
     private fun confirmDeleteTransaction(transaction: PaymentTransaction) {
