@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Transaction, Category } from '../App';
-import { ArrowLeft, Plus, Calendar, CreditCard } from 'lucide-react';
+import { ArrowLeft, Plus, CreditCard } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { useTheme } from '../contexts/ThemeContext';
+import DateTimePicker from './DateTimePicker';
 
 type EditTransactionScreenProps = {
   transaction: Transaction;
@@ -25,7 +26,20 @@ export default function EditTransactionScreen({
   const [newCategoryName, setNewCategoryName] = useState('');
   const [newCategoryEmoji, setNewCategoryEmoji] = useState('📦');
 
-  const emojiOptions = ['🍕', '🛍️', '🚗', '💡', '🎬', '🏥', '📚', '✈️', '🎮', '💰', '🏠', '👔', '🎁', '☕', '🍔', '📱', '💻', '🎵', '🏋️', '🐕'];
+  const emojiOptions = [
+    // Food & Drink
+    '🍕', '🍔', '🍟', '🌭', '🍿', '🧂', '🍞', '🥐', '🥯', '🧈', '🥞', '🧇', '🥓', '🥚', '🍳', '🧀', '🥗', '🥙', '🌮', '🌯', '🥪', '🥘', '🍝', '🍜', '🍲', '🍛', '🍣', '🍱', '🥟', '🦪', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🥮', '🍢', '🍡', '🍧', '🍨', '🍦', '🍰', '🎂', '🧁', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🌰', '🥜', '🍯', '🥛', '☕', '🍵', '🍶', '🍾', '🍷', '🍸', '🍹', '🍺', '🍻', '🥂', '🥃',
+    // Activity & Sports
+    '⚽', '🏀', '🏈', '⚾', '🥎', '🎾', '🏐', '🏉', '🥏', '🎳', '🏏', '🏑', '🏒', '🥊', '🥋', '🎣', '🎽', '🎿', '⛷️', '🛷', '🛸', '🥌', '🎯', '🪀', '🪃', '🏌️', '⛳', '🏇', '🏂',
+    // Travel & Places
+    '🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚓', '🚑', '🚒', '🚐', '🛻', '🚚', '🚛', '🚜', '🏍️', '🛵', '🦯', '🦽', '🦼', '🛺', '🚲', '🛴', '🛹', '🛼', '🚏', '⛽', '🚨', '🚥', '🚦', '🛑', '🚧', '⚓', '⛵', '🚤', '🛳️', '⛴️', '🛥️', '🛶', '✈️', '🛩️', '🛫', '🛬', '🪂', '💺', '🚁', '🚟', '🚠', '🚡', '🛰️', '🚀', '🛸', '⛰️', '⛱️', '🏔️', '🌋', '⛺', '⛳', '🏠', '🏡', '🏘️', '🏚️', '🏗️', '🏭', '🏢', '🏬', '🏣', '🏤', '🏥', '🏦', '🏨', '🏪', '🏫', '🏩', '💒', '🏛️', '⛪', '🕌', '🕍', '🛕', '🕋',
+    // Objects & Tech
+    '⌚', '📱', '📲', '💻', '⌨️', '🖥️', '🖨️', '🖱️', '🖲️', '🕹️', '🗜️', '💽', '💾', '💿', '📀', '🧮', '🎥', '🎬', '📺', '📷', '📸', '📹', '🎞️', '📽️', '🎦', '📞', '☎️', '📟', '📠', '📻', '🎙️', '🎚️', '🎛️', '🧭', '⏱️', '⏲️', '⏰', '🕰️', '⌛', '⏳', '📡', '🔋', '🔌', '💡', '🔦', '🕯️', '🪔', '🧯', '🛢️',
+    // Money & Documents
+    '💸', '💵', '💴', '💶', '💷', '💰', '💳', '🧾', '✉️', '📩', '📨', '📤', '📥', '📦', '🏷️', '🧧', '📪', '📫', '📬', '📭', '📮', '✏️', '✒️', '🖋️', '🖊️', '🖌️', '🖍️', '📝', '📁', '📂', '📅', '📆', '🗒️', '🗓️', '📇', '📈', '📉', '📊', '📋', '📌', '📍', '📎', '🖇️', '📐', '📏', '🧮', '📓', '📔', '📒', '📕', '📗', '📘', '📙', '📚', '📖',
+    // Common items
+    '🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥦', '🥬', '🥒', '🌶️', '🌽', '🥕', '🥔', '🍠', '💡', '🏥', '📚', '🎮', '💰', '🏠', '👔', '🎁', '☕', '📱', '💻', '🎵', '🏋️', '🌳', '🎨', '📦', '🔧', '❤️', '💎', '👑', '🎀', '🎊', '🎉'
+  ];
 
   const handleSubmit = () => {
     if (!formData.amount || !formData.recipient) {
@@ -147,12 +161,12 @@ export default function EditTransactionScreen({
               <h3 className={`text-sm ${theme === 'dark' ? 'text-white' : 'text-zinc-900'}`}>Create New Category</h3>
               <div>
                 <label className={`block text-xs ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'} mb-2`}>Emoji</label>
-                <div className="grid grid-cols-10 gap-1">
+                <div className="grid grid-cols-8 gap-1 max-h-56 overflow-y-auto p-2">
                   {emojiOptions.map((emoji) => (
                     <button
                       key={emoji}
                       onClick={() => setNewCategoryEmoji(emoji)}
-                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${
+                      className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all text-lg ${
                         newCategoryEmoji === emoji
                           ? `${theme === 'dark' ? 'bg-zinc-700' : 'bg-white'} ring-2 ring-[#4F46E5] scale-110`
                           : `${theme === 'dark' ? 'bg-zinc-800 hover:bg-zinc-700' : 'bg-white/50 hover:bg-white'}`
@@ -197,15 +211,10 @@ export default function EditTransactionScreen({
           {/* Date & Time */}
           <div>
             <label className={`block text-sm ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-600'} mb-2`}>Date & Time</label>
-            <div className="relative">
-              <Calendar className={`absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`} />
-              <input
-                type="datetime-local"
-                value={formData.date.toISOString().slice(0, 16)}
-                onChange={(e) => setFormData({ ...formData, date: new Date(e.target.value) })}
-                className={`w-full pl-12 pr-4 py-3 rounded-2xl border ${theme === 'dark' ? 'bg-zinc-900 border-zinc-700 text-white' : 'border-zinc-200'} focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-[#4F46E5]/20 transition-all`}
-              />
-            </div>
+            <DateTimePicker
+              value={formData.date}
+              onChange={(newDate) => setFormData({ ...formData, date: newDate })}
+            />
           </div>
 
           {/* Transaction ID */}

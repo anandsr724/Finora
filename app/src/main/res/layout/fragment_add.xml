@@ -13,6 +13,72 @@
         android:padding="20dp"
         android:paddingBottom="100dp">
 
+        <!-- Entry Options Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="?attr/colorSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add New Transaction"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Choose how you want to add a transaction"
+                    android:textSize="14sp"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:layout_marginBottom="24dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:spacing="12dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/selectImageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Upload Screenshot"
+                        android:textSize="16sp"
+                        android:padding="16dp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/gradient_start"
+                        app:icon="@android:drawable/ic_menu_upload"
+                        app:iconTint="@color/white"
+                        android:layout_marginBottom="12dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/manualEntryButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Enter Details Manually"
+                        android:textSize="16sp"
+                        android:padding="16dp"
+                        app:cornerRadius="16dp"
+                        app:backgroundTint="@color/primary_indigo"
+                        app:icon="@android:drawable/ic_menu_edit"
+                        app:iconTint="@color/white" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
         <!-- Upload Section Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
@@ -40,22 +106,23 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upload or share a UPI payment screenshot to automatically extract transaction details"
+                    android:text="Extract transaction details from your payment screenshot"
                     android:textSize="14sp"
                     android:textColor="?attr/colorOnSurfaceVariant"
                     android:layout_marginBottom="24dp" />
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectImageButton"
+                    android:id="@+id/selectImageButtonAlt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Upload Screenshot"
+                    android:text="Browse Files"
                     android:textSize="16sp"
                     android:padding="16dp"
                     app:cornerRadius="16dp"
                     app:backgroundTint="@color/gradient_start"
-                    app:icon="@android:drawable/ic_menu_upload"
-                    app:iconTint="@color/white" />
+                    app:icon="@android:drawable/ic_input_add"
+                    app:iconTint="@color/white"
+                    android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -35,17 +34,11 @@ class SettingsFragment : Fragment() {
     private lateinit var addCategoryFab: ExtendedFloatingActionButton
     private lateinit var addCategoryForm: LinearLayout
     private lateinit var categoryNameInput: TextInputEditText
-    private lateinit var emojiGrid: GridLayout
     private lateinit var addCategoryButton: MaterialButton
     private lateinit var cancelAddCategoryButton: MaterialButton
     private lateinit var darkModeSwitch: SwitchMaterial
-    private var selectedEmoji: String = "📦"
 
-    private val emojiOptions = listOf(
-        "🍕", "🛍️", "🚗", "💡", "🎬", "🏥", "📚", "✈️",
-        "🎮", "💰", "🏠", "👔", "🎁", "☕", "🍔", "📱",
-        "💻", "🎵", "🏋️", "🐕", "🌳", "🎨", "📦", "🔧"
-    )
+    // Emoji options are now input by user from keyboard
 
     companion object {
         private const val STORAGE_PERMISSION_CODE = 1002
@@ -63,7 +56,6 @@ class SettingsFragment : Fragment() {
 
         setupViews(view)
         setupCategoryRecyclerView()
-        setupEmojiGrid()
         setupDarkModeSwitch()
 
         return view
@@ -74,7 +66,6 @@ class SettingsFragment : Fragment() {
         addCategoryFab = view.findViewById(R.id.addCategoryFab)
         addCategoryForm = view.findViewById(R.id.addCategoryForm)
         categoryNameInput = view.findViewById(R.id.categoryNameInput)
-        emojiGrid = view.findViewById(R.id.emojiGrid)
         addCategoryButton = view.findViewById(R.id.addCategoryButton)
         cancelAddCategoryButton = view.findViewById(R.id.cancelAddCategoryButton)
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch)
@@ -117,60 +108,12 @@ class SettingsFragment : Fragment() {
         categoriesRecyclerView.adapter = adapter
     }
 
-    private fun setupEmojiGrid() {
-        emojiGrid.removeAllViews()
-        val dp8 = (8 * resources.displayMetrics.density).toInt()
-
-        emojiOptions.forEach { emoji ->
-            val button = MaterialButton(requireContext())
-            button.text = emoji
-            button.textSize = 16f
-            button.minHeight = 0
-            button.minimumHeight = (40 * resources.displayMetrics.density).toInt()
-            button.minimumWidth = (40 * resources.displayMetrics.density).toInt()
-            button.cornerRadius = 8
-            button.setPadding(dp8, dp8, dp8, dp8)
-
-            if (emoji == selectedEmoji) {
-                button.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_indigo))
-            } else {
-                button.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
-            }
-
-            button.setOnClickListener {
-                selectedEmoji = emoji
-                updateEmojiSelection()
-            }
-
-            val params = GridLayout.LayoutParams().apply {
-                width = GridLayout.LayoutParams.WRAP_CONTENT
-                height = GridLayout.LayoutParams.WRAP_CONTENT
-                setMargins(dp8 / 2, dp8 / 2, dp8 / 2, dp8 / 2)
-            }
-            button.layoutParams = params
-            emojiGrid.addView(button)
-        }
-    }
-
-    private fun updateEmojiSelection() {
-        for (i in 0 until emojiGrid.childCount) {
-            val button = emojiGrid.getChildAt(i) as? MaterialButton ?: continue
-            val emoji = button.text.toString()
-            if (emoji == selectedEmoji) {
-                button.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.primary_indigo))
-            } else {
-                button.setBackgroundColor(ContextCompat.getColor(requireContext(), android.R.color.transparent))
-            }
-        }
-    }
-
     private fun toggleAddCategoryForm(show: Boolean? = null) {
         val shouldShow = show ?: (addCategoryForm.visibility != View.VISIBLE)
         addCategoryForm.visibility = if (shouldShow) View.VISIBLE else View.GONE
         if (!shouldShow) {
             categoryNameInput.text?.clear()
-            selectedEmoji = "📦"
-            updateEmojiSelection()
+            view?.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.emojiInput)?.text?.clear()
         }
     }
 
@@ -181,7 +124,11 @@ class SettingsFragment : Fragment() {
             return
         }
 
-        val success = categoryManager.addCategory(categoryName, selectedEmoji)
+        // Get emoji from text input or use default
+        val emojiInput = view?.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.emojiInput)?.text?.toString()?.trim() ?: ""
+        val emoji = if (emojiInput.isNotEmpty()) emojiInput else "📦"
+
+        val success = categoryManager.addCategory(categoryName, emoji)
         if (success) {
             Toast.makeText(requireContext(), "Category added successfully", Toast.LENGTH_SHORT).show()
             loadCategories()

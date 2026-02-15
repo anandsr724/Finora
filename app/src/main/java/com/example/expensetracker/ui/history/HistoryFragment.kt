@@ -1,5 +1,6 @@
 package com.example.expensetracker.ui.history
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +8,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -16,6 +19,7 @@ import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
+import com.example.expensetracker.EditPaymentActivity
 import com.google.android.material.chip.Chip
 import com.google.android.material.textfield.TextInputEditText
 import java.text.SimpleDateFormat
@@ -185,9 +189,48 @@ class HistoryFragment : Fragment() {
             
             // Group by date
             val groupedTransactions = groupTransactionsByDate(filtered)
-            transactionAdapter = TransactionHistoryAdapter(groupedTransactions, categoryManager)
+            transactionAdapter = TransactionHistoryAdapter(
+                groupedTransactions,
+                categoryManager,
+                onEdit = { transaction ->
+                    editTransaction(transaction)
+                },
+                onDelete = { transaction ->
+                    confirmDeleteTransaction(transaction)
+                }
+            )
             recyclerView.adapter = transactionAdapter
         }
+    }
+
+    private fun editTransaction(transaction: PaymentTransaction) {
+        val intent = Intent(requireContext(), EditPaymentActivity::class.java)
+        intent.putExtra("amount", transaction.amount)
+        intent.putExtra("recipient", transaction.recipient)
+        intent.putExtra("note", transaction.note)
+        intent.putExtra("dateTime", transaction.dateTime)
+        intent.putExtra("bankInfo", transaction.bankInfo)
+        intent.putExtra("category", transaction.category)
+        intent.putExtra("transactionId", transaction.transactionId)
+        intent.putExtra("id", transaction.id)
+        startActivity(intent)
+    }
+
+    private fun confirmDeleteTransaction(transaction: PaymentTransaction) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Transaction")
+            .setMessage("Are you sure you want to delete this transaction?")
+            .setPositiveButton("Delete") { _, _ ->
+                deleteTransaction(transaction)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun deleteTransaction(transaction: PaymentTransaction) {
+        csvManager.deleteTransaction(transaction.id)
+        Toast.makeText(requireContext(), "Transaction deleted", Toast.LENGTH_SHORT).show()
+        loadTransactions()
     }
 
     private fun groupTransactionsByDate(transactions: List<PaymentTransaction>): List<PaymentTransaction> {

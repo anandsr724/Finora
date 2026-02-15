@@ -100,21 +100,39 @@
                         android:textColor="@color/white"
                         android:layout_marginBottom="12dp" />
 
-                    <!-- Emoji Grid -->
+                    <!-- Emoji Input -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Emoji"
+                        android:text="Emoji (Optional)"
                         android:textSize="12sp"
                         android:textColor="#C7D2FE"
                         android:layout_marginBottom="8dp" />
 
-                    <GridLayout
-                        android:id="@+id/emojiGrid"
+                    <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:columnCount="12"
-                        android:layout_marginBottom="12dp" />
+                        app:boxCornerRadiusTopStart="12dp"
+                        app:boxCornerRadiusTopEnd="12dp"
+                        app:boxCornerRadiusBottomStart="12dp"
+                        app:boxCornerRadiusBottomEnd="12dp"
+                        app:boxStrokeWidth="0dp"
+                        app:boxBackgroundMode="filled"
+                        app:boxBackgroundColor="?attr/colorSurface"
+                        android:layout_marginBottom="12dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/emojiInput"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Paste emoji here (e.g., 🍕)"
+                            android:textSize="16sp"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textColorHint="?attr/colorOnSurfaceVariant"
+                            android:maxLength="2"
+                            android:gravity="center" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- Category Name Input -->
                     <TextView

@@ -179,6 +179,20 @@ function AppContent() {
                       setEditingTransaction(newTransaction);
                     }}
                     onEditTransaction={handleEditTransaction}
+                    onManualEntry={() => {
+                      const newTransaction: Transaction = {
+                        id: Date.now().toString(),
+                        amount: 0,
+                        recipient: '',
+                        note: '',
+                        date: new Date(),
+                        transactionId: '',
+                        bankInfo: 'Google Pay',
+                        category: 'Food & Dining',
+                        emoji: '🍕',
+                      };
+                      setEditingTransaction(newTransaction);
+                    }}
                   />
                 )}
                 {currentScreen === 'history' && (

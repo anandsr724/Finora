@@ -83,17 +83,37 @@
                         android:textColor="?attr/colorOnSurfaceVariant"
                         android:textSize="14sp" />
 
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/uploadButton"
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:text="Upload Screenshot"
-                        android:textSize="16sp"
-                        app:backgroundTint="@color/gradient_start"
-                        app:cornerRadius="16dp"
-                        app:icon="@android:drawable/ic_menu_upload"
-                        app:iconTint="@color/white" />
+                        android:orientation="vertical"
+                        android:spacing="12dp">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/uploadButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            android:text="Upload Screenshot"
+                            android:textSize="16sp"
+                            app:backgroundTint="@color/gradient_start"
+                            app:cornerRadius="16dp"
+                            app:icon="@android:drawable/ic_menu_upload"
+                            app:iconTint="@color/white"
+                            android:layout_marginBottom="12dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/manualEntryButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="16dp"
+                            android:text="Enter Details Manually"
+                            android:textSize="16sp"
+                            app:backgroundTint="@color/primary_indigo"
+                            app:cornerRadius="16dp"
+                            app:icon="@android:drawable/ic_menu_edit"
+                            app:iconTint="@color/white" />
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

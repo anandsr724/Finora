@@ -1,6 +1,9 @@
 package com.example.expensetracker.ui.home
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +30,10 @@ class HomeFragment : Fragment() {
     private lateinit var categoryManager: CategoryManager
     private lateinit var transactionAdapter: TransactionHistoryAdapter
 
+    companion object {
+        private const val PICK_IMAGE_REQUEST = 1004
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,13 +50,19 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupViews(view: View) {
-        // Upload button
+        // Upload button - opens file picker directly
         val uploadButton = view.findViewById<MaterialButton>(R.id.uploadButton)
         uploadButton.setOnClickListener {
+            openFilePicker()
+        }
+
+        // Manual Entry button - navigates to add form
+        val manualEntryButton = view.findViewById<MaterialButton>(R.id.manualEntryButton)
+        manualEntryButton.setOnClickListener {
             findNavController().navigate(R.id.nav_add)
         }
 
-        // FAB
+        // FAB - shows both options in AddFragment
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
         fab.setOnClickListener {
             findNavController().navigate(R.id.nav_add)
@@ -135,5 +148,22 @@ class HomeFragment : Fragment() {
         super.onResume()
         // Refresh data when returning to this fragment
         view?.let { loadData(it) }
+    }
+
+    private fun openFilePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
+            val imageUri = data.data
+            // Navigate to AddFragment with the image URI
+            val bundle = android.os.Bundle()
+            bundle.putString("imageUri", imageUri.toString())
+            findNavController().navigate(R.id.nav_add, bundle)
+        }
     }
 }

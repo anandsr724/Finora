@@ -1,16 +1,31 @@
+import { useState, useRef } from 'react';
 import { Transaction } from '../App';
-import { Upload, Camera } from 'lucide-react';
+import { Upload, Camera, FileText } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 
 type HomeScreenProps = {
   transactions: Transaction[];
   onProcessImage: () => void;
   onEditTransaction: (transaction: Transaction) => void;
+  onManualEntry: () => void;
 };
 
-export default function HomeScreen({ transactions, onProcessImage, onEditTransaction }: HomeScreenProps) {
+export default function HomeScreen({ transactions, onProcessImage, onEditTransaction, onManualEntry }: HomeScreenProps) {
   const { theme } = useTheme();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const recentTransactions = transactions.slice(0, 3);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Process the file
+      onProcessImage();
+      // Reset input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
 
   return (
     <div className="p-5 pb-20">
@@ -28,17 +43,37 @@ export default function HomeScreen({ transactions, onProcessImage, onEditTransac
 
       {/* Upload Section */}
       <div className={`${theme === 'dark' ? 'bg-zinc-800 border-zinc-700' : 'bg-white border-zinc-100'} rounded-3xl p-6 shadow-sm border mb-6`}>
-        <h2 className={theme === 'dark' ? 'text-white' : 'text-zinc-900'}>Process Payment Screenshot</h2>
+        <h2 className={theme === 'dark' ? 'text-white' : 'text-zinc-900'}>Add New Transaction</h2>
         <p className={`text-sm ${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-500'} mb-6`}>
-          Upload or share a UPI payment screenshot to automatically extract transaction details
+          Choose how you want to add a transaction
         </p>
-        <button
-          onClick={onProcessImage}
-          className="w-full bg-gradient-to-r from-[#4F46E5] to-[#6C63FF] text-white py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all active:scale-[0.98]"
-        >
-          <Upload className="w-5 h-5" />
-          <span>Upload Screenshot</span>
-        </button>
+        
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+        
+        <div className="space-y-3">
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="w-full bg-gradient-to-r from-[#4F46E5] to-[#6C63FF] text-white py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all active:scale-[0.98]"
+          >
+            <Upload className="w-5 h-5" />
+            <span>Upload Payment Screenshot</span>
+          </button>
+          
+          <button
+            onClick={onManualEntry}
+            className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 ${theme === 'dark' ? 'bg-zinc-700 text-white hover:bg-zinc-600' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'} transition-all active:scale-[0.98]`}
+          >
+            <FileText className="w-5 h-5" />
+            <span>Enter Details Manually</span>
+          </button>
+        </div>
       </div>
 
       {/* Recent Transactions */}
@@ -125,10 +160,10 @@ export default function HomeScreen({ transactions, onProcessImage, onEditTransac
 
       {/* Floating Action Button */}
       <button
-        onClick={onProcessImage}
+        onClick={onManualEntry}
         className="fixed bottom-24 right-8 w-14 h-14 bg-gradient-to-br from-[#4F46E5] to-[#6C63FF] rounded-full shadow-xl shadow-indigo-500/40 flex items-center justify-center hover:shadow-2xl hover:shadow-indigo-500/50 transition-all active:scale-[0.95]"
       >
-        <Camera className="w-6 h-6 text-white" />
+        <FileText className="w-6 h-6 text-white" />
       </button>
     </div>
   );

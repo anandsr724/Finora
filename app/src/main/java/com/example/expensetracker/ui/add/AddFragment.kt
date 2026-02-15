@@ -63,6 +63,19 @@ class AddFragment : Fragment() {
             performMLKitOCR()
         }
 
+        // Add manual entry button
+        val manualEntryButton = view.findViewById<Button>(R.id.manualEntryButton)
+        manualEntryButton?.setOnClickListener {
+            openManualEntryForm()
+        }
+
+        // Check if image URI was passed from HomeFragment
+        val imageUriString = arguments?.getString("imageUri")
+        if (!imageUriString.isNullOrEmpty()) {
+            val imageUri = Uri.parse(imageUriString)
+            convertToBitmap(imageUri)
+        }
+
         return view
     }
 
@@ -528,6 +541,21 @@ class AddFragment : Fragment() {
             putExtra("transactionId", transactionId)
             putExtra("bankInfo", bankInfo)
             putExtra("category", category)
+        }
+        startActivityForResult(intent, EDIT_REQUEST_CODE)
+    }
+
+    private fun openManualEntryForm() {
+        // Launch EditPaymentActivity with empty fields for manual entry
+        val intent = Intent(requireActivity(), EditPaymentActivity::class.java).apply {
+            putExtra("amount", "")
+            putExtra("recipient", "")
+            putExtra("note", "")
+            putExtra("dateTime", "")
+            putExtra("transactionId", "")
+            putExtra("bankInfo", "")
+            putExtra("category", "cat_other")
+            putExtra("isManualEntry", true)  // Flag to indicate this is manual entry
         }
         startActivityForResult(intent, EDIT_REQUEST_CODE)
     }

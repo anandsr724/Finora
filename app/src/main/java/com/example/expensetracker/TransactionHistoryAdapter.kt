@@ -11,7 +11,9 @@ import java.util.*
 
 class TransactionHistoryAdapter(
     private val transactions: List<PaymentTransaction>,
-    private val categoryManager: CategoryManager? = null
+    private val categoryManager: CategoryManager? = null,
+    private val onEdit: ((PaymentTransaction) -> Unit)? = null,
+    private val onDelete: ((PaymentTransaction) -> Unit)? = null
 ) : RecyclerView.Adapter<TransactionHistoryAdapter.TransactionViewHolder>() {
 
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -22,6 +24,8 @@ class TransactionHistoryAdapter(
         val categoryBadge: TextView = itemView.findViewById(R.id.category_badge)
         val categoryEmoji: TextView = itemView.findViewById(R.id.category_emoji)
         val noteTextView: TextView = itemView.findViewById(R.id.transaction_note)
+        val editButton: android.widget.Button? = itemView.findViewById(R.id.editButton)
+        val deleteButton: android.widget.Button? = itemView.findViewById(R.id.deleteButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -71,6 +75,16 @@ class TransactionHistoryAdapter(
             holder.noteTextView.visibility = View.VISIBLE
         } else {
             holder.noteTextView.visibility = View.GONE
+        }
+        
+        // Edit button click listener
+        holder.editButton?.setOnClickListener {
+            onEdit?.invoke(currentTransaction)
+        }
+        
+        // Delete button click listener
+        holder.deleteButton?.setOnClickListener {
+            onDelete?.invoke(currentTransaction)
         }
     }
 
