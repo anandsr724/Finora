@@ -18,12 +18,13 @@ data class PaymentTransaction(
     val dateTime: String,
     val transactionId: String,
     val bankInfo: String,
-    val category: String = "cat_other", // Default to "Other" category
-    val createdAt: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+    val category: String = "cat_other",
+    val createdAt: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
+    val currency: String = "INR"
 ) {
     // Convert to CSV row
     fun toCsvRow(): String {
-        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt)
+        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt, currency)
             .joinToString(",") { escapeCsvField(it) }
     }
 
@@ -40,16 +41,19 @@ data class PaymentTransaction(
             return try {
                 val fields = parseCsvRow(csvRow)
                 if (fields.size >= 8) {
+                    // Normalize amount: strip any stale ₹ symbol and commas from old data
+                    val rawAmount = fields[1].replace("₹", "").replace(",", "").trim()
                     PaymentTransaction(
                         id = fields[0],
-                        amount = fields[1],
+                        amount = rawAmount,
                         recipient = fields[2],
                         note = fields[3],
                         dateTime = fields[4],
                         transactionId = fields[5],
                         bankInfo = fields[6],
                         category = if (fields.size > 7) fields[7] else "cat_other",
-                        createdAt = if (fields.size > 8) fields[8] else SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+                        createdAt = if (fields.size > 8) fields[8] else SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
+                        currency = if (fields.size > 9) fields[9] else "INR"
                     )
                 } else null
             } catch (e: Exception) {
@@ -105,7 +109,7 @@ data class PaymentTransaction(
         }
 
         fun getCsvHeader(): String {
-            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt"
+            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt,Currency"
         }
     }
 }

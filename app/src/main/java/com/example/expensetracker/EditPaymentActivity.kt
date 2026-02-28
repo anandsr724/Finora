@@ -238,7 +238,9 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun saveAndReturn() {
         // Get updated values from all editable fields
+        // Strip currency symbol and commas so the stored amount is always a plain number
         val updatedAmount = amountEditText.text.toString().trim()
+            .replace("₹", "").replace(",", "").trim()
         val updatedRecipient = recipientEditText.text.toString().trim()
         val updatedDateTime = dateTimeEditText.text.toString().trim()
         val updatedTransactionId = transactionIdEditText.text.toString().trim()

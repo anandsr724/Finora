@@ -146,7 +146,10 @@ export default function TransactionHistoryScreen({
                               )}
                               <div className="flex items-center gap-2 mt-2">
                                 <p className={`text-xs ${theme === 'dark' ? 'text-zinc-500' : 'text-zinc-400'}`}>
-                                  {transaction.date.toLocaleTimeString('en-IN', {
+                                  {transaction.date.toLocaleDateString('en-IN', {
+                                    day: 'numeric',
+                                    month: 'short',
+                                  })}, {transaction.date.toLocaleTimeString('en-IN', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                   })}

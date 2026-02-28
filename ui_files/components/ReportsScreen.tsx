@@ -70,10 +70,7 @@ export default function ReportsScreen({ transactions }: ReportsScreenProps) {
   const COLORS = ['#4F46E5', '#6C63FF', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
 
   const totalSpent = filteredTransactions.reduce((sum, t) => sum + t.amount, 0);
-  const thisMonth = filteredTransactions
-    .filter(t => t.date.getMonth() === new Date().getMonth())
-    .reduce((sum, t) => sum + t.amount, 0);
-  const topCategory = categoryData.length > 0 
+  const topCategory = categoryData.length > 0
     ? categoryData.reduce((max, cat) => cat.value > max.value ? cat : max)
     : null;
   const recentExpense = filteredTransactions.length > 0 ? filteredTransactions[0] : null;
@@ -115,14 +112,6 @@ export default function ReportsScreen({ transactions }: ReportsScreenProps) {
           <p className="text-2xl">₹{totalSpent.toLocaleString('en-IN')}</p>
         </div>
         
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-500 rounded-2xl p-4 text-white shadow-lg shadow-emerald-500/20">
-          <div className="flex items-center gap-2 mb-2">
-            <Calendar className="w-5 h-5" />
-            <p className="text-sm text-emerald-100">This Month</p>
-          </div>
-          <p className="text-2xl">₹{thisMonth.toLocaleString('en-IN')}</p>
-        </div>
-
         {topCategory && (
           <div className="bg-gradient-to-br from-amber-500 to-orange-500 rounded-2xl p-4 text-white shadow-lg shadow-amber-500/20">
             <div className="flex items-center gap-2 mb-2">

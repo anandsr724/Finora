@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.CategoryManager
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,8 +38,15 @@ class TransactionHistoryAdapter(
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
         val currentTransaction = transactions[position]
         
-        // Amount
-        holder.amountTextView.text = currentTransaction.amount
+        // Amount - format with currency symbol and Indian number formatting
+        val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        val numericAmount = currentTransaction.amount.replace("₹", "").replace(",", "").toDoubleOrNull()
+        val currencySymbol = if (currentTransaction.currency == "INR") "₹" else currentTransaction.currency
+        holder.amountTextView.text = if (numericAmount != null) {
+            "$currencySymbol${numberFormat.format(numericAmount)}"
+        } else {
+            currentTransaction.amount
+        }
         
         // Recipient
         holder.recipientTextView.text = currentTransaction.recipient
@@ -48,7 +56,7 @@ class TransactionHistoryAdapter(
             val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
             val date = dateFormat.parse(currentTransaction.dateTime)
             if (date != null) {
-                val timeFormat = SimpleDateFormat("hh:mm a", Locale.ENGLISH)
+                val timeFormat = SimpleDateFormat("dd MMM, hh:mm a", Locale.ENGLISH)
                 holder.dateTextView.text = timeFormat.format(date)
             } else {
                 holder.dateTextView.text = currentTransaction.dateTime

@@ -38,7 +38,6 @@ class AnalyticsFragment : Fragment() {
     private lateinit var pieChart: PieChart
     private lateinit var barChart: BarChart
     private lateinit var totalSpentAmount: TextView
-    private lateinit var thisMonthAmount: TextView
     private lateinit var topCategoryCard: MaterialCardView
     private lateinit var topCategoryName: TextView
     private lateinit var topCategoryEmoji: TextView
@@ -87,7 +86,6 @@ class AnalyticsFragment : Fragment() {
         pieChart = view.findViewById(R.id.pieChart)
         barChart = view.findViewById(R.id.barChart)
         totalSpentAmount = view.findViewById(R.id.totalSpentAmount)
-        thisMonthAmount = view.findViewById(R.id.thisMonthAmount)
         topCategoryCard = view.findViewById(R.id.topCategoryCard)
         topCategoryName = view.findViewById(R.id.topCategoryName)
         topCategoryEmoji = view.findViewById(R.id.topCategoryEmoji)
@@ -211,6 +209,7 @@ class AnalyticsFragment : Fragment() {
         categoryChartCard.visibility = View.GONE
         monthlyTrendCard.visibility = View.GONE
         additionalStatsContainer.visibility = View.GONE
+        totalSpentAmount.text = "₹0"
         emptyStateMessage.text = if (isAllTime) {
             "Add transactions to see your spending analytics"
         } else {
@@ -226,33 +225,10 @@ class AnalyticsFragment : Fragment() {
         val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
 
         // Total Spent
-        val totalSpent = filteredTransactions.sumOf { 
-            it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 
+        val totalSpent = filteredTransactions.sumOf {
+            it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0
         }
         totalSpentAmount.text = "₹${numberFormat.format(totalSpent)}"
-
-        // This Month
-        val calendar = Calendar.getInstance()
-        val currentMonth = calendar.get(Calendar.MONTH)
-        val currentYear = calendar.get(Calendar.YEAR)
-        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-
-        val thisMonthTotal = filteredTransactions.filter { transaction ->
-            try {
-                val date = dateFormat.parse(transaction.dateTime)
-                if (date != null) {
-                    calendar.time = date
-                    calendar.get(Calendar.MONTH) == currentMonth &&
-                            calendar.get(Calendar.YEAR) == currentYear
-                } else {
-                    false
-                }
-            } catch (e: Exception) {
-                false
-            }
-        }.sumOf { it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
-
-        thisMonthAmount.text = "₹${numberFormat.format(thisMonthTotal)}"
 
         // Top Category
         val categoryTotals = filteredTransactions.groupBy { it.category }
@@ -288,7 +264,8 @@ class AnalyticsFragment : Fragment() {
             val category = categoryManager.getCategoryById(recentExpense.category)
             recentExpenseRecipient.text = recentExpense.recipient
             recentExpenseEmoji.text = category?.emoji ?: "📁"
-            recentExpenseAmount.text = recentExpense.amount
+            val recentNumeric = recentExpense.amount.replace("₹", "").replace(",", "").toDoubleOrNull()
+            recentExpenseAmount.text = if (recentNumeric != null) "₹${numberFormat.format(recentNumeric)}" else recentExpense.amount
             recentExpenseCard.visibility = View.VISIBLE
             additionalStatsContainer.visibility = View.VISIBLE
         } else {
