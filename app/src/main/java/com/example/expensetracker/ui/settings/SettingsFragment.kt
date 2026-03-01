@@ -8,37 +8,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.CSVManager
 import com.example.expensetracker.Category
+import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.R
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.textfield.TextInputEditText
 
 class SettingsFragment : Fragment() {
 
     private lateinit var csvManager: CSVManager
     private lateinit var categoryManager: CategoryManager
-    private lateinit var categoriesRecyclerView: RecyclerView
-    private lateinit var addCategoryFab: ExtendedFloatingActionButton
-    private lateinit var addCategoryForm: LinearLayout
-    private lateinit var categoryNameInput: TextInputEditText
-    private lateinit var addCategoryButton: MaterialButton
-    private lateinit var cancelAddCategoryButton: MaterialButton
+    private lateinit var manageCategoriesButton: MaterialButton
+    private lateinit var categoriesCountText: TextView
+    private lateinit var categoryPreviewContainer: LinearLayout
     private lateinit var darkModeSwitch: SwitchMaterial
-
-    // Emoji options are now input by user from keyboard
 
     companion object {
         private const val STORAGE_PERMISSION_CODE = 1002
@@ -55,90 +52,107 @@ class SettingsFragment : Fragment() {
         categoryManager.initializeDefaultCategories()
 
         setupViews(view)
-        setupCategoryRecyclerView()
+        loadCategoryPreview()
         setupDarkModeSwitch()
 
         return view
     }
 
     private fun setupViews(view: View) {
-        categoriesRecyclerView = view.findViewById(R.id.categoriesRecyclerView)
-        addCategoryFab = view.findViewById(R.id.addCategoryFab)
-        addCategoryForm = view.findViewById(R.id.addCategoryForm)
-        categoryNameInput = view.findViewById(R.id.categoryNameInput)
-        addCategoryButton = view.findViewById(R.id.addCategoryButton)
-        cancelAddCategoryButton = view.findViewById(R.id.cancelAddCategoryButton)
+        manageCategoriesButton = view.findViewById(R.id.manageCategoriesButton)
+        categoriesCountText = view.findViewById(R.id.categoriesCountText)
+        categoryPreviewContainer = view.findViewById(R.id.categoryPreviewContainer)
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch)
 
-        addCategoryFab.setOnClickListener {
-            toggleAddCategoryForm()
+        manageCategoriesButton.setOnClickListener {
+            showManageCategoriesSheet()
         }
 
-        addCategoryButton.setOnClickListener {
-            addNewCategory()
-        }
-
-        cancelAddCategoryButton.setOnClickListener {
-            toggleAddCategoryForm(false)
-        }
-
-        val exportButton = view.findViewById<MaterialButton>(R.id.export_csv_button)
-        exportButton.setOnClickListener {
+        view.findViewById<MaterialButton>(R.id.export_csv_button).setOnClickListener {
             exportCsvToDownloads()
         }
 
-        val clearDataButton = view.findViewById<MaterialButton>(R.id.clear_all_data_button)
-        clearDataButton.setOnClickListener {
+        view.findViewById<MaterialButton>(R.id.clear_all_data_button).setOnClickListener {
             confirmClearAllData()
         }
     }
 
-    private fun setupCategoryRecyclerView() {
-        categoriesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        loadCategories()
+    private fun loadCategoryPreview() {
+        val categories = categoryManager.getAllCategories()
+        categoriesCountText.text = "${categories.size} categories"
+        categoryPreviewContainer.removeAllViews()
+        categories.forEach { category ->
+            val chip = layoutInflater.inflate(
+                R.layout.item_category_chip, categoryPreviewContainer, false
+            ) as TextView
+            chip.text = "${category.emoji} ${category.name}"
+            categoryPreviewContainer.addView(chip)
+        }
     }
 
-    private fun loadCategories() {
-        val categories = categoryManager.getAllCategories()
-        val adapter = CategoryAdapter(categories) { category, action ->
-            when (action) {
-                "delete" -> confirmDeleteCategory(category)
+    private fun showManageCategoriesSheet() {
+        val sheet = BottomSheetDialog(requireContext())
+        val sheetView = layoutInflater.inflate(R.layout.layout_manage_categories_sheet, null)
+        sheet.setContentView(sheetView)
+
+        val recycler = sheetView.findViewById<RecyclerView>(R.id.manageCategoriesRecyclerView)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+
+        fun refreshSheet() {
+            val cats = categoryManager.getAllCategories()
+            categoriesCountText.text = "${cats.size} categories"
+            recycler.adapter = ManageCategoryAdapter(cats) { category ->
+                confirmDeleteCategory(category) {
+                    loadCategoryPreview()
+                    refreshSheet()
+                }
             }
         }
-        categoriesRecyclerView.adapter = adapter
-    }
+        refreshSheet()
 
-    private fun toggleAddCategoryForm(show: Boolean? = null) {
-        val shouldShow = show ?: (addCategoryForm.visibility != View.VISIBLE)
-        addCategoryForm.visibility = if (shouldShow) View.VISIBLE else View.GONE
-        if (!shouldShow) {
-            categoryNameInput.text?.clear()
-            view?.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.emojiInput)?.text?.clear()
-        }
-    }
-
-    private fun addNewCategory() {
-        val categoryName = categoryNameInput.text?.toString()?.trim() ?: ""
-        if (categoryName.isEmpty()) {
-            Toast.makeText(requireContext(), "Please enter a category name", Toast.LENGTH_SHORT).show()
-            return
+        sheetView.findViewById<ImageButton>(R.id.closeCategoriesSheetButton).setOnClickListener {
+            sheet.dismiss()
         }
 
-        // Get emoji from text input or use default
-        val emojiInput = view?.findViewById<com.google.android.material.textfield.TextInputEditText>(R.id.emojiInput)?.text?.toString()?.trim() ?: ""
-        val emoji = if (emojiInput.isNotEmpty()) emojiInput else "📦"
-
-        val success = categoryManager.addCategory(categoryName, emoji)
-        if (success) {
-            Toast.makeText(requireContext(), "Category added successfully", Toast.LENGTH_SHORT).show()
-            loadCategories()
-            toggleAddCategoryForm(false)
-        } else {
-            Toast.makeText(requireContext(), "Category already exists", Toast.LENGTH_SHORT).show()
+        sheetView.findViewById<MaterialButton>(R.id.addNewCategoryButton).setOnClickListener {
+            sheet.dismiss()
+            showAddNewCategoryDialog {
+                loadCategoryPreview()
+            }
         }
+
+        sheet.show()
     }
 
-    private fun confirmDeleteCategory(category: Category) {
+    private fun showAddNewCategoryDialog(onAdded: () -> Unit) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_add_category, null)
+        val categoryNameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
+        val emojiInput = dialogView.findViewById<EditText>(R.id.emojiInput)
+        emojiInput.setText("📁")
+
+        AlertDialog.Builder(requireContext())
+            .setTitle("Add New Category")
+            .setView(dialogView)
+            .setPositiveButton("Add") { _, _ ->
+                val name = categoryNameInput.text.toString().trim()
+                val emoji = emojiInput.text.toString().trim().ifEmpty { "📁" }
+                if (name.isNotEmpty()) {
+                    val success = categoryManager.addCategory(name, emoji)
+                    if (success) {
+                        Toast.makeText(requireContext(), "Category added!", Toast.LENGTH_SHORT).show()
+                        onAdded()
+                    } else {
+                        Toast.makeText(requireContext(), "Category already exists", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(requireContext(), "Please enter a category name", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun confirmDeleteCategory(category: Category, onDeleted: () -> Unit) {
         if (category.isPredefined) {
             Toast.makeText(requireContext(), "Cannot delete predefined categories", Toast.LENGTH_SHORT).show()
             return
@@ -151,7 +165,7 @@ class SettingsFragment : Fragment() {
                 val success = categoryManager.deleteCategory(category.id)
                 if (success) {
                     Toast.makeText(requireContext(), "Category deleted", Toast.LENGTH_SHORT).show()
-                    loadCategories()
+                    onDeleted()
                 } else {
                     Toast.makeText(requireContext(), "Error deleting category", Toast.LENGTH_SHORT).show()
                 }
@@ -164,9 +178,7 @@ class SettingsFragment : Fragment() {
         val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
         darkModeSwitch.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES
 
-        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            // Note: Dark mode toggle requires app restart or activity recreation
-            // For now, we'll just show a message
+        darkModeSwitch.setOnCheckedChangeListener { _, _ ->
             Toast.makeText(
                 requireContext(),
                 "Dark mode toggle requires app restart. This feature will be fully implemented soon.",
@@ -177,21 +189,21 @@ class SettingsFragment : Fragment() {
 
     private fun exportCsvToDownloads() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
                 requestPermissions(
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    STORAGE_PERMISSION_CODE)
+                    STORAGE_PERMISSION_CODE
+                )
                 return
             }
         }
 
         val exportedFile = csvManager.exportToDownloads()
-
         if (exportedFile != null) {
-            Toast.makeText(requireContext(),
-                "CSV exported to Downloads!",
-                Toast.LENGTH_LONG).show()
+            Toast.makeText(requireContext(), "CSV exported to Downloads!", Toast.LENGTH_LONG).show()
         } else {
             Toast.makeText(requireContext(), "Export failed", Toast.LENGTH_SHORT).show()
         }
@@ -200,7 +212,9 @@ class SettingsFragment : Fragment() {
     private fun confirmClearAllData() {
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("⚠️ Clear All Data")
-            .setMessage("This will permanently delete all ${csvManager.getTransactionCount()} saved transactions. This cannot be undone!")
+            .setMessage(
+                "This will permanently delete all ${csvManager.getTransactionCount()} saved transactions. This cannot be undone!"
+            )
             .setPositiveButton("Delete All") { _, _ ->
                 val success = csvManager.clearAllTransactions()
                 if (success) {
@@ -213,53 +227,47 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        when (requestCode) {
-            STORAGE_PERMISSION_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    exportCsvToDownloads()
-                } else {
-                    Toast.makeText(requireContext(),
-                        "Storage permission needed for export",
-                        Toast.LENGTH_SHORT).show()
-                }
+        if (requestCode == STORAGE_PERMISSION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                exportCsvToDownloads()
+            } else {
+                Toast.makeText(
+                    requireContext(), "Storage permission needed for export", Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    // Simple Category Adapter
-    private class CategoryAdapter(
+    private inner class ManageCategoryAdapter(
         private val categories: List<Category>,
-        private val onAction: (Category, String) -> Unit
-    ) : RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder>() {
+        private val onDelete: (Category) -> Unit
+    ) : RecyclerView.Adapter<ManageCategoryAdapter.ViewHolder>() {
 
-        class CategoryViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val categoryName: TextView = itemView.findViewById(R.id.categoryNameText)
-            val categoryType: TextView = itemView.findViewById(R.id.categoryTypeText)
-            val categoryEmoji: TextView = itemView.findViewById(R.id.categoryEmoji)
-            val deleteButton: com.google.android.material.button.MaterialButton = itemView.findViewById(R.id.deleteButton)
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val emoji: ImageView = itemView.findViewById(R.id.categoryEmoji)
+            val name: TextView = itemView.findViewById(R.id.categoryNameText)
+            val type: TextView = itemView.findViewById(R.id.categoryTypeText)
+            val deleteButton: MaterialButton = itemView.findViewById(R.id.deleteButton)
         }
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.item_category, parent, false)
-            return CategoryViewHolder(view)
+            return ViewHolder(view)
         }
 
-        override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category = categories[position]
-            holder.categoryName.text = category.name
-            holder.categoryEmoji.text = category.emoji
-            holder.categoryType.text = if (category.isPredefined) "Default category" else "Custom"
-
-            holder.deleteButton.setOnClickListener {
-                onAction(category, "delete")
-            }
-
+            holder.emoji.setImageResource(CategoryIconHelper.getIconResId(category.id))
+            holder.name.text = category.name
+            holder.type.text = if (category.isPredefined) "Default category" else "Custom"
             holder.deleteButton.isEnabled = !category.isPredefined
             holder.deleteButton.alpha = if (category.isPredefined) 0.3f else 1.0f
+            holder.deleteButton.setOnClickListener { onDelete(category) }
         }
 
         override fun getItemCount() = categories.size

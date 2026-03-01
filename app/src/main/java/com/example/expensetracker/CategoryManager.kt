@@ -33,6 +33,25 @@ data class Category(
     }
 }
 
+object CategoryIconHelper {
+    fun getIconResId(categoryId: String): Int {
+        return when {
+            categoryId == "cat_food" -> R.drawable.ic_cat_food
+            categoryId == "cat_groceries" -> R.drawable.ic_cat_groceries
+            categoryId == "cat_transport" -> R.drawable.ic_cat_transport
+            categoryId == "cat_rent" -> R.drawable.ic_cat_rent
+            categoryId == "cat_utilities" -> R.drawable.ic_cat_utilities
+            categoryId == "cat_health" -> R.drawable.ic_cat_health
+            categoryId == "cat_entertainment" -> R.drawable.ic_cat_entertainment
+            categoryId == "cat_shopping" -> R.drawable.ic_cat_shopping
+            categoryId == "cat_education" -> R.drawable.ic_cat_education
+            categoryId == "cat_travel" -> R.drawable.ic_cat_travel
+            categoryId == "cat_personal" -> R.drawable.ic_cat_personal
+            else -> R.drawable.ic_cat_other
+        }
+    }
+}
+
 class CategoryManager(private val context: Context) {
 
     companion object {

@@ -323,19 +323,44 @@
                         android:textColor="@color/text_secondary_light"
                         android:layout_marginBottom="8dp" />
 
-                    <AutoCompleteTextView
-                        android:id="@+id/categoryEditText"
+                    <!-- Compact category selector button -->
+                    <LinearLayout
+                        android:id="@+id/categorySelector"
                         android:layout_width="match_parent"
                         android:layout_height="48dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="Search or type category"
-                        android:background="@drawable/rounded_input_background"
-                        android:inputType="textCapWords"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_primary_light"
+                        android:orientation="horizontal"
                         android:gravity="center_vertical"
-                        android:completionThreshold="1" />
+                        android:paddingStart="16dp"
+                        android:paddingEnd="12dp"
+                        android:background="@drawable/rounded_input_background"
+                        android:clickable="true"
+                        android:focusable="true">
+
+                        <ImageView
+                            android:id="@+id/categorySelectorEmoji"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:scaleType="centerInside"
+                            android:tint="@color/primary_indigo"
+                            android:layout_marginEnd="10dp"
+                            android:contentDescription="Category icon" />
+
+                        <TextView
+                            android:id="@+id/categorySelectorName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Select category"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_secondary_light" />
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/arrow_down_float"
+                            android:contentDescription="Select"
+                            app:tint="@color/text_secondary_light" />
+                    </LinearLayout>
 
                 </LinearLayout>
 

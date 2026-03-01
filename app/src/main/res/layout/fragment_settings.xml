@@ -54,6 +54,7 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
+                <!-- Header row: title + count + Manage button -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -61,149 +62,51 @@
                     android:gravity="center_vertical"
                     android:layout_marginBottom="16dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Manage Categories"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:orientation="vertical">
 
-                    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                        android:id="@+id/addCategoryFab"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Categories"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <TextView
+                            android:id="@+id/categoriesCountText"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 categories"
+                            android:textSize="13sp"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/manageCategoriesButton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Add"
-                        app:icon="@android:drawable/ic_input_add"
-                        app:iconTint="@color/white"
-                        app:backgroundTint="@color/gradient_start"
-                        app:cornerRadius="12dp" />
+                        android:text="Manage"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="@color/primary_indigo" />
                 </LinearLayout>
 
-                <!-- Add Category Form (Hidden by default) -->
-                <LinearLayout
-                    android:id="@+id/addCategoryForm"
+                <!-- Horizontal scrollable category preview chips -->
+                <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:background="@color/primary_indigo"
-                    android:backgroundTint="#1E1B4B"
-                    android:padding="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:visibility="gone">
+                    android:scrollbars="none">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Create New Category"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"
-                        android:layout_marginBottom="12dp" />
-
-                    <!-- Emoji Input -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Emoji (Optional)"
-                        android:textSize="12sp"
-                        android:textColor="#C7D2FE"
-                        android:layout_marginBottom="8dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeWidth="0dp"
-                        app:boxBackgroundMode="filled"
-                        app:boxBackgroundColor="?attr/colorSurface"
-                        android:layout_marginBottom="12dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/emojiInput"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="Paste emoji here (e.g., 🍕)"
-                            android:textSize="16sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textColorHint="?attr/colorOnSurfaceVariant"
-                            android:maxLength="2"
-                            android:gravity="center" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- Category Name Input -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Category Name"
-                        android:textSize="12sp"
-                        android:textColor="#C7D2FE"
-                        android:layout_marginBottom="8dp" />
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:boxCornerRadiusTopStart="12dp"
-                        app:boxCornerRadiusTopEnd="12dp"
-                        app:boxCornerRadiusBottomStart="12dp"
-                        app:boxCornerRadiusBottomEnd="12dp"
-                        app:boxStrokeWidth="0dp"
-                        app:boxBackgroundMode="filled"
-                        app:boxBackgroundColor="?attr/colorSurface"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/categoryNameInput"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:hint="e.g., Subscriptions"
-                            android:textSize="16sp"
-                            android:textColor="?attr/colorOnSurface"
-                            android:textColorHint="?attr/colorOnSurfaceVariant" />
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <!-- Action Buttons -->
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:id="@+id/categoryPreviewContainer"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_marginTop="12dp">
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/addCategoryButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginEnd="6dp"
-                            android:text="Add Category"
-                            app:cornerRadius="12dp"
-                            app:backgroundTint="@color/primary_indigo" />
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/cancelAddCategoryButton"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:layout_marginStart="6dp"
-                            android:text="Cancel"
-                            app:cornerRadius="12dp"
-                            app:backgroundTint="?attr/colorSurface"
-                            app:strokeColor="?attr/colorOutline"
-                            app:strokeWidth="1dp"
-                            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-                    </LinearLayout>
-                </LinearLayout>
-
-                <!-- Categories List -->
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/categoriesRecyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                        android:orientation="horizontal" />
+                </HorizontalScrollView>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

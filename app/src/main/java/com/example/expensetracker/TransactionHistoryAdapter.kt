@@ -3,9 +3,9 @@ package com.example.expensetracker
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.expensetracker.CategoryManager
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -13,8 +13,7 @@ import java.util.*
 class TransactionHistoryAdapter(
     private val transactions: List<PaymentTransaction>,
     private val categoryManager: CategoryManager? = null,
-    private val onEdit: ((PaymentTransaction) -> Unit)? = null,
-    private val onDelete: ((PaymentTransaction) -> Unit)? = null
+    private val onClick: ((PaymentTransaction) -> Unit)? = null
 ) : RecyclerView.Adapter<TransactionHistoryAdapter.TransactionViewHolder>() {
 
     class TransactionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -23,10 +22,8 @@ class TransactionHistoryAdapter(
         val dateTextView: TextView = itemView.findViewById(R.id.transaction_time)
         val bankTextView: TextView = itemView.findViewById(R.id.transaction_bank)
         val categoryBadge: TextView = itemView.findViewById(R.id.category_badge)
-        val categoryEmoji: TextView = itemView.findViewById(R.id.category_emoji)
+        val categoryIcon: ImageView = itemView.findViewById(R.id.category_icon)
         val noteTextView: TextView = itemView.findViewById(R.id.transaction_note)
-        val editButton: android.widget.Button? = itemView.findViewById(R.id.editButton)
-        val deleteButton: android.widget.Button? = itemView.findViewById(R.id.deleteButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionViewHolder {
@@ -36,64 +33,50 @@ class TransactionHistoryAdapter(
     }
 
     override fun onBindViewHolder(holder: TransactionViewHolder, position: Int) {
-        val currentTransaction = transactions[position]
-        
-        // Amount - format with currency symbol and Indian number formatting
+        val tx = transactions[position]
+
+        // Amount
         val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
-        val numericAmount = currentTransaction.amount.replace("₹", "").replace(",", "").toDoubleOrNull()
-        val currencySymbol = if (currentTransaction.currency == "INR") "₹" else currentTransaction.currency
+        val numericAmount = tx.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
+        val currencySymbol = if (tx.currency == "INR") "Rs." else tx.currency
         holder.amountTextView.text = if (numericAmount != null) {
             "$currencySymbol${numberFormat.format(numericAmount)}"
         } else {
-            currentTransaction.amount
+            tx.amount
         }
-        
+
         // Recipient
-        holder.recipientTextView.text = currentTransaction.recipient
-        
-        // Date and time
+        holder.recipientTextView.text = tx.recipient
+
+        // Date
         try {
-            val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-            val date = dateFormat.parse(currentTransaction.dateTime)
-            if (date != null) {
-                val timeFormat = SimpleDateFormat("dd MMM, hh:mm a", Locale.ENGLISH)
-                holder.dateTextView.text = timeFormat.format(date)
-            } else {
-                holder.dateTextView.text = currentTransaction.dateTime
-            }
+            val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(tx.dateTime)
+            holder.dateTextView.text = if (date != null)
+                SimpleDateFormat("dd MMM, hh:mm a", Locale.ENGLISH).format(date)
+            else tx.dateTime
         } catch (e: Exception) {
-            holder.dateTextView.text = currentTransaction.dateTime
+            holder.dateTextView.text = tx.dateTime
         }
-        
+
         // Bank info
-        holder.bankTextView.text = currentTransaction.bankInfo.ifEmpty { "N/A" }
-        
-        // Category
-        val categoryDisplayName = categoryManager?.getCategoryDisplayName(currentTransaction.category) 
-            ?: currentTransaction.category
-        holder.categoryBadge.text = categoryDisplayName
-        
-        // Category emoji
-        val categoryEmoji = categoryManager?.getCategoryEmoji(currentTransaction.category) ?: "📁"
-        holder.categoryEmoji.text = categoryEmoji
-        
+        holder.bankTextView.text = tx.bankInfo.ifEmpty { "N/A" }
+
+        // Category badge
+        holder.categoryBadge.text = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
+
+        // Category icon
+        holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(tx.category))
+
         // Note
-        if (currentTransaction.note.isNotEmpty()) {
-            holder.noteTextView.text = currentTransaction.note
+        if (tx.note.isNotEmpty()) {
+            holder.noteTextView.text = tx.note
             holder.noteTextView.visibility = View.VISIBLE
         } else {
             holder.noteTextView.visibility = View.GONE
         }
-        
-        // Edit button click listener
-        holder.editButton?.setOnClickListener {
-            onEdit?.invoke(currentTransaction)
-        }
-        
-        // Delete button click listener
-        holder.deleteButton?.setOnClickListener {
-            onDelete?.invoke(currentTransaction)
-        }
+
+        // Click listener on entire card
+        holder.itemView.setOnClickListener { onClick?.invoke(tx) }
     }
 
     override fun getItemCount() = transactions.size

@@ -15,9 +15,7 @@
         android:paddingTop="44dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="20dp"
-        app:strokeWidth="1dp"
-        app:strokeColor="?attr/colorOutline">
+        android:paddingBottom="16dp">
 
         <TextView
             android:layout_width="wrap_content"
@@ -52,7 +50,7 @@
                 android:paddingEnd="16dp"
                 android:paddingTop="12dp"
                 android:paddingBottom="12dp"
-                android:textSize="16sp"
+                android:textSize="15sp"
                 android:textColor="?attr/colorOnSurface"
                 android:textColorHint="?attr/colorOnSurfaceVariant"
                 android:inputType="text"
@@ -60,33 +58,70 @@
                 app:startIconDrawable="@android:drawable/ic_menu_search" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Category Filter Pills -->
+        <!-- Month Selector + Category filter row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <!-- Month Spinner -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                app:boxCornerRadiusTopStart="14dp"
+                app:boxCornerRadiusTopEnd="14dp"
+                app:boxCornerRadiusBottomStart="14dp"
+                app:boxCornerRadiusBottomEnd="14dp"
+                app:boxStrokeWidth="0dp"
+                app:boxBackgroundMode="filled"
+                app:boxBackgroundColor="?attr/colorSurfaceVariant"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <Spinner
+                    android:id="@+id/historyMonthSpinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:textSize="13sp"
+                    android:textColor="?attr/colorOnSurface" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Filter categories button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterCategoriesButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Filter"
+                android:textSize="13sp"
+                app:backgroundTint="?attr/colorSurfaceVariant"
+                android:textColor="?attr/colorOnSurface"
+                app:cornerRadius="14dp"
+                app:icon="@android:drawable/ic_menu_sort_by_size"
+                app:iconTint="?attr/colorOnSurface"
+                style="@style/Widget.MaterialComponents.Button" />
+        </LinearLayout>
+
+        <!-- Active category filters display (horizontal scrollable chips) -->
         <HorizontalScrollView
+            android:id="@+id/activeCategoryFiltersScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:fadeScrollbars="false">
+            android:visibility="gone">
 
             <LinearLayout
-                android:id="@+id/categoryFiltersContainer"
+                android:id="@+id/activeCategoryFiltersContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <!-- All Button -->
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/filterAllChip"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="All"
-                    android:layout_marginEnd="8dp"
-                    app:chipBackgroundColor="@color/primary_indigo"
-                    android:textColor="@color/white"
-                    app:chipCornerRadius="12dp"
-                    app:chipMinHeight="40dp"
-                    app:checkedIconEnabled="false" />
-            </LinearLayout>
+                android:gravity="center_vertical" />
         </HorizontalScrollView>
     </LinearLayout>
 
@@ -96,7 +131,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="20dp"
+        android:padding="16dp"
         android:clipToPadding="false" />
 
     <!-- Empty State -->

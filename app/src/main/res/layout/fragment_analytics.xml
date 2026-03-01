@@ -137,13 +137,22 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/topCategoryEmoji"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📁"
-                        android:textSize="24sp"
-                        android:layout_marginEnd="8dp" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardBackgroundColor="#33FFFFFF"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="10dp">
+
+                        <ImageView
+                            android:id="@+id/topCategoryIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:scaleType="centerInside"
+                            android:tint="@color/white" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -199,13 +208,22 @@
                     android:padding="16dp"
                     android:gravity="center_vertical">
 
-                    <TextView
-                        android:id="@+id/recentExpenseEmoji"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📁"
-                        android:textSize="24sp"
-                        android:layout_marginEnd="8dp" />
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="14dp"
+                        app:cardBackgroundColor="#33FFFFFF"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="10dp">
+
+                        <ImageView
+                            android:id="@+id/recentExpenseIcon"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:scaleType="centerInside"
+                            android:tint="@color/white" />
+                    </com.google.android.material.card.MaterialCardView>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -301,18 +319,38 @@
                 android:orientation="vertical"
                 android:padding="20dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Header with toggle -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Monthly Spending Trend"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="16dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="16dp">
 
-                <!-- Bar Chart -->
-                <com.github.mikephil.charting.charts.BarChart
-                    android:id="@+id/barChart"
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Monthly Spending Trend"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/chartToggleButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Total"
+                        android:textSize="12sp"
+                        android:padding="8dp"
+                        app:backgroundTint="@color/primary_indigo"
+                        app:cornerRadius="12dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+                </LinearLayout>
+
+                <!-- Line Chart -->
+                <com.github.mikephil.charting.charts.LineChart
+                    android:id="@+id/lineChart"
                     android:layout_width="match_parent"
                     android:layout_height="256dp" />
             </LinearLayout>

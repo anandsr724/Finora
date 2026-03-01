@@ -6,25 +6,28 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.expensetracker.CSVManager
+import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
-import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.components.Legend
 import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.components.YAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -36,15 +39,16 @@ class AnalyticsFragment : Fragment() {
     private lateinit var categoryManager: CategoryManager
     private lateinit var monthSpinner: Spinner
     private lateinit var pieChart: PieChart
-    private lateinit var barChart: BarChart
+    private lateinit var lineChart: LineChart
+    private lateinit var chartToggleButton: MaterialButton
     private lateinit var totalSpentAmount: TextView
     private lateinit var topCategoryCard: MaterialCardView
     private lateinit var topCategoryName: TextView
-    private lateinit var topCategoryEmoji: TextView
+    private lateinit var topCategoryIcon: ImageView
     private lateinit var topCategoryAmount: TextView
     private lateinit var recentExpenseCard: MaterialCardView
     private lateinit var recentExpenseRecipient: TextView
-    private lateinit var recentExpenseEmoji: TextView
+    private lateinit var recentExpenseIcon: ImageView
     private lateinit var recentExpenseAmount: TextView
     private lateinit var categoryChartCard: MaterialCardView
     private lateinit var monthlyTrendCard: MaterialCardView
@@ -52,9 +56,11 @@ class AnalyticsFragment : Fragment() {
     private lateinit var emptyStateMessage: TextView
     private lateinit var additionalStatsContainer: LinearLayout
 
+    private var showByCategory = false
+
     private val chartColors = intArrayOf(
-        Color.parseColor("#4F46E5"),
-        Color.parseColor("#6C63FF"),
+        Color.parseColor("#6B5DD3"),
+        Color.parseColor("#8B7DE8"),
         Color.parseColor("#10B981"),
         Color.parseColor("#F59E0B"),
         Color.parseColor("#EF4444"),
@@ -84,15 +90,16 @@ class AnalyticsFragment : Fragment() {
     private fun setupViews(view: View) {
         monthSpinner = view.findViewById(R.id.monthSpinner)
         pieChart = view.findViewById(R.id.pieChart)
-        barChart = view.findViewById(R.id.barChart)
+        lineChart = view.findViewById(R.id.lineChart)
+        chartToggleButton = view.findViewById(R.id.chartToggleButton)
         totalSpentAmount = view.findViewById(R.id.totalSpentAmount)
         topCategoryCard = view.findViewById(R.id.topCategoryCard)
         topCategoryName = view.findViewById(R.id.topCategoryName)
-        topCategoryEmoji = view.findViewById(R.id.topCategoryEmoji)
+        topCategoryIcon = view.findViewById(R.id.topCategoryIcon)
         topCategoryAmount = view.findViewById(R.id.topCategoryAmount)
         recentExpenseCard = view.findViewById(R.id.recentExpenseCard)
         recentExpenseRecipient = view.findViewById(R.id.recentExpenseRecipient)
-        recentExpenseEmoji = view.findViewById(R.id.recentExpenseEmoji)
+        recentExpenseIcon = view.findViewById(R.id.recentExpenseIcon)
         recentExpenseAmount = view.findViewById(R.id.recentExpenseAmount)
         categoryChartCard = view.findViewById(R.id.categoryChartCard)
         monthlyTrendCard = view.findViewById(R.id.monthlyTrendCard)
@@ -106,62 +113,61 @@ class AnalyticsFragment : Fragment() {
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
+
+        chartToggleButton.setOnClickListener {
+            showByCategory = !showByCategory
+            chartToggleButton.text = if (showByCategory) "By Category" else "Total"
+            val allTransactions = csvManager.getAllTransactions()
+            updateMonthlyTrend(allTransactions)
+        }
     }
 
     private fun setupMonthSpinner() {
-        val monthOptions = mutableListOf<Pair<String, String>>()
-        monthOptions.add(Pair("all", "All Time"))
-
+        val monthOptions = mutableListOf<String>()
+        monthOptions.add("All Time")
         val calendar = Calendar.getInstance()
         for (i in 0 until 12) {
             calendar.time = Date()
             calendar.add(Calendar.MONTH, -i)
-            val monthName = SimpleDateFormat("MMMM yyyy", Locale("en", "IN")).format(calendar.time)
-            val monthValue = "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH)}"
-            monthOptions.add(Pair(monthValue, monthName))
+            monthOptions.add(SimpleDateFormat("MMMM yyyy", Locale("en", "IN")).format(calendar.time))
         }
-
-        val adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_item,
-            monthOptions.map { it.second }
-        )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, monthOptions)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         monthSpinner.adapter = adapter
     }
 
     private fun setupCharts() {
-        // Pie Chart Setup
         pieChart.description.isEnabled = false
         pieChart.legend.isEnabled = false
         pieChart.setEntryLabelColor(Color.TRANSPARENT)
         pieChart.setHoleColor(Color.TRANSPARENT)
         pieChart.setTransparentCircleColor(Color.TRANSPARENT)
 
-        // Bar Chart Setup
-        barChart.description.isEnabled = false
-        barChart.legend.isEnabled = false
-        barChart.setDrawGridBackground(false)
-        barChart.setScaleEnabled(false)
-        barChart.setPinchZoom(false)
+        lineChart.description.isEnabled = false
+        lineChart.setDrawGridBackground(false)
+        lineChart.setScaleEnabled(false)
+        lineChart.setPinchZoom(false)
+        lineChart.setExtraOffsets(0f, 10f, 0f, 10f)
 
-        val xAxis = barChart.xAxis
+        val xAxis = lineChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
         xAxis.textColor = requireContext().getColor(android.R.color.darker_gray)
-        xAxis.textSize = 12f
+        xAxis.textSize = 11f
+        xAxis.setDrawAxisLine(false)
+        xAxis.granularity = 1f
 
-        val yAxisLeft = barChart.axisLeft
-        yAxisLeft.setDrawGridLines(true)
-        yAxisLeft.textColor = requireContext().getColor(android.R.color.darker_gray)
-        yAxisLeft.textSize = 12f
-        yAxisLeft.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                return "₹${value.toInt()}"
+        lineChart.axisLeft.apply {
+            setDrawGridLines(true)
+            gridColor = Color.parseColor("#22000000")
+            textColor = requireContext().getColor(android.R.color.darker_gray)
+            textSize = 11f
+            setDrawAxisLine(false)
+            valueFormatter = object : ValueFormatter() {
+                override fun getFormattedValue(value: Float) = "₹${value.toInt()}"
             }
         }
-
-        barChart.axisRight.isEnabled = false
+        lineChart.axisRight.isEnabled = false
     }
 
     private fun loadData() {
@@ -175,21 +181,14 @@ class AnalyticsFragment : Fragment() {
             calendar.add(Calendar.MONTH, -(selectedMonth - 1))
             val targetMonth = calendar.get(Calendar.MONTH)
             val targetYear = calendar.get(Calendar.YEAR)
-
             allTransactions.filter { transaction ->
                 try {
-                    val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-                    val date = dateFormat.parse(transaction.dateTime)
+                    val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(transaction.dateTime)
                     if (date != null) {
                         calendar.time = date
-                        calendar.get(Calendar.MONTH) == targetMonth &&
-                                calendar.get(Calendar.YEAR) == targetYear
-                    } else {
-                        false
-                    }
-                } catch (e: Exception) {
-                    false
-                }
+                        calendar.get(Calendar.MONTH) == targetMonth && calendar.get(Calendar.YEAR) == targetYear
+                    } else false
+                } catch (e: Exception) { false }
             }
         }
 
@@ -199,7 +198,7 @@ class AnalyticsFragment : Fragment() {
         }
 
         hideEmptyState()
-        updateSummaryCards(filteredTransactions, allTransactions)
+        updateSummaryCards(filteredTransactions)
         updateCategoryChart(filteredTransactions)
         updateMonthlyTrend(allTransactions)
     }
@@ -209,63 +208,48 @@ class AnalyticsFragment : Fragment() {
         categoryChartCard.visibility = View.GONE
         monthlyTrendCard.visibility = View.GONE
         additionalStatsContainer.visibility = View.GONE
-        totalSpentAmount.text = "₹0"
-        emptyStateMessage.text = if (isAllTime) {
+        totalSpentAmount.text = "Rs.0"
+        emptyStateMessage.text = if (isAllTime)
             "Add transactions to see your spending analytics"
-        } else {
+        else
             "No transactions found for the selected month"
-        }
     }
 
     private fun hideEmptyState() {
         emptyStateLayout.visibility = View.GONE
     }
 
-    private fun updateSummaryCards(filteredTransactions: List<PaymentTransaction>, allTransactions: List<PaymentTransaction>) {
-        val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
-
-        // Total Spent
+    private fun updateSummaryCards(filteredTransactions: List<PaymentTransaction>) {
+        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
         val totalSpent = filteredTransactions.sumOf {
-            it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0
+            it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0
         }
-        totalSpentAmount.text = "₹${numberFormat.format(totalSpent)}"
+        totalSpentAmount.text = "Rs.${fmt.format(totalSpent)}"
 
-        // Top Category
         val categoryTotals = filteredTransactions.groupBy { it.category }
-            .mapValues { (_, transactions) ->
-                transactions.sumOf { 
-                    it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 
-                }
-            }
+            .mapValues { (_, txns) -> txns.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 } }
 
-        val topCategory = categoryTotals.maxByOrNull { it.value }
-        if (topCategory != null) {
-            val category = categoryManager.getCategoryById(topCategory.key)
-            topCategoryName.text = category?.name ?: topCategory.key
-            topCategoryEmoji.text = category?.emoji ?: "📁"
-            topCategoryAmount.text = "₹${numberFormat.format(topCategory.value)}"
+        val topCat = categoryTotals.maxByOrNull { it.value }
+        if (topCat != null) {
+            val category = categoryManager.getCategoryById(topCat.key)
+            topCategoryName.text = category?.name ?: topCat.key
+            topCategoryIcon.setImageResource(CategoryIconHelper.getIconResId(topCat.key))
+            topCategoryAmount.text = "Rs.${fmt.format(topCat.value)}"
             topCategoryCard.visibility = View.VISIBLE
             additionalStatsContainer.visibility = View.VISIBLE
         } else {
             topCategoryCard.visibility = View.GONE
         }
 
-        // Recent Expense
-        val recentExpense = filteredTransactions.maxByOrNull { transaction ->
-            try {
-                val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-                dateFormat.parse(transaction.dateTime)?.time ?: 0L
-            } catch (e: Exception) {
-                0L
-            }
+        val recentExpense = filteredTransactions.maxByOrNull { t ->
+            try { SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(t.dateTime)?.time ?: 0L }
+            catch (e: Exception) { 0L }
         }
-
         if (recentExpense != null) {
-            val category = categoryManager.getCategoryById(recentExpense.category)
             recentExpenseRecipient.text = recentExpense.recipient
-            recentExpenseEmoji.text = category?.emoji ?: "📁"
-            val recentNumeric = recentExpense.amount.replace("₹", "").replace(",", "").toDoubleOrNull()
-            recentExpenseAmount.text = if (recentNumeric != null) "₹${numberFormat.format(recentNumeric)}" else recentExpense.amount
+            recentExpenseIcon.setImageResource(CategoryIconHelper.getIconResId(recentExpense.category))
+            val num = recentExpense.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
+            recentExpenseAmount.text = if (num != null) "Rs.${fmt.format(num)}" else recentExpense.amount
             recentExpenseCard.visibility = View.VISIBLE
             additionalStatsContainer.visibility = View.VISIBLE
         } else {
@@ -275,26 +259,15 @@ class AnalyticsFragment : Fragment() {
 
     private fun updateCategoryChart(transactions: List<PaymentTransaction>) {
         val categoryTotals = transactions.groupBy { it.category }
-            .mapValues { (_, transactions) ->
-                transactions.sumOf { 
-                    it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 
-                }
-            }
-            .toList()
-            .sortedByDescending { it.second }
+            .mapValues { (_, txns) -> txns.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 } }
+            .toList().sortedByDescending { it.second }
 
-        if (categoryTotals.isEmpty()) {
-            categoryChartCard.visibility = View.GONE
-            return
-        }
-
+        if (categoryTotals.isEmpty()) { categoryChartCard.visibility = View.GONE; return }
         categoryChartCard.visibility = View.VISIBLE
 
-        val pieEntries = categoryTotals.mapIndexed { index, (categoryId, amount) ->
-            val category = categoryManager.getCategoryById(categoryId)
-            PieEntry(amount.toFloat(), category?.name ?: categoryId)
+        val pieEntries = categoryTotals.map { (catId, amount) ->
+            PieEntry(amount.toFloat(), categoryManager.getCategoryById(catId)?.name ?: catId)
         }
-
         val dataSet = PieDataSet(pieEntries, "")
         dataSet.colors = chartColors.toList()
         dataSet.valueTextColor = Color.WHITE
@@ -305,82 +278,78 @@ class AnalyticsFragment : Fragment() {
                 return "${(value / total * 100).toInt()}%"
             }
         }
-
-        val pieData = PieData(dataSet)
-        pieChart.data = pieData
+        pieChart.data = PieData(dataSet)
         pieChart.invalidate()
     }
 
     private fun updateMonthlyTrend(allTransactions: List<PaymentTransaction>) {
-        val monthlyData = mutableListOf<Pair<String, Double>>()
+        val monthLabels = mutableListOf<String>()
         val calendar = Calendar.getInstance()
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
 
-        for (i in 5 downTo 0) {
-            calendar.time = Date()
-            calendar.add(Calendar.MONTH, -i)
-            val monthName = SimpleDateFormat("MMM", Locale("en", "IN")).format(calendar.time)
-            val targetMonth = calendar.get(Calendar.MONTH)
-            val targetYear = calendar.get(Calendar.YEAR)
+        val monthRanges = (5 downTo 0).map { i ->
+            val cal = Calendar.getInstance().apply { time = Date(); add(Calendar.MONTH, -i) }
+            monthLabels.add(SimpleDateFormat("MMM", Locale("en", "IN")).format(cal.time))
+            Triple(i, cal.get(Calendar.MONTH), cal.get(Calendar.YEAR))
+        }
 
-            val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
-            val monthTotal = allTransactions.filter { transaction ->
-                try {
-                    val date = dateFormat.parse(transaction.dateTime)
-                    if (date != null) {
-                        calendar.time = date
-                        calendar.get(Calendar.MONTH) == targetMonth &&
-                                calendar.get(Calendar.YEAR) == targetYear
-                    } else {
-                        false
-                    }
-                } catch (e: Exception) {
-                    false
+        val xFormatter = object : ValueFormatter() {
+            override fun getFormattedValue(value: Float): String {
+                val idx = value.toInt()
+                return if (idx >= 0 && idx < monthLabels.size) monthLabels[idx] else ""
+            }
+        }
+
+        if (showByCategory) {
+            val categoryIds = allTransactions.map { it.category }.distinct()
+            val dataSets = categoryIds.mapIndexed { idx, catId ->
+                val entries = monthRanges.mapIndexed { mIdx, (_, month, year) ->
+                    val total = allTransactions.filter { t ->
+                        t.category == catId && try {
+                            val d = dateFormat.parse(t.dateTime)
+                            d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
+                                    && calendar.get(Calendar.YEAR) == year
+                        } catch (e: Exception) { false }
+                    }.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
+                    Entry(mIdx.toFloat(), total.toFloat())
                 }
-            }.sumOf { 
-                it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 
-            }
-
-            monthlyData.add(Pair(monthName, monthTotal))
-        }
-
-        if (monthlyData.all { it.second == 0.0 }) {
-            monthlyTrendCard.visibility = View.GONE
-            return
-        }
-
-        monthlyTrendCard.visibility = View.VISIBLE
-
-        val barEntries = monthlyData.mapIndexed { index, (_, amount) ->
-            BarEntry(index.toFloat(), amount.toFloat())
-        }
-
-        val dataSet = BarDataSet(barEntries, "")
-        dataSet.color = chartColors[0]
-        dataSet.valueTextColor = requireContext().getColor(android.R.color.darker_gray)
-        dataSet.valueTextSize = 10f
-        dataSet.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                return if (value > 0) "₹${value.toInt()}" else ""
-            }
-        }
-
-        val barData = BarData(dataSet)
-        barData.barWidth = 0.5f
-        barChart.data = barData
-
-        val xAxisLabels = monthlyData.map { it.first }
-        barChart.xAxis.valueFormatter = object : ValueFormatter() {
-            override fun getFormattedValue(value: Float): String {
-                val index = value.toInt()
-                return if (index >= 0 && index < xAxisLabels.size) {
-                    xAxisLabels[index]
-                } else {
-                    ""
+                LineDataSet(entries, categoryManager.getCategoryById(catId)?.name ?: catId).apply {
+                    val c = chartColors[idx % chartColors.size]
+                    color = c; lineWidth = 2f; setCircleColor(c); circleRadius = 3f
+                    setDrawCircleHole(false); setDrawValues(false); mode = LineDataSet.Mode.CUBIC_BEZIER
                 }
             }
+            if (dataSets.all { ds -> ds.values.all { it.y == 0f } }) { monthlyTrendCard.visibility = View.GONE; return }
+            monthlyTrendCard.visibility = View.VISIBLE
+            lineChart.legend.isEnabled = true
+            lineChart.legend.form = Legend.LegendForm.LINE
+            lineChart.legend.textSize = 11f
+            lineChart.xAxis.valueFormatter = xFormatter
+            lineChart.data = LineData(dataSets)
+        } else {
+            val entries = monthRanges.mapIndexed { mIdx, (_, month, year) ->
+                val total = allTransactions.filter { t ->
+                    try {
+                        val d = dateFormat.parse(t.dateTime)
+                        d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
+                                && calendar.get(Calendar.YEAR) == year
+                    } catch (e: Exception) { false }
+                }.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
+                Entry(mIdx.toFloat(), total.toFloat())
+            }
+            if (entries.all { it.y == 0f }) { monthlyTrendCard.visibility = View.GONE; return }
+            val ds = LineDataSet(entries, "Total").apply {
+                color = chartColors[0]; lineWidth = 3f; setCircleColor(chartColors[0])
+                circleRadius = 5f; circleHoleRadius = 2.5f; setDrawCircleHole(true)
+                circleHoleColor = Color.WHITE; setDrawValues(false); mode = LineDataSet.Mode.CUBIC_BEZIER
+                setDrawFilled(true); fillColor = chartColors[0]; fillAlpha = 40
+            }
+            monthlyTrendCard.visibility = View.VISIBLE
+            lineChart.legend.isEnabled = false
+            lineChart.xAxis.valueFormatter = xFormatter
+            lineChart.data = LineData(ds)
         }
-
-        barChart.invalidate()
+        lineChart.invalidate()
     }
 
     override fun onResume() {
