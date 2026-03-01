@@ -12,20 +12,24 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp"
-        android:background="@drawable/header_background"
-        android:layout_marginBottom="12dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="14dp"
+        android:background="@color/white"
+        android:elevation="2dp">
 
         <ImageButton
             android:id="@+id/backButton"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_arrow_back"
-            android:background="@drawable/back_button_background"
+            android:background="@drawable/rounded_surface_variant"
             android:scaleType="centerInside"
-            app:tint="@color/text_secondary_light"
+            android:padding="10dp"
+            app:tint="#71717A"
             android:contentDescription="Back"
-            android:layout_marginEnd="12dp" />
+            android:layout_marginEnd="14dp" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -36,21 +40,19 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Transaction Details"
+                android:text="Edit Transaction"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary_light" />
+                android:textColor="#2D3142" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Enter or edit transaction details"
+                android:text="Update transaction details"
                 android:textSize="12sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="#71717A"
                 android:layout_marginTop="2dp" />
-
         </LinearLayout>
-
     </LinearLayout>
 
     <!-- Scrollable Content -->
@@ -67,307 +69,299 @@
             android:padding="16dp">
 
             <!-- Form Card -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:background="@drawable/card_background"
-                android:padding="20dp"
+                app:cardCornerRadius="24dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_light"
                 android:layout_marginBottom="16dp">
 
-                <!-- Amount (Editable) -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
+                    android:padding="20dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Amount *"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp">
-
-                        <EditText
-                            android:id="@+id/amountEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:hint="0.00"
-                            android:background="@drawable/rounded_input_background"
-                            android:inputType="numberDecimal"
-                            android:maxLines="1"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_primary_light" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="₹"
-                            android:textSize="16sp"
-                            android:textColor="@color/text_secondary_light"
-                            android:layout_gravity="center_vertical|start"
-                            android:layout_marginStart="12dp" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!-- Recipient (Editable) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Recipient *"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <EditText
-                        android:id="@+id/recipientEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="Enter recipient name"
-                        android:background="@drawable/rounded_input_background"
-                        android:inputType="textPersonName|textCapWords"
-                        android:maxLines="1"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_primary_light"
-                        android:gravity="center_vertical" />
-
-                </LinearLayout>
-
-                <!-- Date & Time (Editable) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Date &amp; Time"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp">
-
-                        <EditText
-                            android:id="@+id/dateTimeEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="40dp"
-                            android:hint="Tap to select date and time"
-                            android:background="@drawable/rounded_input_background"
-                            android:inputType="none"
-                            android:maxLines="1"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_primary_light"
-                            android:gravity="center_vertical" />
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_today"
-                            app:tint="@color/text_secondary_light"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="12dp"
-                            android:contentDescription="Calendar" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!-- Transaction ID (Editable) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Transaction ID"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <EditText
-                        android:id="@+id/transactionIdEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:hint="UPI/XXXXXXXXXXXX"
-                        android:background="@drawable/rounded_input_background"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_primary_light"
-                        android:gravity="center_vertical" />
-
-                </LinearLayout>
-
-                <!-- Note (Editable) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Note"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <EditText
-                        android:id="@+id/noteEditText"
-                        android:layout_width="match_parent"
-                        android:layout_height="100dp"
-                        android:paddingStart="16dp"
-                        android:paddingTop="12dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="12dp"
-                        android:hint="Add a note (optional)"
-                        android:background="@drawable/rounded_input_background"
-                        android:inputType="textCapSentences|textMultiLine"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_primary_light"
-                        android:gravity="top" />
-
-                </LinearLayout>
-
-                <!-- Payment Method (Editable) -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Payment Method"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp">
-
-                        <Spinner
-                            android:id="@+id/bankEditText"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="40dp"
-                            android:background="@drawable/rounded_input_background"
-                            android:layout_gravity="center_vertical" />
-
-                        <ImageView
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:src="@android:drawable/ic_menu_send"
-                            app:tint="@color/text_secondary_light"
-                            android:layout_gravity="center_vertical|end"
-                            android:layout_marginEnd="12dp"
-                            android:contentDescription="Payment" />
-
-                    </FrameLayout>
-
-                </LinearLayout>
-
-                <!-- Category Selection -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="20dp">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Category"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
-
-                    <!-- Compact category selector button -->
+                    <!-- Amount -->
                     <LinearLayout
-                        android:id="@+id/categorySelector"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="12dp"
-                        android:background="@drawable/rounded_input_background"
-                        android:clickable="true"
-                        android:focusable="true">
-
-                        <ImageView
-                            android:id="@+id/categorySelectorEmoji"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:scaleType="centerInside"
-                            android:tint="@color/primary_indigo"
-                            android:layout_marginEnd="10dp"
-                            android:contentDescription="Category icon" />
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
 
                         <TextView
-                            android:id="@+id/categorySelectorName"
-                            android:layout_width="0dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Select category"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:text="Amount *"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
 
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@android:drawable/arrow_down_float"
-                            android:contentDescription="Select"
-                            app:tint="@color/text_secondary_light" />
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp">
+
+                            <EditText
+                                android:id="@+id/amountEditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:paddingStart="40dp"
+                                android:paddingEnd="16dp"
+                                android:hint="0.00"
+                                android:background="@drawable/rounded_input_background"
+                                android:inputType="numberDecimal"
+                                android:maxLines="1"
+                                android:textSize="15sp"
+                                android:textColor="#2D3142"
+                                android:textColorHint="#A1A1AA" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹"
+                                android:textSize="16sp"
+                                android:textColor="#71717A"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="14dp" />
+                        </FrameLayout>
                     </LinearLayout>
 
+                    <!-- Recipient -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Recipient *"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <EditText
+                            android:id="@+id/recipientEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:hint="Enter recipient name"
+                            android:background="@drawable/rounded_input_background"
+                            android:inputType="textPersonName|textCapWords"
+                            android:maxLines="1"
+                            android:textSize="15sp"
+                            android:textColor="#2D3142"
+                            android:textColorHint="#A1A1AA"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+
+                    <!-- Note -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Note"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <EditText
+                            android:id="@+id/noteEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp"
+                            android:paddingStart="16dp"
+                            android:paddingTop="12dp"
+                            android:paddingEnd="16dp"
+                            android:paddingBottom="12dp"
+                            android:hint="Add a note (optional)"
+                            android:background="@drawable/rounded_input_background"
+                            android:inputType="textCapSentences|textMultiLine"
+                            android:textSize="15sp"
+                            android:textColor="#2D3142"
+                            android:textColorHint="#A1A1AA"
+                            android:gravity="top" />
+                    </LinearLayout>
+
+                    <!-- Category Selection -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Category"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <LinearLayout
+                            android:id="@+id/categorySelector"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="14dp"
+                            android:background="@drawable/rounded_input_background"
+                            android:clickable="true"
+                            android:focusable="true">
+
+                            <ImageView
+                                android:id="@+id/categorySelectorEmoji"
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:scaleType="centerInside"
+                                android:tint="@color/primary_indigo"
+                                android:layout_marginEnd="10dp"
+                                android:contentDescription="Category icon" />
+
+                            <TextView
+                                android:id="@+id/categorySelectorName"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Select category"
+                                android:textSize="15sp"
+                                android:textColor="#A1A1AA" />
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@android:drawable/arrow_down_float"
+                                android:contentDescription="Select"
+                                android:tint="#71717A" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- Date & Time -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Date &amp; Time"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp">
+
+                            <EditText
+                                android:id="@+id/dateTimeEditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:paddingStart="44dp"
+                                android:paddingEnd="16dp"
+                                android:hint="Tap to select date and time"
+                                android:background="@drawable/rounded_input_background"
+                                android:inputType="none"
+                                android:maxLines="1"
+                                android:textSize="15sp"
+                                android:textColor="#2D3142"
+                                android:textColorHint="#A1A1AA"
+                                android:gravity="center_vertical" />
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:src="@android:drawable/ic_menu_today"
+                                android:tint="#71717A"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="14dp"
+                                android:contentDescription="Calendar" />
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <!-- Transaction ID -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Transaction ID"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <EditText
+                            android:id="@+id/transactionIdEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:hint="UPI/XXXXXXXXXXXX"
+                            android:background="@drawable/rounded_input_background"
+                            android:inputType="text"
+                            android:maxLines="1"
+                            android:textSize="15sp"
+                            android:textColor="#2D3142"
+                            android:textColorHint="#A1A1AA"
+                            android:gravity="center_vertical" />
+                    </LinearLayout>
+
+                    <!-- Payment Method -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Payment Method"
+                            android:textSize="13sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="8dp" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="52dp">
+
+                            <Spinner
+                                android:id="@+id/bankEditText"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:paddingStart="44dp"
+                                android:paddingEnd="16dp"
+                                android:background="@drawable/rounded_input_background"
+                                android:layout_gravity="center_vertical" />
+
+                            <ImageView
+                                android:layout_width="22dp"
+                                android:layout_height="22dp"
+                                android:src="@android:drawable/ic_menu_send"
+                                android:tint="#71717A"
+                                android:layout_gravity="center_vertical|start"
+                                android:layout_marginStart="14dp"
+                                android:contentDescription="Payment" />
+                        </FrameLayout>
+                    </LinearLayout>
                 </LinearLayout>
-
-            </LinearLayout>
-
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
     </ScrollView>
 
     <!-- Action Buttons Footer -->
@@ -376,33 +370,40 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:padding="16dp"
-        android:background="@drawable/header_background"
-        android:layout_marginTop="8dp">
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:background="@color/white"
+        android:elevation="4dp">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:text="Cancel"
-            android:textSize="14sp"
-            android:textColor="@color/white"
-            android:background="@drawable/cancel_button_background"
-            android:layout_marginEnd="6dp" />
+            android:textSize="15sp"
+            android:textColor="#2D3142"
+            app:backgroundTint="@color/white"
+            app:strokeColor="@color/border_light"
+            app:strokeWidth="1dp"
+            app:cornerRadius="16dp"
+            android:layout_marginEnd="8dp"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"
             android:layout_width="0dp"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:text="Save"
-            android:textSize="14sp"
-            android:textColor="@color/white"
+            android:textSize="15sp"
             android:textStyle="bold"
-            android:background="@drawable/gradient_button_background"
-            android:layout_marginStart="6dp" />
-
+            android:textColor="@color/white"
+            app:backgroundTint="@color/primary_indigo"
+            app:cornerRadius="16dp"
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
 </LinearLayout>

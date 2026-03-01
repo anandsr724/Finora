@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="44dp"
+        android:paddingTop="24dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="100dp">
@@ -20,65 +20,83 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reports &amp; Analytics"
+                android:text="Reports"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnBackground"
-                android:layout_marginBottom="8dp" />
+                android:textColor="#2D3142"
+                android:layout_marginBottom="4dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Understand your spending patterns"
-                android:textSize="14sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:text="Analyze your spending patterns"
+                android:textSize="13sp"
+                android:textColor="#71717A"
                 android:layout_marginBottom="16dp" />
 
             <!-- Month Selector -->
-            <com.google.android.material.textfield.TextInputLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:boxCornerRadiusTopStart="16dp"
-                app:boxCornerRadiusTopEnd="16dp"
-                app:boxCornerRadiusBottomStart="16dp"
-                app:boxCornerRadiusBottomEnd="16dp"
-                app:boxStrokeWidth="0dp"
-                app:boxStrokeWidthFocused="2dp"
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="?attr/colorSurface"
-                app:boxStrokeColor="@color/primary_indigo"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:layout_height="52dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="0dp">
 
-                <Spinner
-                    android:id="@+id/monthSpinner"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:textSize="16sp"
-                    android:textColor="?attr/colorOnSurface" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/ic_menu_today"
+                        android:tint="#71717A"
+                        android:layout_marginEnd="10dp"
+                        android:contentDescription="Calendar" />
+
+                    <Spinner
+                        android:id="@+id/monthSpinner"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:textColor="#2D3142"
+                        android:background="@null" />
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@android:drawable/arrow_down_float"
+                        android:tint="#71717A"
+                        android:contentDescription="Expand" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Summary Cards -->
+        <!-- Summary Cards 2x2 grid -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="24dp">
+            android:layout_marginBottom="12dp">
 
-            <!-- Total Spent Card -->
+            <!-- Total Spent Card (purple gradient) -->
             <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp"
                 app:cardElevation="4dp"
                 app:cardBackgroundColor="@color/gradient_start">
 
@@ -86,16 +104,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="16dp"
+                    android:background="@drawable/balance_card_gradient">
 
-                    <TextView
-                        android:id="@+id/totalSpentLabel"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Total Spent"
-                        android:textSize="12sp"
-                        android:textColor="#C7D2FE"
-                        android:layout_marginBottom="4dp" />
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/ic_menu_my_calendar"
+                            android:tint="#CCFFFFFF"
+                            android:layout_marginEnd="6dp"
+                            android:contentDescription="Wallet" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Total Spent"
+                            android:textSize="12sp"
+                            android:textColor="#CCFFFFFF" />
+                    </LinearLayout>
 
                     <TextView
                         android:id="@+id/totalSpentAmount"
@@ -107,9 +140,61 @@
                         android:textColor="@color/white" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Transactions Count Card (white) -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_light">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/stat_sys_upload_done"
+                            android:tint="#71717A"
+                            android:layout_marginEnd="6dp"
+                            android:contentDescription="Transactions" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Transactions"
+                            android:textSize="12sp"
+                            android:textColor="#71717A" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/transactionCountText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#2D3142" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
-        <!-- Top Category and Recent Expense Cards -->
+        <!-- Top Category and Recent Expense Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,144 +203,161 @@
             android:visibility="gone"
             android:id="@+id/additionalStatsContainer">
 
-            <!-- Top Category Card -->
+            <!-- Top Category Card (white) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/topCategoryCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="6dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/amber_500"
+                android:layout_marginEnd="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_light"
                 android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        app:cardCornerRadius="14dp"
-                        app:cardBackgroundColor="#33FFFFFF"
-                        app:cardElevation="0dp"
-                        android:layout_marginEnd="10dp">
-
-                        <ImageView
-                            android:id="@+id/topCategoryIcon"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10dp"
-                            android:scaleType="centerInside"
-                            android:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:src="@android:drawable/stat_sys_upload_done"
+                            android:tint="#71717A"
+                            android:layout_marginEnd="6dp"
+                            android:contentDescription="Top category" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Top Category"
                             android:textSize="12sp"
-                            android:textColor="#FEF3C7"
-                            android:layout_marginBottom="2dp" />
+                            android:textColor="#71717A" />
+                    </LinearLayout>
 
-                        <TextView
-                            android:id="@+id/topCategoryName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Category"
-                            android:textSize="14sp"
-                            android:textColor="@color/white"
-                            android:maxLines="1"
-                            android:ellipsize="end" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
-                        <TextView
-                            android:id="@+id/topCategoryAmount"
-                            android:layout_width="wrap_content"
+                        <ImageView
+                            android:id="@+id/topCategoryIcon"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:scaleType="centerInside"
+                            android:tint="@color/primary_indigo"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Category icon" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="₹0"
-                            android:textSize="12sp"
-                            android:textColor="#FEF3C7" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/topCategoryName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Category"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="#2D3142"
+                                android:maxLines="1"
+                                android:ellipsize="end" />
+
+                            <TextView
+                                android:id="@+id/topCategoryAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹0"
+                                android:textSize="12sp"
+                                android:textColor="#71717A" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Recent Expense Card -->
+            <!-- Recent Expense Card (white) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/recentExpenseCard"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="4dp"
-                app:cardBackgroundColor="@color/purple_500"
+                android:layout_marginStart="8dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="@color/white"
+                app:strokeWidth="1dp"
+                app:strokeColor="@color/border_light"
                 android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="44dp"
-                        android:layout_height="44dp"
-                        app:cardCornerRadius="14dp"
-                        app:cardBackgroundColor="#33FFFFFF"
-                        app:cardElevation="0dp"
-                        android:layout_marginEnd="10dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Recent Expense"
+                        android:textSize="12sp"
+                        android:textColor="#71717A"
+                        android:layout_marginBottom="8dp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
 
                         <ImageView
                             android:id="@+id/recentExpenseIcon"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:padding="10dp"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             android:scaleType="centerInside"
-                            android:tint="@color/white" />
-                    </com.google.android.material.card.MaterialCardView>
+                            android:tint="@color/primary_indigo"
+                            android:layout_marginEnd="8dp"
+                            android:contentDescription="Recent expense icon" />
 
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:text="Recent Expense"
-                            android:textSize="12sp"
-                            android:textColor="#F3E8FF"
-                            android:layout_marginBottom="2dp" />
+                            android:layout_weight="1"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/recentExpenseRecipient"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Recipient"
-                            android:textSize="14sp"
-                            android:textColor="@color/white"
-                            android:maxLines="1"
-                            android:ellipsize="end" />
+                            <TextView
+                                android:id="@+id/recentExpenseRecipient"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Recipient"
+                                android:textSize="13sp"
+                                android:textStyle="bold"
+                                android:textColor="#2D3142"
+                                android:maxLines="1"
+                                android:ellipsize="end" />
 
-                        <TextView
-                            android:id="@+id/recentExpenseAmount"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="₹0"
-                            android:textSize="12sp"
-                            android:textColor="#F3E8FF" />
+                            <TextView
+                                android:id="@+id/recentExpenseAmount"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="₹0"
+                                android:textSize="12sp"
+                                android:textColor="#71717A" />
+                        </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
@@ -266,10 +368,12 @@
             android:id="@+id/categoryChartCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light"
             android:visibility="gone">
 
             <LinearLayout
@@ -282,9 +386,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Spending by Category"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
+                    android:textColor="#2D3142"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Pie Chart -->
@@ -310,7 +414,9 @@
             android:layout_height="wrap_content"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light"
             android:visibility="gone">
 
             <LinearLayout
@@ -334,17 +440,18 @@
                         android:text="Monthly Spending Trend"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="?attr/colorOnSurface" />
+                        android:textColor="#2D3142" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/chartToggleButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="36dp"
                         android:text="Total"
                         android:textSize="12sp"
-                        android:padding="8dp"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
                         app:backgroundTint="@color/primary_indigo"
-                        app:cornerRadius="12dp"
+                        app:cornerRadius="10dp"
                         style="@style/Widget.MaterialComponents.Button" />
                 </LinearLayout>
 
@@ -370,7 +477,7 @@
                 android:layout_width="96dp"
                 android:layout_height="96dp"
                 app:cardCornerRadius="48dp"
-                app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                app:cardBackgroundColor="#F4F4F5"
                 app:cardElevation="0dp"
                 android:layout_marginBottom="16dp">
 
@@ -379,8 +486,9 @@
                     android:layout_height="match_parent"
                     android:src="@android:drawable/ic_menu_sort_by_size"
                     android:scaleType="centerInside"
-                    android:tint="?attr/colorOnSurfaceVariant"
-                    android:padding="24dp" />
+                    android:tint="#A1A1AA"
+                    android:padding="24dp"
+                    android:contentDescription="No data" />
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
@@ -389,7 +497,7 @@
                 android:text="No data yet"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="#2D3142"
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -398,7 +506,7 @@
                 android:layout_height="wrap_content"
                 android:text="Add transactions to see your spending analytics"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textColor="#71717A"
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>

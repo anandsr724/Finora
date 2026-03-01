@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
+    android:background="@color/white"
     android:paddingBottom="24dp">
 
     <!-- Handle bar -->
@@ -13,7 +13,7 @@
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:background="#E0E0E0" />
 
     <!-- Header -->
@@ -24,75 +24,93 @@
         android:gravity="center_vertical"
         android:paddingStart="20dp"
         android:paddingEnd="12dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="16dp">
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
+        android:background="@color/white">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Transaction Details"
-            android:textSize="18sp"
+            android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="#2D3142" />
 
-        <ImageButton
-            android:id="@+id/closeDetailSheetButton"
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="?attr/colorOnSurfaceVariant"
-            android:contentDescription="Close" />
+            app:cardCornerRadius="14dp"
+            app:cardBackgroundColor="#F4F4F5"
+            app:cardElevation="0dp">
+
+            <ImageButton
+                android:id="@+id/closeDetailSheetButton"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:tint="#71717A"
+                android:padding="10dp"
+                android:contentDescription="Close" />
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 
-    <!-- Amount + Category Hero -->
+    <!-- Amount + Category Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
         android:paddingBottom="20dp">
 
         <com.google.android.material.card.MaterialCardView
-            android:layout_width="72dp"
-            android:layout_height="72dp"
-            app:cardCornerRadius="24dp"
-            app:cardBackgroundColor="#EEF2FF"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="#EDE9FE"
             app:cardElevation="0dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginEnd="16dp">
 
             <ImageView
                 android:id="@+id/detailCategoryIcon"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="18dp"
+                android:padding="16dp"
                 android:scaleType="centerInside"
-                android:tint="@color/primary_indigo" />
+                android:tint="@color/primary_indigo"
+                android:contentDescription="Category" />
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            android:id="@+id/detailAmount"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="8dp" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/detailCategoryBadge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="12sp"
-            android:textColor="@color/primary_indigo"
-            android:background="#EEF2FF"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp" />
+            <TextView
+                android:id="@+id/detailAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:textColor="#2D3142"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/detailCategoryBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/primary_indigo"
+                android:background="@drawable/category_badge_background"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Details List -->
@@ -107,18 +125,17 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp">
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="To"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:text="Recipient"
+                android:textSize="11sp"
+                android:textColor="#A1A1AA"
+                android:layout_marginBottom="3dp" />
 
             <TextView
                 android:id="@+id/detailRecipient"
@@ -126,125 +143,121 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="#2D3142"
                 android:maxLines="1"
                 android:ellipsize="end" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="?attr/colorOutline" android:alpha="0.4"/>
+            android:background="#F4F4F5"/>
 
         <!-- Note (conditional) -->
         <LinearLayout
             android:id="@+id/detailNoteRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:visibility="gone">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Note"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="11sp"
+                android:textColor="#A1A1AA"
+                android:layout_marginBottom="3dp" />
 
             <TextView
                 android:id="@+id/detailNote"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="#52525B"
                 android:maxLines="2"
                 android:ellipsize="end" />
         </LinearLayout>
 
         <View android:id="@+id/detailNoteDivider" android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="?attr/colorOutline" android:alpha="0.4" android:visibility="gone"/>
+            android:background="#F4F4F5" android:visibility="gone"/>
 
         <!-- Date & Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp">
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Date &amp; Time"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="11sp"
+                android:textColor="#A1A1AA"
+                android:layout_marginBottom="3dp" />
 
             <TextView
                 android:id="@+id/detailDateTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="#52525B" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="?attr/colorOutline" android:alpha="0.4"/>
+            android:background="#F4F4F5"/>
 
         <!-- Payment Method -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp">
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Payment Method"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="11sp"
+                android:textColor="#A1A1AA"
+                android:layout_marginBottom="3dp" />
 
             <TextView
                 android:id="@+id/detailPaymentMethod"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="?attr/colorOnSurface" />
+                android:textColor="#52525B" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="?attr/colorOutline" android:alpha="0.4"/>
+            android:background="#F4F4F5"/>
 
         <!-- Transaction ID -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp">
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:text="Transaction ID"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant" />
+                android:textSize="11sp"
+                android:textColor="#A1A1AA"
+                android:layout_marginBottom="3dp" />
 
             <TextView
                 android:id="@+id/detailTransactionId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textColor="#71717A"
                 android:maxLines="1"
                 android:ellipsize="middle" />
         </LinearLayout>
@@ -259,28 +272,34 @@
         android:paddingEnd="20dp"
         android:paddingTop="16dp">
 
+        <!-- Edit button (purple tinted) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/detailEditButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
             android:text="Edit"
-            app:backgroundTint="@color/primary_indigo"
+            android:textColor="@color/primary_indigo"
+            app:backgroundTint="#EDE9FE"
             app:cornerRadius="16dp"
             app:icon="@android:drawable/ic_menu_edit"
-            app:iconTint="@color/white" />
+            app:iconTint="@color/primary_indigo"
+            style="@style/Widget.MaterialComponents.Button" />
 
+        <!-- Delete button (red tinted) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/detailDeleteButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="52dp"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:text="Delete"
-            app:backgroundTint="#EF4444"
+            android:textColor="#EF4444"
+            app:backgroundTint="#FEE2E2"
             app:cornerRadius="16dp"
             app:icon="@android:drawable/ic_menu_delete"
-            app:iconTint="@color/white" />
+            app:iconTint="#EF4444"
+            style="@style/Widget.MaterialComponents.Button" />
     </LinearLayout>
 </LinearLayout>

@@ -11,101 +11,165 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="?attr/colorSurface"
-        android:paddingTop="44dp"
+        android:background="@color/background_light"
+        android:paddingTop="24dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="14dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Your Transactions"
+            android:text="Transactions"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
-            android:layout_marginBottom="12dp" />
+            android:textColor="#2D3142"
+            android:layout_marginBottom="14dp" />
 
         <!-- Search Bar -->
-        <com.google.android.material.textfield.TextInputLayout
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Search by name or category"
-            app:boxCornerRadiusTopStart="16dp"
-            app:boxCornerRadiusTopEnd="16dp"
-            app:boxCornerRadiusBottomStart="16dp"
-            app:boxCornerRadiusBottomEnd="16dp"
-            app:boxStrokeWidth="0dp"
-            app:boxStrokeWidthFocused="0dp"
-            app:boxBackgroundMode="filled"
-            app:boxBackgroundColor="?attr/colorSurfaceVariant"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            android:layout_height="52dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="0dp"
+            android:layout_marginBottom="12dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/searchEditText"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:textSize="15sp"
-                android:textColor="?attr/colorOnSurface"
-                android:textColorHint="?attr/colorOnSurfaceVariant"
-                android:inputType="text"
-                android:imeOptions="actionSearch"
-                app:startIconDrawable="@android:drawable/ic_menu_search" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
 
-        <!-- Month Selector + Category filter row -->
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    android:tint="#A1A1AA"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="Search" />
+
+                <EditText
+                    android:id="@+id/searchEditText"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:hint="Search transactions..."
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:textColorHint="#A1A1AA"
+                    android:background="@null"
+                    android:inputType="text"
+                    android:imeOptions="actionSearch"
+                    android:singleLine="true" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Month Selector (full-width, with calendar icon + chevron) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="0dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/ic_menu_today"
+                    android:tint="#71717A"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="Calendar" />
+
+                <Spinner
+                    android:id="@+id/historyMonthSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    android:background="@null" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@android:drawable/arrow_down_float"
+                    android:tint="#71717A"
+                    android:contentDescription="Expand" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Category Filter Pills Row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="12dp">
+            android:gravity="center_vertical">
 
-            <!-- Month Spinner -->
-            <com.google.android.material.textfield.TextInputLayout
+            <!-- All pill (always visible) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/filterAllButton"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:layout_marginEnd="6dp"
+                android:text="All"
+                android:textSize="13sp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:backgroundTint="@color/primary_indigo"
+                app:cornerRadius="14dp"
+                app:strokeWidth="0dp"
+                style="@style/Widget.MaterialComponents.Button" />
+
+            <!-- Scrollable category icon pills -->
+            <HorizontalScrollView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="10dp"
-                app:boxCornerRadiusTopStart="14dp"
-                app:boxCornerRadiusTopEnd="14dp"
-                app:boxCornerRadiusBottomStart="14dp"
-                app:boxCornerRadiusBottomEnd="14dp"
-                app:boxStrokeWidth="0dp"
-                app:boxBackgroundMode="filled"
-                app:boxBackgroundColor="?attr/colorSurfaceVariant"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                android:scrollbars="none"
+                android:fillViewport="false">
 
-                <Spinner
-                    android:id="@+id/historyMonthSpinner"
-                    android:layout_width="match_parent"
+                <LinearLayout
+                    android:id="@+id/categoryFilterPillsContainer"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:textSize="13sp"
-                    android:textColor="?attr/colorOnSurface" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" />
+            </HorizontalScrollView>
 
-            <!-- Filter categories button -->
+            <!-- More filters button (always visible) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/filterCategoriesButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Filter"
-                android:textSize="13sp"
-                app:backgroundTint="?attr/colorSurfaceVariant"
-                android:textColor="?attr/colorOnSurface"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginStart="6dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                app:backgroundTint="@color/white"
                 app:cornerRadius="14dp"
                 app:icon="@android:drawable/ic_menu_sort_by_size"
-                app:iconTint="?attr/colorOnSurface"
-                style="@style/Widget.MaterialComponents.Button" />
+                app:iconTint="#71717A"
+                app:iconSize="20dp"
+                app:iconPadding="0dp"
+                app:strokeColor="@color/border_light"
+                app:strokeWidth="1dp"
+                android:contentDescription="Filter by category"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
         </LinearLayout>
 
         <!-- Active category filters display (horizontal scrollable chips) -->
@@ -114,7 +178,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:scrollbars="none"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:layout_marginTop="8dp">
 
             <LinearLayout
                 android:id="@+id/activeCategoryFiltersContainer"
@@ -131,7 +196,10 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:padding="16dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="16dp"
         android:clipToPadding="false" />
 
     <!-- Empty State -->
@@ -149,7 +217,7 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             app:cardCornerRadius="48dp"
-            app:cardBackgroundColor="?attr/colorSurfaceVariant"
+            app:cardBackgroundColor="#F4F4F5"
             app:cardElevation="0dp"
             android:layout_marginBottom="16dp">
 
@@ -158,8 +226,9 @@
                 android:layout_height="match_parent"
                 android:src="@android:drawable/ic_menu_view"
                 android:scaleType="centerInside"
-                android:tint="?attr/colorOnSurfaceVariant"
-                android:padding="24dp" />
+                android:tint="#A1A1AA"
+                android:padding="24dp"
+                android:contentDescription="No transactions" />
         </com.google.android.material.card.MaterialCardView>
 
         <TextView
@@ -168,7 +237,7 @@
             android:text="No transactions found"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface"
+            android:textColor="#2D3142"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -177,7 +246,7 @@
             android:layout_height="wrap_content"
             android:text="Upload a payment screenshot to add your first transaction"
             android:textSize="14sp"
-            android:textColor="?attr/colorOnSurfaceVariant"
+            android:textColor="#71717A"
             android:gravity="center" />
     </LinearLayout>
 </LinearLayout>

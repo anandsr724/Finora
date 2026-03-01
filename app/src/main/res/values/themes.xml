@@ -17,5 +17,6 @@
         <item name="colorOnBackground">@color/text_primary_light</item>
         <item name="colorOutline">@color/border_light</item>
         <item name="selectableItemBackgroundBorderless">?attr/selectableItemBackground</item>
+        <item name="android:fontFamily">@font/poppins</item>
     </style>
 </resources>

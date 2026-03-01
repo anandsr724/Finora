@@ -82,10 +82,10 @@ class SettingsFragment : Fragment() {
         categoriesCountText.text = "${categories.size} categories"
         categoryPreviewContainer.removeAllViews()
         categories.forEach { category ->
-            val chip = layoutInflater.inflate(
-                R.layout.item_category_chip, categoryPreviewContainer, false
-            ) as TextView
-            chip.text = "${category.emoji} ${category.name}"
+            val chip = layoutInflater.inflate(R.layout.item_category_chip, categoryPreviewContainer, false)
+            chip.findViewById<ImageView>(R.id.chipIcon)
+                .setImageResource(CategoryIconHelper.getIconResId(category.id))
+            chip.findViewById<android.widget.TextView>(R.id.chipName).text = category.name
             categoryPreviewContainer.addView(chip)
         }
     }

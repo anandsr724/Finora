@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="44dp"
+            android:paddingTop="24dp"
             android:paddingStart="20dp"
             android:paddingEnd="20dp"
             android:paddingBottom="100dp">
@@ -23,103 +23,128 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:layout_marginBottom="32dp"
-                android:orientation="horizontal">
+                android:orientation="vertical"
+                android:layout_marginBottom="28dp">
 
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardBackgroundColor="@color/gradient_start"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
 
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="8dp"
-                        android:scaleType="centerCrop"
-                        android:src="@android:drawable/ic_menu_compass"
-                        android:tint="@color/white" />
-                </com.google.android.material.card.MaterialCardView>
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Finora"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:textColor="#2D3142" />
+
+                    <!-- Notification Bell -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="14dp"
+                        app:cardElevation="2dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="10dp"
+                            android:scaleType="centerInside"
+                            android:src="@android:drawable/ic_popup_reminder"
+                            android:tint="#71717A"
+                            android:contentDescription="Notifications" />
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
 
                 <TextView
+                    android:id="@+id/dateSubtitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="12dp"
-                    android:text="Finora"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:text="Monday, March 2"
+                    android:textSize="13sp"
+                    android:textColor="#71717A" />
             </LinearLayout>
 
-            <!-- Upload Section -->
+            <!-- Total Balance Card (Purple Gradient) -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                app:cardBackgroundColor="?attr/colorSurface"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="2dp">
+                android:layout_marginBottom="20dp"
+                app:cardCornerRadius="28dp"
+                app:cardElevation="8dp"
+                app:cardBackgroundColor="@color/gradient_start">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="24dp">
+                    android:padding="24dp"
+                    android:background="@drawable/balance_card_gradient">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:text="Process Payment Screenshot"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
+                        android:text="Total Balance"
+                        android:textSize="13sp"
+                        android:textColor="#CCFFFFFF"
+                        android:layout_marginBottom="6dp" />
 
                     <TextView
+                        android:id="@+id/totalBalanceAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="24dp"
-                        android:text="Upload or share a UPI payment screenshot to automatically extract transaction details"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp" />
+                        android:text="₹0"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="24dp" />
 
+                    <!-- Action buttons row -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:spacing="12dp">
+                        android:orientation="horizontal">
 
+                        <!-- Upload button -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/uploadButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="16dp"
-                            android:text="Upload Screenshot"
-                            android:textSize="16sp"
-                            app:backgroundTint="@color/gradient_start"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:layout_marginEnd="10dp"
+                            android:text="Upload"
+                            android:textSize="14sp"
+                            android:textColor="@color/white"
+                            app:backgroundTint="#33FFFFFF"
                             app:cornerRadius="16dp"
                             app:icon="@android:drawable/ic_menu_upload"
                             app:iconTint="@color/white"
-                            android:layout_marginBottom="12dp" />
+                            app:strokeWidth="0dp" />
 
+                        <!-- Add Manual button -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/manualEntryButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:padding="16dp"
-                            android:text="Enter Details Manually"
-                            android:textSize="16sp"
-                            app:backgroundTint="@color/primary_indigo"
+                            android:layout_width="0dp"
+                            android:layout_height="48dp"
+                            android:layout_weight="1"
+                            android:text="Add Manual"
+                            android:textSize="14sp"
+                            android:textColor="@color/gradient_start"
+                            app:backgroundTint="@color/white"
                             app:cornerRadius="16dp"
-                            app:icon="@android:drawable/ic_menu_edit"
-                            app:iconTint="@color/white" />
+                            app:icon="@android:drawable/ic_input_add"
+                            app:iconTint="@color/gradient_start"
+                            app:strokeWidth="0dp" />
                     </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Quick Stats -->
+            <!-- Quick Stats (2 white cards) -->
             <LinearLayout
                 android:id="@+id/quickStatsContainer"
                 android:layout_width="match_parent"
@@ -132,33 +157,51 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="6dp"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/emerald_500"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="18dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="14dp"
+                            app:cardBackgroundColor="#D1FAE5"
+                            app:cardElevation="0dp"
+                            android:layout_marginBottom="10dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="10dp"
+                                android:scaleType="centerInside"
+                                android:src="@android:drawable/stat_sys_upload_done"
+                                android:tint="@color/emerald_600"
+                                android:contentDescription="Month" />
+                        </com.google.android.material.card.MaterialCardView>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
                             android:text="This Month"
-                            android:textColor="#E0F2FE"
-                            android:textSize="12sp" />
+                            android:textSize="11sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="4dp" />
 
                         <TextView
                             android:id="@+id/thisMonthAmount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="₹0"
-                            android:textColor="@color/white"
-                            android:textSize="24sp"
+                            android:textColor="#2D3142"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -167,43 +210,61 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/amber_500"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp">
+                    app:cardBackgroundColor="@color/white"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="16dp">
+                        android:padding="18dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            app:cardCornerRadius="14dp"
+                            app:cardBackgroundColor="#EDE9FE"
+                            app:cardElevation="0dp"
+                            android:layout_marginBottom="10dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="10dp"
+                                android:scaleType="centerInside"
+                                android:src="@android:drawable/ic_menu_my_calendar"
+                                android:tint="@color/primary_indigo"
+                                android:contentDescription="Transactions" />
+                        </com.google.android.material.card.MaterialCardView>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginBottom="4dp"
                             android:text="Transactions"
-                            android:textColor="#FEF3C7"
-                            android:textSize="12sp" />
+                            android:textSize="11sp"
+                            android:textColor="#71717A"
+                            android:layout_marginBottom="4dp" />
 
                         <TextView
                             android:id="@+id/transactionsCount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
-                            android:textColor="@color/white"
-                            android:textSize="24sp"
+                            android:textColor="#2D3142"
+                            android:textSize="22sp"
                             android:textStyle="bold" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
-            <!-- Recent Transactions Header -->
+            <!-- Recent Activity Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:layout_marginBottom="14dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -211,18 +272,19 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Recent Transactions"
-                    android:textColor="?attr/colorOnBackground"
-                    android:textSize="20sp"
+                    android:text="Recent Activity"
+                    android:textColor="#2D3142"
+                    android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/viewAllButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="View All"
+                    android:text="See All"
                     android:textColor="@color/primary_indigo"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
                     android:visibility="gone" />
             </LinearLayout>
 
@@ -233,7 +295,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
                 android:visibility="gone"
-                app:cardBackgroundColor="?attr/colorSurface"
+                app:cardBackgroundColor="@color/white"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="2dp">
 
@@ -248,7 +310,7 @@
                         android:layout_width="80dp"
                         android:layout_height="80dp"
                         android:layout_marginBottom="16dp"
-                        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                        app:cardBackgroundColor="#F4F4F5"
                         app:cardCornerRadius="40dp"
                         app:cardElevation="0dp">
 
@@ -258,7 +320,8 @@
                             android:padding="20dp"
                             android:scaleType="centerInside"
                             android:src="@android:drawable/ic_menu_camera"
-                            android:tint="?attr/colorOnSurfaceVariant" />
+                            android:tint="#A1A1AA"
+                            android:contentDescription="No transactions" />
                     </com.google.android.material.card.MaterialCardView>
 
                     <TextView
@@ -266,17 +329,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="8dp"
                         android:text="No transactions yet"
-                        android:textColor="?attr/colorOnSurface"
-                        android:textSize="18sp"
+                        android:textColor="#2D3142"
+                        android:textSize="16sp"
                         android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Upload your first payment screenshot to get started"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:textSize="14sp" />
+                        android:text="Add your first transaction to get started"
+                        android:textColor="#71717A"
+                        android:textSize="13sp" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -300,7 +363,8 @@
         android:layout_margin="24dp"
         app:backgroundTint="@color/gradient_start"
         app:elevation="8dp"
-        app:srcCompat="@android:drawable/ic_menu_camera"
-        app:tint="@color/white" />
+        app:srcCompat="@android:drawable/ic_input_add"
+        app:tint="@color/white"
+        android:contentDescription="Add transaction" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

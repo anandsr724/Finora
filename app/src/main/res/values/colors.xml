@@ -26,7 +26,7 @@
     <color name="card_background_dark_secondary">#3F3F46</color>
 
     <!-- Text Colors -->
-    <color name="text_primary_light">#18181B</color>
+    <color name="text_primary_light">#2D3142</color>
     <color name="text_primary_dark">#FAFAFA</color>
     <color name="text_secondary_light">#71717A</color>
     <color name="text_secondary_dark">#A1A1AA</color>

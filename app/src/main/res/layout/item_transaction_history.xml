@@ -4,14 +4,14 @@
     android:id="@+id/transactionCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
+    android:layout_marginBottom="10dp"
     android:clickable="true"
     android:focusable="true"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="20dp"
     app:cardElevation="2dp"
-    app:cardBackgroundColor="?attr/colorSurface"
+    app:cardBackgroundColor="@color/white"
     app:strokeWidth="1dp"
-    app:strokeColor="?attr/colorOutline">
+    app:strokeColor="@color/border_light">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -25,9 +25,9 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             app:cardCornerRadius="16dp"
-            app:cardBackgroundColor="#EEF2FF"
+            app:cardBackgroundColor="#EDE9FE"
             app:cardElevation="0dp"
-            android:layout_marginEnd="12dp">
+            android:layout_marginEnd="14dp">
 
             <ImageView
                 android:id="@+id/category_icon"
@@ -35,7 +35,8 @@
                 android:layout_height="match_parent"
                 android:padding="12dp"
                 android:scaleType="centerInside"
-                android:tint="@color/primary_indigo" />
+                android:tint="@color/primary_indigo"
+                android:contentDescription="Category" />
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Transaction Details -->
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="10sp"
                 android:textColor="@color/primary_indigo"
-                android:background="#EEF2FF"
+                android:background="@drawable/category_badge_background"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp"
                 android:paddingTop="3dp"
@@ -67,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:textColor="?attr/colorOnSurface"
+                android:textColor="#2D3142"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginBottom="2dp" />
@@ -77,8 +78,8 @@
                 android:id="@+id/transaction_note"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="?attr/colorOnSurfaceVariant"
+                android:textSize="12sp"
+                android:textColor="#71717A"
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_marginBottom="4dp"
@@ -95,22 +96,22 @@
                     android:id="@+id/transaction_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant" />
+                    android:textSize="11sp"
+                    android:textColor="#A1A1AA" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text=" · "
-                    android:textSize="12sp"
-                    android:textColor="?attr/colorOutline" />
+                    android:textSize="11sp"
+                    android:textColor="#D4D4D8" />
 
                 <TextView
                     android:id="@+id/transaction_bank"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:textSize="11sp"
+                    android:textColor="#A1A1AA"
                     android:maxLines="1"
                     android:ellipsize="end" />
             </LinearLayout>
@@ -122,8 +123,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:textSize="17sp"
+            android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
+            android:textColor="#2D3142" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

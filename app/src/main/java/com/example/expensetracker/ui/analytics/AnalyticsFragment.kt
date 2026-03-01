@@ -42,6 +42,7 @@ class AnalyticsFragment : Fragment() {
     private lateinit var lineChart: LineChart
     private lateinit var chartToggleButton: MaterialButton
     private lateinit var totalSpentAmount: TextView
+    private lateinit var transactionCountText: TextView
     private lateinit var topCategoryCard: MaterialCardView
     private lateinit var topCategoryName: TextView
     private lateinit var topCategoryIcon: ImageView
@@ -55,6 +56,7 @@ class AnalyticsFragment : Fragment() {
     private lateinit var emptyStateLayout: LinearLayout
     private lateinit var emptyStateMessage: TextView
     private lateinit var additionalStatsContainer: LinearLayout
+    private lateinit var categoryLegend: LinearLayout
 
     private var showByCategory = false
 
@@ -93,6 +95,7 @@ class AnalyticsFragment : Fragment() {
         lineChart = view.findViewById(R.id.lineChart)
         chartToggleButton = view.findViewById(R.id.chartToggleButton)
         totalSpentAmount = view.findViewById(R.id.totalSpentAmount)
+        transactionCountText = view.findViewById(R.id.transactionCountText)
         topCategoryCard = view.findViewById(R.id.topCategoryCard)
         topCategoryName = view.findViewById(R.id.topCategoryName)
         topCategoryIcon = view.findViewById(R.id.topCategoryIcon)
@@ -106,6 +109,7 @@ class AnalyticsFragment : Fragment() {
         emptyStateLayout = view.findViewById(R.id.emptyStateLayout)
         emptyStateMessage = view.findViewById(R.id.emptyStateMessage)
         additionalStatsContainer = view.findViewById(R.id.additionalStatsContainer)
+        categoryLegend = view.findViewById(R.id.categoryLegend)
 
         monthSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -140,8 +144,7 @@ class AnalyticsFragment : Fragment() {
         pieChart.description.isEnabled = false
         pieChart.legend.isEnabled = false
         pieChart.setEntryLabelColor(Color.TRANSPARENT)
-        pieChart.setHoleColor(Color.TRANSPARENT)
-        pieChart.setTransparentCircleColor(Color.TRANSPARENT)
+        pieChart.isDrawHoleEnabled = false
 
         lineChart.description.isEnabled = false
         lineChart.setDrawGridBackground(false)
@@ -209,6 +212,7 @@ class AnalyticsFragment : Fragment() {
         monthlyTrendCard.visibility = View.GONE
         additionalStatsContainer.visibility = View.GONE
         totalSpentAmount.text = "Rs.0"
+        transactionCountText.text = "0"
         emptyStateMessage.text = if (isAllTime)
             "Add transactions to see your spending analytics"
         else
@@ -225,6 +229,7 @@ class AnalyticsFragment : Fragment() {
             it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0
         }
         totalSpentAmount.text = "Rs.${fmt.format(totalSpent)}"
+        transactionCountText.text = filteredTransactions.size.toString()
 
         val categoryTotals = filteredTransactions.groupBy { it.category }
             .mapValues { (_, txns) -> txns.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 } }
@@ -280,6 +285,58 @@ class AnalyticsFragment : Fragment() {
         }
         pieChart.data = PieData(dataSet)
         pieChart.invalidate()
+        updateCategoryLegend(categoryTotals)
+    }
+
+    private fun updateCategoryLegend(categoryTotals: List<Pair<String, Double>>) {
+        categoryLegend.removeAllViews()
+        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        val density = resources.displayMetrics.density
+
+        categoryTotals.forEachIndexed { idx, (catId, amount) ->
+            val row = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = android.view.Gravity.CENTER_VERTICAL
+                setPadding(0, (10 * density).toInt(), 0, (10 * density).toInt())
+            }
+
+            val dot = android.view.View(requireContext()).apply {
+                val size = (10 * density).toInt()
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    marginEnd = (12 * density).toInt()
+                }
+                background = android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL
+                    setColor(chartColors[idx % chartColors.size])
+                }
+            }
+
+            val nameView = android.widget.TextView(requireContext()).apply {
+                text = categoryManager.getCategoryById(catId)?.name ?: catId
+                textSize = 13f
+                setTextColor(Color.parseColor("#2D3142"))
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+
+            val amountView = android.widget.TextView(requireContext()).apply {
+                text = "₹${fmt.format(amount)}"
+                textSize = 13f
+                setTextColor(Color.parseColor("#71717A"))
+            }
+
+            row.addView(dot)
+            row.addView(nameView)
+            row.addView(amountView)
+            categoryLegend.addView(row)
+
+            if (idx < categoryTotals.size - 1) {
+                val divider = android.view.View(requireContext()).apply {
+                    layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
+                    setBackgroundColor(Color.parseColor("#E4E4E7"))
+                }
+                categoryLegend.addView(divider)
+            }
+        }
     }
 
     private fun updateMonthlyTrend(allTransactions: List<PaymentTransaction>) {

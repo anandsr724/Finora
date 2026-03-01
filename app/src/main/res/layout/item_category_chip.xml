@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_marginEnd="8dp"
-    android:paddingStart="12dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="10dp"
     android:paddingEnd="12dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="6dp"
-    android:background="@drawable/category_button_background"
-    android:textSize="13sp"
-    android:textColor="?attr/colorOnSurface"
-    android:maxLines="1" />
+    android:paddingTop="7dp"
+    android:paddingBottom="7dp"
+    android:background="@drawable/category_badge_background">
+
+    <ImageView
+        android:id="@+id/chipIcon"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:layout_marginEnd="5dp"
+        android:tint="@color/primary_indigo"
+        android:scaleType="centerInside"
+        android:contentDescription="Category icon" />
+
+    <TextView
+        android:id="@+id/chipName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/primary_indigo"
+        android:maxLines="1" />
+
+</LinearLayout>

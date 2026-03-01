@@ -83,7 +83,20 @@ class HomeFragment : Fragment() {
 
     private fun loadData(view: View) {
         val transactions = csvManager.getAllTransactions()
-        
+        val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
+
+        // Date subtitle
+        val dateSubtitle = view.findViewById<TextView>(R.id.dateSubtitle)
+        val dateFormat = SimpleDateFormat("EEEE, MMMM d", Locale.ENGLISH)
+        dateSubtitle.text = dateFormat.format(Date())
+
+        // Total balance (sum of all transactions)
+        val totalBalance = transactions.sumOf {
+            it.amount.replace("Rs.", "").replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0
+        }
+        val totalBalanceAmount = view.findViewById<TextView>(R.id.totalBalanceAmount)
+        totalBalanceAmount.text = "₹${numberFormat.format(totalBalance)}"
+
         // Calculate monthly total
         val monthlyTotal = calculateMonthlyTotal(transactions)
         val thisMonthAmount = view.findViewById<TextView>(R.id.thisMonthAmount)
@@ -92,8 +105,6 @@ class HomeFragment : Fragment() {
         val emptyStateCard = view.findViewById<MaterialCardView>(R.id.emptyStateCard)
         val viewAllButton = view.findViewById<TextView>(R.id.viewAllButton)
 
-        // Format amounts
-        val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
         thisMonthAmount.text = "₹${numberFormat.format(monthlyTotal)}"
         transactionsCount.text = transactions.size.toString()
 
