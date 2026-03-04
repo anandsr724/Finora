@@ -281,11 +281,11 @@
             android:layout_marginEnd="8dp"
             android:text="Edit"
             android:textColor="@color/primary_indigo"
+            android:textSize="14sp"
             app:backgroundTint="#EDE9FE"
             app:cornerRadius="16dp"
-            app:icon="@android:drawable/ic_menu_edit"
-            app:iconTint="@color/primary_indigo"
-            style="@style/Widget.MaterialComponents.Button" />
+            app:strokeWidth="0dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
 
         <!-- Delete button (red tinted) -->
         <com.google.android.material.button.MaterialButton
@@ -296,10 +296,10 @@
             android:layout_marginStart="8dp"
             android:text="Delete"
             android:textColor="#EF4444"
+            android:textSize="14sp"
             app:backgroundTint="#FEE2E2"
             app:cornerRadius="16dp"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconTint="#EF4444"
-            style="@style/Widget.MaterialComponents.Button" />
+            app:strokeWidth="0dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
     </LinearLayout>
 </LinearLayout>

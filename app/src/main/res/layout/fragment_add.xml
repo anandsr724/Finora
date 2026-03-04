@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,119 +10,81 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp"
+        android:paddingTop="24dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="100dp">
 
-        <!-- Entry Options Section -->
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Transaction"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:textColor="#2D3142" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scan a screenshot or enter details manually"
+                android:textSize="13sp"
+                android:textColor="#71717A"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+
+        <!-- Action Buttons Card -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface">
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add New Transaction"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Choose how you want to add a transaction"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginBottom="24dp" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:spacing="12dp">
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/selectImageButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Upload Screenshot"
-                        android:textSize="16sp"
-                        android:padding="16dp"
-                        app:cornerRadius="16dp"
-                        app:backgroundTint="@color/gradient_start"
-                        app:icon="@android:drawable/ic_menu_upload"
-                        app:iconTint="@color/white"
-                        android:layout_marginBottom="12dp" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/manualEntryButton"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Enter Details Manually"
-                        android:textSize="16sp"
-                        android:padding="16dp"
-                        app:cornerRadius="16dp"
-                        app:backgroundTint="@color/primary_indigo"
-                        app:icon="@android:drawable/ic_menu_edit"
-                        app:iconTint="@color/white" />
-                </LinearLayout>
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Upload Section Card -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Process Payment Screenshot"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="?attr/colorOnSurface"
-                    android:layout_marginBottom="8dp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Extract transaction details from your payment screenshot"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurfaceVariant"
-                    android:layout_marginBottom="24dp" />
+                android:orientation="horizontal"
+                android:padding="16dp">
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectImageButtonAlt"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Browse Files"
-                    android:textSize="16sp"
-                    android:padding="16dp"
+                    android:id="@+id/selectImageButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="Upload"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/primary_indigo"
                     app:cornerRadius="16dp"
-                    app:backgroundTint="@color/gradient_start"
-                    app:icon="@android:drawable/ic_input_add"
+                    app:icon="@android:drawable/ic_menu_upload"
                     app:iconTint="@color/white"
-                    android:visibility="gone" />
+                    app:strokeWidth="0dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/manualEntryButton"
+                    android:layout_width="0dp"
+                    android:layout_height="52dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Enter Manually"
+                    android:textSize="14sp"
+                    android:textColor="#2D3142"
+                    app:backgroundTint="@color/white"
+                    app:cornerRadius="16dp"
+                    app:strokeColor="@color/border_light"
+                    app:strokeWidth="1dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -131,18 +93,34 @@
             android:id="@+id/imagePreviewCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="16dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light"
             android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/imageView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="Payment screenshot preview" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="320dp"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Payment screenshot preview" />
+
+                <TextView
+                    android:id="@+id/imageInfoText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="14dp"
+                    android:textSize="12sp"
+                    android:textColor="#71717A" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Process Button Card -->
@@ -150,53 +128,59 @@
             android:id="@+id/processButtonCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light"
             android:visibility="gone">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/processButton"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Process Image"
-                android:textSize="16sp"
-                android:padding="16dp"
-                app:cornerRadius="16dp"
-                app:backgroundTint="@color/gradient_start"
-                app:icon="@android:drawable/ic_menu_compass"
-                app:iconTint="@color/white"
-                android:enabled="false" />
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/processButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Extract Details"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    app:backgroundTint="@color/primary_indigo"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:enabled="false" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Status Text Card -->
+        <!-- Status / Results Card -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/statusCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
+            android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="?attr/colorSurface">
+            app:cardBackgroundColor="@color/white"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light"
+            android:visibility="gone">
 
-            <ScrollView
+            <TextView
+                android:id="@+id/statusText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxHeight="300dp"
-                android:padding="20dp">
-
-                <TextView
-                    android:id="@+id/statusText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Select an image to get started"
-                    android:textSize="14sp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:lineSpacingExtra="4dp" />
-            </ScrollView>
+                android:padding="20dp"
+                android:textSize="14sp"
+                android:textColor="#2D3142"
+                android:lineSpacingExtra="4dp" />
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Action Buttons Container -->
+        <!-- Save / Edit Buttons -->
         <LinearLayout
             android:id="@+id/buttonsContainer"
             android:layout_width="match_parent"
@@ -207,30 +191,32 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/saveButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:layout_marginEnd="6dp"
+                android:layout_marginEnd="8dp"
                 android:text="Save"
-                android:textSize="16sp"
-                android:padding="16dp"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/primary_indigo"
                 app:cornerRadius="16dp"
-                app:backgroundTint="@color/emerald_500"
-                app:icon="@android:drawable/ic_menu_save"
-                app:iconTint="@color/white" />
+                app:strokeWidth="0dp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/editButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="52dp"
                 android:layout_weight="1"
-                android:layout_marginStart="6dp"
-                android:text="Edit"
-                android:textSize="16sp"
-                android:padding="16dp"
+                android:layout_marginStart="8dp"
+                android:text="Review &amp; Edit"
+                android:textSize="15sp"
+                android:textColor="#2D3142"
+                app:backgroundTint="@color/white"
                 app:cornerRadius="16dp"
-                app:backgroundTint="@color/primary_indigo"
-                app:icon="@android:drawable/ic_menu_edit"
-                app:iconTint="@color/white" />
+                app:strokeColor="@color/border_light"
+                app:strokeWidth="1dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
         </LinearLayout>
+
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

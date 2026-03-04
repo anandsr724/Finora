@@ -57,6 +57,7 @@ class HistoryFragment : Fragment() {
     private var searchQuery: String = ""
     private var selectedMonthIndex = 0 // 0 = All Time
     private val categoryPillMap = mutableMapOf<String, MaterialButton>()
+    private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
     companion object {
         private const val EDIT_REQUEST_CODE = 1001
@@ -74,7 +75,6 @@ class HistoryFragment : Fragment() {
 
         setupViews(view)
         setupSearch()
-        setupMonthSpinner()
         loadTransactions()
 
         return view
@@ -115,17 +115,44 @@ class HistoryFragment : Fragment() {
         })
     }
 
-    private fun setupMonthSpinner() {
+    private fun setupMonthSpinner(transactions: List<PaymentTransaction>) {
         val options = mutableListOf("All Time")
-        val calendar = Calendar.getInstance()
-        for (i in 0 until 12) {
-            calendar.time = Date()
-            calendar.add(Calendar.MONTH, -i)
-            options.add(SimpleDateFormat("MMMM yyyy", Locale("en", "IN")).format(calendar.time))
+        monthYearPairs.clear()
+
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val cal = Calendar.getInstance()
+        val distinctMonths = transactions.mapNotNull { tx ->
+            try {
+                val d = dateFormat.parse(tx.dateTime) ?: return@mapNotNull null
+                cal.time = d
+                Pair(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH))
+            } catch (e: Exception) { null }
+        }.distinct().sortedByDescending { (y, m) -> y * 12 + m }
+
+        val monthLabelFormat = SimpleDateFormat("MMMM yyyy", Locale("en", "IN"))
+        distinctMonths.forEach { (year, month) ->
+            cal.set(year, month, 1)
+            options.add(monthLabelFormat.format(cal.time))
+            monthYearPairs.add(Pair(year, month))
         }
+
+        // Preserve current selection by year/month value
+        val currentYearMonth = if (selectedMonthIndex > 0 && selectedMonthIndex <= monthYearPairs.size) {
+            monthYearPairs[selectedMonthIndex - 1]
+        } else null
+
+        historyMonthSpinner.onItemSelectedListener = null
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         historyMonthSpinner.adapter = adapter
+
+        val newPos = if (currentYearMonth != null) {
+            val idx = monthYearPairs.indexOf(currentYearMonth)
+            if (idx >= 0) idx + 1 else 0
+        } else 0
+        selectedMonthIndex = newPos
+        historyMonthSpinner.setSelection(newPos)
+
         historyMonthSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
                 selectedMonthIndex = position
@@ -269,6 +296,7 @@ class HistoryFragment : Fragment() {
 
     private fun loadTransactions() {
         allTransactions = csvManager.getAllTransactions()
+        setupMonthSpinner(allTransactions)
         populateCategoryFilterPills()
         filterTransactions()
     }
@@ -283,12 +311,10 @@ class HistoryFragment : Fragment() {
                     tx.note.lowercase().contains(searchQuery) ||
                     categoryManager.getCategoryDisplayName(tx.category).lowercase().contains(searchQuery)
 
-            val matchesMonth = if (selectedMonthIndex == 0) {
+            val matchesMonth = if (selectedMonthIndex == 0 || selectedMonthIndex > monthYearPairs.size) {
                 true
             } else {
-                val cal = Calendar.getInstance().apply { time = Date(); add(Calendar.MONTH, -(selectedMonthIndex - 1)) }
-                val targetMonth = cal.get(Calendar.MONTH)
-                val targetYear = cal.get(Calendar.YEAR)
+                val (targetYear, targetMonth) = monthYearPairs[selectedMonthIndex - 1]
                 try {
                     val date = dateFormat.parse(tx.dateTime)
                     if (date != null) {

@@ -8,6 +8,7 @@
 
     <!-- Header -->
     <LinearLayout
+        android:id="@+id/editHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
@@ -366,6 +367,7 @@
 
     <!-- Action Buttons Footer -->
     <LinearLayout
+        android:id="@+id/editFooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

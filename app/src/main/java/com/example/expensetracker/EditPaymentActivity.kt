@@ -19,6 +19,10 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -51,7 +55,23 @@ class EditPaymentActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         setContentView(R.layout.activity_edit_payment)
+
+        // Apply status bar height to header and nav bar height to footer
+        val dp = resources.displayMetrics.density
+        val header = findViewById<LinearLayout>(R.id.editHeader)
+        val footer = findViewById<LinearLayout>(R.id.editFooter)
+        ViewCompat.setOnApplyWindowInsetsListener(header) { view, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            view.updatePadding(top = statusBars.top + (16 * dp).toInt())
+            insets
+        }
+        ViewCompat.setOnApplyWindowInsetsListener(footer) { view, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = navBars.bottom + (20 * dp).toInt())
+            insets
+        }
 
         categoryManager = CategoryManager(this)
         categoryManager.initializeDefaultCategories()
@@ -85,6 +105,7 @@ class EditPaymentActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()
+            overridePendingTransition(0, 0)
         }
 
         dateTimeEditText.isFocusable = false
@@ -203,6 +224,7 @@ class EditPaymentActivity : AppCompatActivity() {
         cancelButton.setOnClickListener {
             setResult(RESULT_CANCELED)
             finish()
+            overridePendingTransition(0, 0)
         }
     }
 
@@ -249,6 +271,7 @@ class EditPaymentActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {
                 setResult(RESULT_CANCELED)
                 finish()
+                overridePendingTransition(0, 0)
             }
         })
     }

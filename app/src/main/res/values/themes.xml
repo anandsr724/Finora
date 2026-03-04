@@ -19,4 +19,14 @@
         <item name="selectableItemBackgroundBorderless">?attr/selectableItemBackground</item>
         <item name="android:fontFamily">@font/poppins</item>
     </style>
+
+    <!-- Bottom sheet with no entrance/exit animation -->
+    <style name="BottomSheetDialog.NoAnim" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="android:windowAnimationStyle">@style/Animation.BottomSheet.NoAnim</item>
+    </style>
+
+    <style name="Animation.BottomSheet.NoAnim" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@null</item>
+        <item name="android:windowExitAnimation">@null</item>
+    </style>
 </resources>

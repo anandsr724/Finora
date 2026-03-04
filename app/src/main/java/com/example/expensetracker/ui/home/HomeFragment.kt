@@ -7,17 +7,24 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.CSVManager
+import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.EditPaymentActivity
+import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -116,17 +123,24 @@ class HomeFragment : Fragment() {
         } else {
             emptyStateCard.visibility = View.GONE
             quickStatsContainer.visibility = View.VISIBLE
-            if (transactions.size > 3) {
+            if (transactions.size > 5) {
                 viewAllButton.visibility = View.VISIBLE
             }
         }
 
-        // Load recent transactions (max 3)
-        val recentTransactions = transactions.take(3)
+        // Load recent transactions sorted by date, newest first
+        val txDateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val recentTransactions = transactions
+            .sortedByDescending { tx ->
+                try { txDateFormat.parse(tx.dateTime)?.time ?: 0L } catch (e: Exception) { 0L }
+            }
+            .take(5)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recent_transactions_list)
         
         if (recentTransactions.isNotEmpty()) {
-            transactionAdapter = TransactionHistoryAdapter(recentTransactions, categoryManager)
+            transactionAdapter = TransactionHistoryAdapter(recentTransactions, categoryManager) { transaction ->
+                showTransactionDetailSheet(transaction)
+            }
             recyclerView.adapter = transactionAdapter
             recyclerView.visibility = View.VISIBLE
         } else {
@@ -161,6 +175,96 @@ class HomeFragment : Fragment() {
         super.onResume()
         // Refresh data when returning to this fragment
         view?.let { loadData(it) }
+    }
+
+    private fun showTransactionDetailSheet(transaction: PaymentTransaction) {
+        val sheet = BottomSheetDialog(requireContext())
+        val sheetView = layoutInflater.inflate(R.layout.layout_transaction_detail_sheet, null)
+        sheet.setContentView(sheetView)
+
+        val fmt = NumberFormat.getNumberInstance(java.util.Locale("en", "IN"))
+
+        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
+            .setImageResource(CategoryIconHelper.getIconResId(transaction.category))
+
+        val numericAmount = transaction.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
+        val currencySymbol = if (transaction.currency == "INR") "Rs." else transaction.currency
+        sheetView.findViewById<TextView>(R.id.detailAmount).text =
+            if (numericAmount != null) "$currencySymbol${fmt.format(numericAmount)}" else transaction.amount
+
+        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
+            categoryManager.getCategoryDisplayName(transaction.category)
+
+        sheetView.findViewById<TextView>(R.id.detailRecipient).text = transaction.recipient
+
+        val noteRow = sheetView.findViewById<LinearLayout>(R.id.detailNoteRow)
+        val noteDivider = sheetView.findViewById<View>(R.id.detailNoteDivider)
+        if (transaction.note.isNotEmpty()) {
+            sheetView.findViewById<TextView>(R.id.detailNote).text = transaction.note
+            noteRow.visibility = View.VISIBLE
+            noteDivider.visibility = View.VISIBLE
+        } else {
+            noteRow.visibility = View.GONE
+            noteDivider.visibility = View.GONE
+        }
+
+        try {
+            val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.ENGLISH).parse(transaction.dateTime)
+            sheetView.findViewById<TextView>(R.id.detailDateTime).text =
+                if (date != null) SimpleDateFormat("dd MMM yyyy, hh:mm a", java.util.Locale.ENGLISH).format(date)
+                else transaction.dateTime
+        } catch (e: Exception) {
+            sheetView.findViewById<TextView>(R.id.detailDateTime).text = transaction.dateTime
+        }
+
+        sheetView.findViewById<TextView>(R.id.detailPaymentMethod).text =
+            transaction.bankInfo.ifEmpty { "N/A" }
+
+        sheetView.findViewById<TextView>(R.id.detailTransactionId).text =
+            transaction.transactionId.ifEmpty { "N/A" }
+
+        sheetView.findViewById<ImageButton>(R.id.closeDetailSheetButton).setOnClickListener {
+            sheet.dismiss()
+        }
+
+        sheetView.findViewById<MaterialButton>(R.id.detailEditButton).setOnClickListener {
+            sheet.dismiss()
+            editTransaction(transaction)
+        }
+
+        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).setOnClickListener {
+            sheet.dismiss()
+            confirmDeleteTransaction(transaction)
+        }
+
+        sheet.show()
+    }
+
+    private fun editTransaction(transaction: PaymentTransaction) {
+        val intent = Intent(requireContext(), EditPaymentActivity::class.java).apply {
+            putExtra("amount", transaction.amount)
+            putExtra("recipient", transaction.recipient)
+            putExtra("note", transaction.note)
+            putExtra("dateTime", transaction.dateTime)
+            putExtra("bankInfo", transaction.bankInfo)
+            putExtra("category", transaction.category)
+            putExtra("transactionId", transaction.transactionId)
+            putExtra("editingId", transaction.id)
+        }
+        startActivityForResult(intent, EDIT_REQUEST_CODE)
+    }
+
+    private fun confirmDeleteTransaction(transaction: PaymentTransaction) {
+        AlertDialog.Builder(requireContext())
+            .setTitle("Delete Transaction")
+            .setMessage("Are you sure you want to delete this transaction?")
+            .setPositiveButton("Delete") { _, _ ->
+                csvManager.deleteTransaction(transaction.id)
+                Toast.makeText(requireContext(), "Transaction deleted", Toast.LENGTH_SHORT).show()
+                view?.let { loadData(it) }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun openFilePicker() {

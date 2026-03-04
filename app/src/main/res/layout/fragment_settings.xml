@@ -293,22 +293,19 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Clear Data (subtle, at bottom) -->
+        <!-- Clear Data (at bottom) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/clear_all_data_button"
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="52dp"
             android:layout_marginBottom="16dp"
             android:text="Clear All Data"
             android:textSize="14sp"
             android:textColor="#EF4444"
-            app:backgroundTint="@color/white"
-            app:strokeColor="#FECACA"
-            app:strokeWidth="1dp"
+            app:backgroundTint="#FEE2E2"
             app:cornerRadius="16dp"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconTint="#EF4444"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            app:strokeWidth="0dp"
+            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
 
         <!-- Tip Info Box -->
         <LinearLayout

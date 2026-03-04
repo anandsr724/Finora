@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -59,7 +59,7 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@android:drawable/ic_menu_today"
+                        android:src="@drawable/ic_calendar_month"
                         android:tint="#71717A"
                         android:layout_marginEnd="10dp"
                         android:contentDescription="Calendar" />
@@ -97,7 +97,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="4dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/gradient_start">
 
                 <LinearLayout
@@ -117,7 +117,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@android:drawable/ic_menu_my_calendar"
+                            android:src="@drawable/ic_wallet"
                             android:tint="#CCFFFFFF"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Wallet" />
@@ -148,7 +148,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="1dp"
                 app:strokeColor="@color/border_light">
@@ -169,7 +169,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@android:drawable/stat_sys_upload_done"
+                            android:src="@drawable/ic_trending_up"
                             android:tint="#71717A"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Transactions" />
@@ -211,7 +211,7 @@
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="1dp"
                 app:strokeColor="@color/border_light"
@@ -233,7 +233,7 @@
                         <ImageView
                             android:layout_width="20dp"
                             android:layout_height="20dp"
-                            android:src="@android:drawable/stat_sys_upload_done"
+                            android:src="@drawable/ic_wallet"
                             android:tint="#71717A"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Top category" />
@@ -298,7 +298,7 @@
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="2dp"
+                app:cardElevation="0dp"
                 app:cardBackgroundColor="@color/white"
                 app:strokeWidth="1dp"
                 app:strokeColor="@color/border_light"
@@ -510,4 +510,4 @@
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>
-</ScrollView>
+</androidx.core.widget.NestedScrollView>

@@ -59,6 +59,7 @@ class AnalyticsFragment : Fragment() {
     private lateinit var categoryLegend: LinearLayout
 
     private var showByCategory = false
+    private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
     private val chartColors = intArrayOf(
         Color.parseColor("#6B5DD3"),
@@ -82,7 +83,6 @@ class AnalyticsFragment : Fragment() {
         categoryManager.initializeDefaultCategories()
 
         setupViews(view)
-        setupMonthSpinner()
         setupCharts()
         loadData()
 
@@ -111,12 +111,7 @@ class AnalyticsFragment : Fragment() {
         additionalStatsContainer = view.findViewById(R.id.additionalStatsContainer)
         categoryLegend = view.findViewById(R.id.categoryLegend)
 
-        monthSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                loadData()
-            }
-            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
-        }
+        // Listener is installed inside rebuildMonthSpinner; nothing to set here
 
         chartToggleButton.setOnClickListener {
             showByCategory = !showByCategory
@@ -126,18 +121,50 @@ class AnalyticsFragment : Fragment() {
         }
     }
 
-    private fun setupMonthSpinner() {
-        val monthOptions = mutableListOf<String>()
-        monthOptions.add("All Time")
-        val calendar = Calendar.getInstance()
-        for (i in 0 until 12) {
-            calendar.time = Date()
-            calendar.add(Calendar.MONTH, -i)
-            monthOptions.add(SimpleDateFormat("MMMM yyyy", Locale("en", "IN")).format(calendar.time))
+    private fun rebuildMonthSpinner(transactions: List<com.example.expensetracker.PaymentTransaction>) {
+        val options = mutableListOf("All Time")
+        monthYearPairs.clear()
+
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+        val cal = Calendar.getInstance()
+        val distinctMonths = transactions.mapNotNull { tx ->
+            try {
+                val d = dateFormat.parse(tx.dateTime) ?: return@mapNotNull null
+                cal.time = d
+                Pair(cal.get(Calendar.YEAR), cal.get(Calendar.MONTH))
+            } catch (e: Exception) { null }
+        }.distinct().sortedByDescending { (y, m) -> y * 12 + m }
+
+        val monthLabelFormat = SimpleDateFormat("MMMM yyyy", Locale("en", "IN"))
+        distinctMonths.forEach { (year, month) ->
+            cal.set(year, month, 1)
+            options.add(monthLabelFormat.format(cal.time))
+            monthYearPairs.add(Pair(year, month))
         }
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, monthOptions)
+
+        // Preserve current selection by year/month value
+        val currentYearMonth = if (monthSpinner.selectedItemPosition > 0 &&
+            monthSpinner.selectedItemPosition <= monthYearPairs.size) {
+            monthYearPairs[monthSpinner.selectedItemPosition - 1]
+        } else null
+
+        monthSpinner.onItemSelectedListener = null
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         monthSpinner.adapter = adapter
+
+        val newPos = if (currentYearMonth != null) {
+            val idx = monthYearPairs.indexOf(currentYearMonth)
+            if (idx >= 0) idx + 1 else 0
+        } else 0
+        monthSpinner.setSelection(newPos)
+
+        monthSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
+                loadData()
+            }
+            override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
+        }
     }
 
     private fun setupCharts() {
@@ -175,21 +202,20 @@ class AnalyticsFragment : Fragment() {
 
     private fun loadData() {
         val allTransactions = csvManager.getAllTransactions()
-        val selectedMonth = monthSpinner.selectedItemPosition
+        rebuildMonthSpinner(allTransactions)
 
-        val filteredTransactions = if (selectedMonth == 0) {
+        val selectedMonth = monthSpinner.selectedItemPosition
+        val filteredTransactions = if (selectedMonth == 0 || selectedMonth > monthYearPairs.size) {
             allTransactions
         } else {
-            val calendar = Calendar.getInstance()
-            calendar.add(Calendar.MONTH, -(selectedMonth - 1))
-            val targetMonth = calendar.get(Calendar.MONTH)
-            val targetYear = calendar.get(Calendar.YEAR)
+            val (targetYear, targetMonth) = monthYearPairs[selectedMonth - 1]
+            val cal = Calendar.getInstance()
             allTransactions.filter { transaction ->
                 try {
                     val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(transaction.dateTime)
                     if (date != null) {
-                        calendar.time = date
-                        calendar.get(Calendar.MONTH) == targetMonth && calendar.get(Calendar.YEAR) == targetYear
+                        cal.time = date
+                        cal.get(Calendar.MONTH) == targetMonth && cal.get(Calendar.YEAR) == targetYear
                     } else false
                 } catch (e: Exception) { false }
             }

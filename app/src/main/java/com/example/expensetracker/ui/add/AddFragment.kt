@@ -1,5 +1,6 @@
 package com.example.expensetracker.ui.add
 
+import android.app.Activity
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,12 +14,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.expensetracker.*
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
+import java.text.NumberFormat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -28,10 +34,21 @@ import java.util.*
 
 class AddFragment : Fragment() {
     private lateinit var imageView: ImageView
+    private lateinit var imageInfoText: TextView
     private lateinit var statusText: TextView
     private lateinit var processButton: Button
+    private lateinit var imagePreviewCard: MaterialCardView
+    private lateinit var processButtonCard: MaterialCardView
+    private lateinit var statusCard: MaterialCardView
     private var currentBitmap: Bitmap? = null
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    // Pending OCR result — preserved so sheet can be re-shown if Edit is cancelled
+    private var pendingAmount = ""
+    private var pendingRecipient = ""
+    private var pendingNote = ""
+    private var pendingDateTime = ""
+    private var pendingTransactionId = ""
+    private var pendingBankInfo = ""
     private lateinit var csvManager: CSVManager
     private lateinit var categoryManager: CategoryManager
 
@@ -51,8 +68,12 @@ class AddFragment : Fragment() {
         categoryManager.initializeDefaultCategories()
 
         imageView = view.findViewById(R.id.imageView)
+        imageInfoText = view.findViewById(R.id.imageInfoText)
         statusText = view.findViewById(R.id.statusText)
         processButton = view.findViewById(R.id.processButton)
+        imagePreviewCard = view.findViewById(R.id.imagePreviewCard)
+        processButtonCard = view.findViewById(R.id.processButtonCard)
+        statusCard = view.findViewById(R.id.statusCard)
 
         val selectImageButton = view.findViewById<Button>(R.id.selectImageButton)
         selectImageButton.setOnClickListener {
@@ -69,7 +90,7 @@ class AddFragment : Fragment() {
             openManualEntryForm()
         }
 
-        // Check if image URI was passed from HomeFragment
+        // Check if image URI was passed from HomeFragment — load preview, wait for user to process
         val imageUriString = arguments?.getString("imageUri")
         if (!imageUriString.isNullOrEmpty()) {
             val imageUri = Uri.parse(imageUriString)
@@ -95,11 +116,12 @@ class AddFragment : Fragment() {
                 }
             }
             imageView.setImageBitmap(currentBitmap)
-            view?.findViewById<MaterialCardView>(R.id.imagePreviewCard)?.visibility = View.VISIBLE
-            view?.findViewById<MaterialCardView>(R.id.processButtonCard)?.visibility = View.VISIBLE
-            statusText.text = "Image loaded! Size: ${currentBitmap?.width}x${currentBitmap?.height}"
+            imagePreviewCard.visibility = View.VISIBLE
+            imageInfoText.text = "${currentBitmap?.width} × ${currentBitmap?.height} px"
+            processButtonCard.visibility = View.VISIBLE
             processButton.isEnabled = true
         } catch (e: Exception) {
+            statusCard.visibility = View.VISIBLE
             statusText.text = "Error loading image: ${e.message}"
         }
     }
@@ -112,6 +134,7 @@ class AddFragment : Fragment() {
             return
         }
 
+        statusCard.visibility = View.VISIBLE
         statusText.text = "Processing image with ML Kit Text Recognition..."
         processButton.isEnabled = false
 
@@ -563,43 +586,90 @@ class AddFragment : Fragment() {
     private fun displayParsedResults(
         amount: String, recipient: String, note: String,
         dateTime: String, transactionId: String, bankInfo: String,
-        lines: List<String>, transactionIdCandidates: List<Pair<String, Int>>
+        lines: List<String>, transactionIdCandidates: List<Pair<String, Int>>,
+        instant: Boolean = false
     ) {
-        val parsedInfo = buildString {
-            appendLine("===== PAYMENT DETAILS =====")
-            appendLine()
-            appendLine("💰 Amount: ${amount.ifEmpty { "Not found" }}")
-            appendLine("👤 Recipient: ${recipient.ifEmpty { "Not found" }}")
-            appendLine("📝 Note: ${note.ifEmpty { "Not found" }}")
-            appendLine("📅 Date/Time: ${dateTime.ifEmpty { "Not found" }}")
-            appendLine("🆔 Transaction ID: ${transactionId.ifEmpty { "Not found" }}")
-            appendLine("🏦 Bank: ${bankInfo.ifEmpty { "Not found" }}")
-            appendLine()
-            appendLine("Ready to save or edit the details above.")
+        statusCard.visibility = View.GONE
+
+        val sheet = if (instant)
+            BottomSheetDialog(requireContext(), R.style.BottomSheetDialog_NoAnim)
+        else
+            BottomSheetDialog(requireContext())
+        val sheetView = layoutInflater.inflate(R.layout.layout_transaction_detail_sheet, null)
+        sheet.setContentView(sheetView)
+
+        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
+
+        // Category icon (default until user sets category via edit)
+        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
+            .setImageResource(CategoryIconHelper.getIconResId("cat_other"))
+
+        // Amount
+        val numericAmount = amount.replace("₹", "").replace("Rs.", "").replace(",", "").toDoubleOrNull()
+        sheetView.findViewById<TextView>(R.id.detailAmount).text =
+            if (numericAmount != null) "₹${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
+
+        // Category badge
+        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text = "Uncategorized"
+
+        // Recipient
+        sheetView.findViewById<TextView>(R.id.detailRecipient).text = recipient.ifEmpty { "—" }
+
+        // Note
+        val noteRow = sheetView.findViewById<LinearLayout>(R.id.detailNoteRow)
+        val noteDivider = sheetView.findViewById<View>(R.id.detailNoteDivider)
+        if (note.isNotEmpty()) {
+            sheetView.findViewById<TextView>(R.id.detailNote).text = note
+            noteRow.visibility = View.VISIBLE
+            noteDivider.visibility = View.VISIBLE
+        } else {
+            noteRow.visibility = View.GONE
+            noteDivider.visibility = View.GONE
         }
 
-        statusText.text = parsedInfo
+        // Date/Time
+        sheetView.findViewById<TextView>(R.id.detailDateTime).text = dateTime.ifEmpty { "—" }
 
-        val buttonsContainer = view?.findViewById<LinearLayout>(R.id.buttonsContainer)
-        buttonsContainer?.visibility = LinearLayout.VISIBLE
+        // Payment method
+        sheetView.findViewById<TextView>(R.id.detailPaymentMethod).text = bankInfo.ifEmpty { "—" }
 
-        setupButtonListeners(amount, recipient, note, dateTime, transactionId, bankInfo)
-    }
+        // Transaction ID
+        sheetView.findViewById<TextView>(R.id.detailTransactionId).text = transactionId.ifEmpty { "—" }
 
-    private fun setupButtonListeners(
-        amount: String, recipient: String, note: String,
-        dateTime: String, transactionId: String, bankInfo: String
-    ) {
-        val saveButton = view?.findViewById<Button>(R.id.saveButton)
-        val editButton = view?.findViewById<Button>(R.id.editButton)
-
-        saveButton?.setOnClickListener {
-            savePaymentDetails(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
+        // Close button
+        sheetView.findViewById<ImageButton>(R.id.closeDetailSheetButton).setOnClickListener {
+            sheet.dismiss()
         }
 
-        editButton?.setOnClickListener {
-            launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
+        // Edit button — opens EditPaymentActivity to review/correct before saving
+        sheetView.findViewById<MaterialButton>(R.id.detailEditButton).apply {
+            text = "Edit"
+            setOnClickListener {
+                pendingAmount = amount
+                pendingRecipient = recipient
+                pendingNote = note
+                pendingDateTime = dateTime
+                pendingTransactionId = transactionId
+                pendingBankInfo = bankInfo
+                sheet.dismiss()
+                launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
+            }
         }
+
+        // Repurpose Delete button as Save
+        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).apply {
+            text = "Save"
+            setTextColor(requireContext().getColor(android.R.color.white))
+            backgroundTintList = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#6B5DD3")
+            )
+            setOnClickListener {
+                sheet.dismiss()
+                savePaymentDetails(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
+            }
+        }
+
+        sheet.show()
     }
 
     private fun savePaymentDetails(
@@ -620,32 +690,18 @@ class AddFragment : Fragment() {
         val success = csvManager.saveTransaction(transaction)
 
         if (success) {
-            val categoryDisplay = categoryManager.getCategoryDisplayName(category)
-            val savedInfo = buildString {
-                appendLine("✅ PAYMENT DETAILS SAVED!")
-                appendLine()
-                appendLine("Amount: $amount")
-                appendLine("Recipient: $recipient")
-                appendLine("Category: $categoryDisplay")
-                appendLine("Note: ${note.ifEmpty { "No note" }}")
-                appendLine("Date/Time: $dateTime")
-                appendLine("Transaction ID: $transactionId")
-                appendLine("Bank: ${bankInfo.ifEmpty { "No bank info" }}")
-                appendLine()
-                appendLine("💾 Saved to CSV file!")
-                appendLine("📊 Total transactions: ${csvManager.getTransactionCount()}")
-            }
-
-            statusText.text = savedInfo
-
-            android.widget.Toast.makeText(requireContext(), "Payment details saved successfully!", android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Transaction saved!", Toast.LENGTH_SHORT).show()
+            pendingAmount = ""; pendingRecipient = ""; pendingNote = ""
+            pendingDateTime = ""; pendingTransactionId = ""; pendingBankInfo = ""
+            // Reset page for next upload
+            imagePreviewCard.visibility = View.GONE
+            processButtonCard.visibility = View.GONE
+            statusCard.visibility = View.GONE
+            currentBitmap = null
+            processButton.isEnabled = false
         } else {
-            statusText.text = "❌ Error saving payment details. Please try again."
-            android.widget.Toast.makeText(requireContext(), "Error saving transaction", android.widget.Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Error saving transaction", Toast.LENGTH_SHORT).show()
         }
-
-        val buttonsContainer = view?.findViewById<LinearLayout>(R.id.buttonsContainer)
-        buttonsContainer?.visibility = LinearLayout.GONE
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -654,12 +710,18 @@ class AddFragment : Fragment() {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
             val imageUri = data.data
             if (imageUri != null) {
-                imageView.setImageURI(imageUri)
-                view?.findViewById<MaterialCardView>(R.id.imagePreviewCard)?.visibility = View.VISIBLE
-                view?.findViewById<MaterialCardView>(R.id.processButtonCard)?.visibility = View.VISIBLE
-                statusText.text = "Image received! Ready to process."
-                processButton.isEnabled = true
                 convertToBitmap(imageUri)
+            }
+        }
+
+        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
+            if (pendingAmount.isNotEmpty() || pendingRecipient.isNotEmpty()) {
+                displayParsedResults(
+                    pendingAmount, pendingRecipient, pendingNote,
+                    pendingDateTime, pendingTransactionId, pendingBankInfo,
+                    emptyList(), emptyList(),
+                    instant = true
+                )
             }
         }
 
