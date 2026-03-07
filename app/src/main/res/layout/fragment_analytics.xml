@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/background_light">
+    android:background="@color/background_light"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -13,7 +14,9 @@
         android:paddingTop="24dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
-        android:paddingBottom="100dp">
+        android:paddingBottom="100dp"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <!-- Header -->
         <LinearLayout
@@ -71,12 +74,14 @@
                         android:layout_weight="1"
                         android:textSize="14sp"
                         android:textColor="#2D3142"
-                        android:background="@null" />
+                        android:background="@null"
+                        android:spinnerMode="dropdown"
+                        android:popupBackground="@drawable/dropdown_popup_bg" />
 
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:src="@android:drawable/arrow_down_float"
+                        android:src="@drawable/ic_chevron_down"
                         android:tint="#71717A"
                         android:contentDescription="Expand" />
                 </LinearLayout>
@@ -96,9 +101,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="20dp"
+                app:cardCornerRadius="28dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/gradient_start">
+                app:cardBackgroundColor="@android:color/transparent">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -395,7 +400,7 @@
                 <com.github.mikephil.charting.charts.PieChart
                     android:id="@+id/pieChart"
                     android:layout_width="match_parent"
-                    android:layout_height="256dp"
+                    android:layout_height="240dp"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Category Legend -->

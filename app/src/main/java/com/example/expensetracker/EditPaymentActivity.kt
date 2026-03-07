@@ -3,6 +3,8 @@ package com.example.expensetracker
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +12,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import android.widget.FrameLayout
+import android.widget.GridLayout
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -159,36 +163,76 @@ class EditPaymentActivity : AppCompatActivity() {
     }
 
     private fun showAddNewCategoryDialog() {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_add_category, null)
-        val categoryNameInput = dialogView.findViewById<EditText>(R.id.categoryNameInput)
-        val emojiInput = dialogView.findViewById<EditText>(R.id.emojiInput)
-        emojiInput.setText("📁")
+        val sheetView = layoutInflater.inflate(R.layout.dialog_add_category, null)
+        val categoryNameInput = sheetView.findViewById<EditText>(R.id.categoryNameInput)
+        val iconPickerGrid = sheetView.findViewById<GridLayout>(R.id.iconPickerGrid)
 
-        AlertDialog.Builder(this)
-            .setTitle("Add New Category")
-            .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
-                val name = categoryNameInput.text.toString().trim()
-                val emoji = emojiInput.text.toString().trim().ifEmpty { "📁" }
-                if (name.isNotEmpty()) {
-                    val success = categoryManager.addCategory(name, emoji)
-                    if (success) {
-                        Toast.makeText(this, "Category added!", Toast.LENGTH_SHORT).show()
-                        loadCategories()
-                        val newCat = categories.lastOrNull { !it.isPredefined }
-                        if (newCat != null) {
-                            selectedCategoryId = newCat.id
-                            updateCategorySelectorDisplay()
-                        }
-                    } else {
-                        Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show()
+        val sheet = BottomSheetDialog(this)
+        sheet.setContentView(sheetView)
+
+        sheetView.findViewById<ImageButton>(R.id.closeButton).setOnClickListener { sheet.dismiss() }
+        sheetView.findViewById<MaterialButton>(R.id.cancelButton).setOnClickListener { sheet.dismiss() }
+
+        val iconOptions = CategoryIconHelper.allIconKeys.map { key -> key to CategoryIconHelper.getIconResId(key) }
+        var selectedIconKey = iconOptions[0].first
+        val density = resources.displayMetrics.density
+        val cellSize = (48 * density).toInt()
+        val cellMargin = (4 * density).toInt()
+        val iconPadding = (12 * density).toInt()
+        val iconViews = mutableListOf<Pair<FrameLayout, ImageView>>()
+
+        fun makeBackground(filled: Boolean) = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 12 * density
+            setColor(if (filled) Color.parseColor("#6B5DD3") else Color.parseColor("#EDE9FE"))
+        }
+        fun updateSelection(selectedIdx: Int) {
+            iconViews.forEachIndexed { idx, (frame, img) ->
+                val sel = idx == selectedIdx
+                frame.background = makeBackground(sel)
+                img.setColorFilter(if (sel) Color.WHITE else Color.parseColor("#6B5DD3"))
+            }
+        }
+        iconOptions.forEachIndexed { idx, (key, resId) ->
+            val frame = FrameLayout(this).apply {
+                layoutParams = GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED, 1f)).apply { width = 0; height = cellSize; setMargins(cellMargin, cellMargin, cellMargin, cellMargin) }
+                background = makeBackground(false)
+            }
+            val img = ImageView(this).apply {
+                layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+                setImageResource(resId); scaleType = ImageView.ScaleType.CENTER_INSIDE
+                setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
+                setColorFilter(Color.parseColor("#6B5DD3"))
+            }
+            frame.addView(img)
+            frame.setOnClickListener { selectedIconKey = key; updateSelection(idx) }
+            iconViews.add(frame to img)
+            iconPickerGrid.addView(frame)
+        }
+        updateSelection(0)
+
+        sheetView.findViewById<MaterialButton>(R.id.addCategoryButton).setOnClickListener {
+            val name = categoryNameInput.text.toString().trim()
+            if (name.isNotEmpty()) {
+                val success = categoryManager.addCategory(name, selectedIconKey)
+                if (success) {
+                    Toast.makeText(this, "Category added!", Toast.LENGTH_SHORT).show()
+                    sheet.dismiss()
+                    loadCategories()
+                    val newCat = categories.lastOrNull { !it.isPredefined }
+                    if (newCat != null) {
+                        selectedCategoryId = newCat.id
+                        updateCategorySelectorDisplay()
                     }
                 } else {
-                    Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Category already exists", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(this, "Please enter a category name", Toast.LENGTH_SHORT).show()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+
+        sheet.show()
     }
 
     private fun populateFields() {

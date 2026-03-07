@@ -386,13 +386,11 @@
             android:layout_weight="1"
             android:text="Cancel"
             android:textSize="15sp"
-            android:textColor="#2D3142"
-            app:backgroundTint="@color/white"
-            app:strokeColor="@color/border_light"
-            app:strokeWidth="1dp"
+            android:textColor="@color/primary_indigo"
+            app:backgroundTint="#EDE9FE"
+            app:strokeWidth="0dp"
             app:cornerRadius="16dp"
-            android:layout_marginEnd="8dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+            android:layout_marginEnd="8dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/saveButton"

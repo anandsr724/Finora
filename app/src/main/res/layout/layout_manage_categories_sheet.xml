@@ -46,6 +46,37 @@
             android:contentDescription="Close" />
     </LinearLayout>
 
+    <!-- Add New Category Button (top, always visible) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/addNewCategoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="12dp"
+        android:text="+ Add New Category"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:cornerRadius="16dp"
+        app:backgroundTint="@color/primary_indigo"
+        app:strokeWidth="0dp"
+        style="@style/Widget.MaterialComponents.Button" />
+
+    <!-- Restore Defaults Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/restoreDefaultsButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="12dp"
+        android:text="Restore Default Categories"
+        android:textColor="#71717A"
+        android:textSize="13sp"
+        app:cornerRadius="14dp"
+        app:strokeColor="#71717A" />
+
     <!-- Categories RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/manageCategoriesRecyclerView"
@@ -53,24 +84,7 @@
         android:layout_height="wrap_content"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
         android:clipToPadding="false" />
-
-    <!-- Add New Category Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addNewCategoryButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="16dp"
-        android:text="Add New Category"
-        android:textColor="@color/primary_indigo"
-        app:icon="@android:drawable/ic_input_add"
-        app:iconTint="@color/primary_indigo"
-        app:cornerRadius="16dp"
-        app:backgroundTint="?attr/colorSurface"
-        app:strokeColor="@color/primary_indigo"
-        app:strokeWidth="1dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
 
 </LinearLayout>

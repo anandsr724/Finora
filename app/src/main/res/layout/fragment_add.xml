@@ -4,16 +4,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
+    android:paddingTop="24dp"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="100dp"
+    android:clipToPadding="false"
     android:background="@color/background_light">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingTop="24dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="100dp">
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <!-- Header -->
         <LinearLayout
@@ -39,54 +42,50 @@
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Action Buttons Card -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Action Buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:padding="16dp">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/selectImageButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:text="Upload"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                app:backgroundTint="@color/primary_indigo"
+                app:cornerRadius="16dp"
+                app:icon="@drawable/ic_upload"
+                app:iconTint="@color/white"
+                app:strokeWidth="0dp" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/selectImageButton"
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
-                    android:text="Upload"
-                    android:textSize="14sp"
-                    android:textColor="@color/white"
-                    app:backgroundTint="@color/primary_indigo"
-                    app:cornerRadius="16dp"
-                    app:icon="@android:drawable/ic_menu_upload"
-                    app:iconTint="@color/white"
-                    app:strokeWidth="0dp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/manualEntryButton"
-                    android:layout_width="0dp"
-                    android:layout_height="52dp"
-                    android:layout_weight="1"
-                    android:layout_marginStart="8dp"
-                    android:text="Enter Manually"
-                    android:textSize="14sp"
-                    android:textColor="#2D3142"
-                    app:backgroundTint="@color/white"
-                    app:cornerRadius="16dp"
-                    app:strokeColor="@color/border_light"
-                    app:strokeWidth="1dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/manualEntryButton"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:insetLeft="0dp"
+                android:insetRight="0dp"
+                android:text="Add Manual"
+                android:textAllCaps="false"
+                android:textSize="14sp"
+                android:textColor="@color/gradient_start"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="16dp"
+                app:strokeWidth="0dp" />
+        </LinearLayout>
 
         <!-- Image Preview Card -->
         <com.google.android.material.card.MaterialCardView
@@ -210,12 +209,10 @@
                 android:layout_marginStart="8dp"
                 android:text="Review &amp; Edit"
                 android:textSize="15sp"
-                android:textColor="#2D3142"
-                app:backgroundTint="@color/white"
+                android:textColor="@color/primary_indigo"
+                app:backgroundTint="#EDE9FE"
                 app:cornerRadius="16dp"
-                app:strokeColor="@color/border_light"
-                app:strokeWidth="1dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                app:strokeWidth="0dp" />
         </LinearLayout>
 
     </LinearLayout>

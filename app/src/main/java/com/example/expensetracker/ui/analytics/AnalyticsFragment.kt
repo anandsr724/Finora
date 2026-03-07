@@ -62,14 +62,14 @@ class AnalyticsFragment : Fragment() {
     private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
     private val chartColors = intArrayOf(
-        Color.parseColor("#6B5DD3"),
-        Color.parseColor("#8B7DE8"),
-        Color.parseColor("#10B981"),
-        Color.parseColor("#F59E0B"),
-        Color.parseColor("#EF4444"),
-        Color.parseColor("#8B5CF6"),
-        Color.parseColor("#EC4899"),
-        Color.parseColor("#06B6D4")
+        Color.parseColor("#6366F1"),  // indigo
+        Color.parseColor("#10B981"),  // emerald
+        Color.parseColor("#F59E0B"),  // amber
+        Color.parseColor("#EF4444"),  // red
+        Color.parseColor("#06B6D4"),  // cyan
+        Color.parseColor("#EC4899"),  // pink
+        Color.parseColor("#84CC16"),  // lime
+        Color.parseColor("#F97316")   // orange
     )
 
     override fun onCreateView(
@@ -121,7 +121,7 @@ class AnalyticsFragment : Fragment() {
         }
     }
 
-    private fun rebuildMonthSpinner(transactions: List<com.example.expensetracker.PaymentTransaction>) {
+    private fun rebuildMonthSpinner(transactions: List<com.example.expensetracker.PaymentTransaction>): Int {
         val options = mutableListOf("All Time")
         monthYearPairs.clear()
 
@@ -149,8 +149,8 @@ class AnalyticsFragment : Fragment() {
         } else null
 
         monthSpinner.onItemSelectedListener = null
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_month, options)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_month)
         monthSpinner.adapter = adapter
 
         val newPos = if (currentYearMonth != null) {
@@ -161,10 +161,12 @@ class AnalyticsFragment : Fragment() {
 
         monthSpinner.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: android.widget.AdapterView<*>?, view: View?, position: Int, id: Long) {
-                loadData()
+                renderData(position, csvManager.getAllTransactions())
             }
             override fun onNothingSelected(parent: android.widget.AdapterView<*>?) {}
         }
+
+        return newPos
     }
 
     private fun setupCharts() {
@@ -172,6 +174,7 @@ class AnalyticsFragment : Fragment() {
         pieChart.legend.isEnabled = false
         pieChart.setEntryLabelColor(Color.TRANSPARENT)
         pieChart.isDrawHoleEnabled = false
+        pieChart.setExtraOffsets(24f, 16f, 24f, 16f)  // room for outside percentage labels
 
         lineChart.description.isEnabled = false
         lineChart.setDrawGridBackground(false)
@@ -202,9 +205,11 @@ class AnalyticsFragment : Fragment() {
 
     private fun loadData() {
         val allTransactions = csvManager.getAllTransactions()
-        rebuildMonthSpinner(allTransactions)
+        val position = rebuildMonthSpinner(allTransactions)
+        renderData(position, allTransactions)
+    }
 
-        val selectedMonth = monthSpinner.selectedItemPosition
+    private fun renderData(selectedMonth: Int, allTransactions: List<com.example.expensetracker.PaymentTransaction>) {
         val filteredTransactions = if (selectedMonth == 0 || selectedMonth > monthYearPairs.size) {
             allTransactions
         } else {
@@ -296,30 +301,69 @@ class AnalyticsFragment : Fragment() {
         if (categoryTotals.isEmpty()) { categoryChartCard.visibility = View.GONE; return }
         categoryChartCard.visibility = View.VISIBLE
 
-        val pieEntries = categoryTotals.map { (catId, amount) ->
-            PieEntry(amount.toFloat(), categoryManager.getCategoryById(catId)?.name ?: catId)
+        val grandTotal = categoryTotals.sumOf { it.second }
+        val threshold = grandTotal * 0.05  // club categories below 5% into "Others"
+
+        val mainCategories = categoryTotals.filter { it.second >= threshold }
+        val smallCategories = categoryTotals.filter { it.second < threshold }
+        val othersTotal = smallCategories.sumOf { it.second }
+
+        val pieEntries = mutableListOf<PieEntry>()
+        mainCategories.forEach { (catId, amount) ->
+            pieEntries.add(PieEntry(amount.toFloat(), categoryManager.getCategoryById(catId)?.name ?: catId))
         }
+        if (smallCategories.isNotEmpty()) {
+            pieEntries.add(PieEntry(othersTotal.toFloat(), "Others"))
+        }
+
+        val total = pieEntries.sumOf { it.value.toDouble() }.toFloat()
+        val colors = chartColors.take(mainCategories.size).toMutableList()
+        if (smallCategories.isNotEmpty()) colors.add(Color.parseColor("#A1A1AA"))  // neutral gray for Others
+
         val dataSet = PieDataSet(pieEntries, "")
-        dataSet.colors = chartColors.toList()
-        dataSet.valueTextColor = Color.WHITE
-        dataSet.valueTextSize = 12f
+        dataSet.colors = colors
+        dataSet.sliceSpace = 3f
+        dataSet.yValuePosition = PieDataSet.ValuePosition.OUTSIDE_SLICE
+        dataSet.valueTextColor = Color.parseColor("#2D3142")
+        dataSet.valueTextSize = 11f
+        dataSet.valueLineColor = Color.parseColor("#A1A1AA")
+        dataSet.valueLineWidth = 1f
+        dataSet.valueLinePart1Length = 0.7f
+        dataSet.valueLinePart2Length = 0.45f
+        dataSet.valueLinePart1OffsetPercentage = 80f
+        val othersValue = othersTotal.toFloat()
         dataSet.valueFormatter = object : ValueFormatter() {
             override fun getFormattedValue(value: Float): String {
-                val total = pieEntries.sumOf { it.value.toDouble() }.toFloat()
-                return "${(value / total * 100).toInt()}%"
+                val pct = value / total * 100
+                return if (pct < 4f && value != othersValue) "" else "${pct.toInt()}%"
             }
         }
         pieChart.data = PieData(dataSet)
         pieChart.invalidate()
-        updateCategoryLegend(categoryTotals)
+        updateCategoryLegend(mainCategories, smallCategories)
     }
 
-    private fun updateCategoryLegend(categoryTotals: List<Pair<String, Double>>) {
+    private fun updateCategoryLegend(
+        mainCategories: List<Pair<String, Double>>,
+        smallCategories: List<Pair<String, Double>>
+    ) {
         categoryLegend.removeAllViews()
         val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
         val density = resources.displayMetrics.density
 
-        categoryTotals.forEachIndexed { idx, (catId, amount) ->
+        val allRows = mainCategories.mapIndexed { idx, (catId, amount) ->
+            Triple(categoryManager.getCategoryById(catId)?.name ?: catId, amount, chartColors[idx % chartColors.size])
+        }.toMutableList()
+
+        if (smallCategories.isNotEmpty()) {
+            val othersTotal = smallCategories.sumOf { it.second }
+            val othersLabel = if (smallCategories.size == 1)
+                categoryManager.getCategoryById(smallCategories[0].first)?.name ?: smallCategories[0].first
+            else "Others (${smallCategories.size})"
+            allRows.add(Triple(othersLabel, othersTotal, Color.parseColor("#A1A1AA")))
+        }
+
+        allRows.forEachIndexed { idx, (name, amount, color) ->
             val row = LinearLayout(requireContext()).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = android.view.Gravity.CENTER_VERTICAL
@@ -333,12 +377,12 @@ class AnalyticsFragment : Fragment() {
                 }
                 background = android.graphics.drawable.GradientDrawable().apply {
                     shape = android.graphics.drawable.GradientDrawable.OVAL
-                    setColor(chartColors[idx % chartColors.size])
+                    setColor(color)
                 }
             }
 
             val nameView = android.widget.TextView(requireContext()).apply {
-                text = categoryManager.getCategoryById(catId)?.name ?: catId
+                text = name
                 textSize = 13f
                 setTextColor(Color.parseColor("#2D3142"))
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
@@ -355,7 +399,7 @@ class AnalyticsFragment : Fragment() {
             row.addView(amountView)
             categoryLegend.addView(row)
 
-            if (idx < categoryTotals.size - 1) {
+            if (idx < allRows.size - 1) {
                 val divider = android.view.View(requireContext()).apply {
                     layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
                     setBackgroundColor(Color.parseColor("#E4E4E7"))

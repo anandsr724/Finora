@@ -59,6 +59,8 @@ class HistoryFragment : Fragment() {
     private val categoryPillMap = mutableMapOf<String, MaterialButton>()
     private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
+    private lateinit var filterCategoriesBadge: TextView
+
     companion object {
         private const val EDIT_REQUEST_CODE = 1001
     }
@@ -93,6 +95,7 @@ class HistoryFragment : Fragment() {
         activeCategoryFiltersContainer = view.findViewById(R.id.activeCategoryFiltersContainer)
         categoryFilterPillsContainer = view.findViewById(R.id.categoryFilterPillsContainer)
 
+        filterCategoriesBadge = view.findViewById(R.id.filterCategoriesBadge)
         filterCategoriesButton.setOnClickListener { showCategoryFilterSheet() }
 
         filterAllButton.setOnClickListener {
@@ -142,8 +145,8 @@ class HistoryFragment : Fragment() {
         } else null
 
         historyMonthSpinner.onItemSelectedListener = null
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, options)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_item_month, options)
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item_month)
         historyMonthSpinner.adapter = adapter
 
         val newPos = if (currentYearMonth != null) {
@@ -169,7 +172,16 @@ class HistoryFragment : Fragment() {
         val usedCategoryIds = allTransactions.map { it.category }.distinct()
         val density = resources.displayMetrics.density
 
-        usedCategoryIds.forEach { catId ->
+        // Dynamically fit as many pills as possible between the All button and the dots button
+        val screenWidthPx = resources.displayMetrics.widthPixels
+        val hPaddingPx = (40 * density)           // 20dp start + 20dp end fragment margin
+        val allBtnPx   = (44 + 6) * density       // All pill + marginEnd
+        val dotsBtnPx  = (6 + 44) * density       // marginStart + dots button
+        val pillStepPx = (44 + 6) * density       // each pill width + marginEnd
+        val availablePx = screenWidthPx - hPaddingPx - allBtnPx - dotsBtnPx
+        val maxPills = maxOf(1, (availablePx / pillStepPx).toInt())
+
+        usedCategoryIds.take(maxPills).forEach { catId ->
             val pill = MaterialButton(
                 requireContext(), null,
                 com.google.android.material.R.attr.materialButtonOutlinedStyle
@@ -220,7 +232,7 @@ class HistoryFragment : Fragment() {
         } else {
             pill.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.white, null))
             pill.iconTint = ColorStateList.valueOf(
-                resources.getColor(R.color.text_secondary_light, null)
+                resources.getColor(R.color.primary_indigo, null)
             )
             pill.strokeWidth = (1 * resources.displayMetrics.density).toInt()
             pill.strokeColor = resources.getColorStateList(R.color.border_light, null)
@@ -241,6 +253,17 @@ class HistoryFragment : Fragment() {
             filterAllButton.setTextColor(resources.getColor(R.color.text_secondary_light, null))
             filterAllButton.strokeWidth = (1 * resources.displayMetrics.density).toInt()
             filterAllButton.strokeColor = resources.getColorStateList(R.color.border_light, null)
+        }
+        updateDotsButtonBadge()
+    }
+
+    private fun updateDotsButtonBadge() {
+        val count = selectedCategories.size
+        if (count > 0) {
+            filterCategoriesBadge.text = count.toString()
+            filterCategoriesBadge.visibility = View.VISIBLE
+        } else {
+            filterCategoriesBadge.visibility = View.GONE
         }
     }
 
