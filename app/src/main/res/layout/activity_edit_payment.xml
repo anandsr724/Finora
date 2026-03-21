@@ -17,7 +17,7 @@
         android:paddingEnd="16dp"
         android:paddingTop="16dp"
         android:paddingBottom="14dp"
-        android:background="@color/white"
+        android:background="@color/card_background_light"
         android:elevation="2dp">
 
         <ImageButton
@@ -44,14 +44,14 @@
                 android:text="Edit Transaction"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142" />
+                android:textColor="@color/text_primary_light" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Update transaction details"
                 android:textSize="12sp"
-                android:textColor="#71717A"
+                android:textColor="@color/text_secondary_light"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
     </LinearLayout>
@@ -86,6 +86,60 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
+                    <!-- Transaction Type -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="20dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Type"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_secondary_light"
+                            android:layout_marginBottom="8dp" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:orientation="horizontal"
+                            android:background="@drawable/rounded_input_background"
+                            android:padding="4dp">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/typeExpenseButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="Expense"
+                                android:textAllCaps="false"
+                                android:textSize="14sp"
+                                app:cornerRadius="12dp"
+                                app:backgroundTint="@color/primary_indigo"
+                                android:textColor="@color/white"
+                                app:strokeWidth="0dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/typeIncomeButton"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:text="Income"
+                                android:textAllCaps="false"
+                                android:textSize="14sp"
+                                app:cornerRadius="12dp"
+                                app:backgroundTint="@android:color/transparent"
+                                android:textColor="@color/text_secondary_light"
+                                app:strokeWidth="0dp"
+                                android:insetTop="0dp"
+                                android:insetBottom="0dp" />
+                        </LinearLayout>
+                    </LinearLayout>
+
                     <!-- Amount -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -98,7 +152,7 @@
                             android:layout_height="wrap_content"
                             android:text="Amount *"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <FrameLayout
@@ -109,24 +163,32 @@
                                 android:id="@+id/amountEditText"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:paddingStart="40dp"
+                                android:paddingStart="60dp"
                                 android:paddingEnd="16dp"
                                 android:hint="0.00"
                                 android:background="@drawable/rounded_input_background"
                                 android:inputType="numberDecimal"
                                 android:maxLines="1"
                                 android:textSize="15sp"
-                                android:textColor="#2D3142"
+                                android:textColor="@color/text_primary_light"
                                 android:textColorHint="#A1A1AA" />
 
                             <TextView
+                                android:id="@+id/currencyButton"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="₹"
-                                android:textSize="16sp"
-                                android:textColor="#71717A"
+                                android:textSize="15sp"
+                                android:textColor="@color/primary_indigo"
+                                android:textStyle="bold"
                                 android:layout_gravity="center_vertical|start"
-                                android:layout_marginStart="14dp" />
+                                android:layout_marginStart="14dp"
+                                android:paddingEnd="6dp"
+                                android:background="?attr/selectableItemBackground"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:minWidth="40dp"
+                                android:gravity="center" />
                         </FrameLayout>
                     </LinearLayout>
 
@@ -142,7 +204,7 @@
                             android:layout_height="wrap_content"
                             android:text="Recipient *"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <EditText
@@ -156,7 +218,7 @@
                             android:inputType="textPersonName|textCapWords"
                             android:maxLines="1"
                             android:textSize="15sp"
-                            android:textColor="#2D3142"
+                            android:textColor="@color/text_primary_light"
                             android:textColorHint="#A1A1AA"
                             android:gravity="center_vertical" />
                     </LinearLayout>
@@ -173,7 +235,7 @@
                             android:layout_height="wrap_content"
                             android:text="Note"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <EditText
@@ -188,7 +250,7 @@
                             android:background="@drawable/rounded_input_background"
                             android:inputType="textCapSentences|textMultiLine"
                             android:textSize="15sp"
-                            android:textColor="#2D3142"
+                            android:textColor="@color/text_primary_light"
                             android:textColorHint="#A1A1AA"
                             android:gravity="top" />
                     </LinearLayout>
@@ -205,7 +267,7 @@
                             android:layout_height="wrap_content"
                             android:text="Category"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <LinearLayout
@@ -259,7 +321,7 @@
                             android:layout_height="wrap_content"
                             android:text="Date &amp; Time"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <FrameLayout
@@ -277,7 +339,7 @@
                                 android:inputType="none"
                                 android:maxLines="1"
                                 android:textSize="15sp"
-                                android:textColor="#2D3142"
+                                android:textColor="@color/text_primary_light"
                                 android:textColorHint="#A1A1AA"
                                 android:gravity="center_vertical" />
 
@@ -304,7 +366,7 @@
                             android:layout_height="wrap_content"
                             android:text="Transaction ID"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <EditText
@@ -318,7 +380,7 @@
                             android:inputType="text"
                             android:maxLines="1"
                             android:textSize="15sp"
-                            android:textColor="#2D3142"
+                            android:textColor="@color/text_primary_light"
                             android:textColorHint="#A1A1AA"
                             android:gravity="center_vertical" />
                     </LinearLayout>
@@ -334,7 +396,7 @@
                             android:layout_height="wrap_content"
                             android:text="Payment Method"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginBottom="8dp" />
 
                         <FrameLayout
@@ -376,7 +438,7 @@
         android:paddingEnd="16dp"
         android:paddingTop="14dp"
         android:paddingBottom="14dp"
-        android:background="@color/white"
+        android:background="@color/card_background_light"
         android:elevation="4dp">
 
         <com.google.android.material.button.MaterialButton

@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.expensetracker.CurrencyManager
 
 class TransactionHistoryAdapter(
     private val transactions: List<PaymentTransaction>,
@@ -37,13 +38,9 @@ class TransactionHistoryAdapter(
 
         // Amount
         val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
-        val numericAmount = tx.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
-        val currencySymbol = if (tx.currency == "INR") "Rs." else tx.currency
-        holder.amountTextView.text = if (numericAmount != null) {
-            "$currencySymbol${numberFormat.format(numericAmount)}"
-        } else {
-            tx.amount
-        }
+        val numericAmount = CurrencyManager.parseAmount(tx.amount)
+        val currencySymbol = CurrencyManager.getSymbol(tx.currency)
+        holder.amountTextView.text = "$currencySymbol${numberFormat.format(numericAmount)}"
 
         // Recipient
         holder.recipientTextView.text = tx.recipient

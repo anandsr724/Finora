@@ -28,14 +28,14 @@
                 android:text="Settings"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142" />
+                android:textColor="@color/text_primary_light" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Manage your preferences"
                 android:textSize="13sp"
-                android:textColor="#71717A"
+                android:textColor="@color/text_secondary_light"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -46,7 +46,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light">
 
@@ -76,7 +76,7 @@
                             android:text="Categories"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="#2D3142" />
+                            android:textColor="@color/text_primary_light" />
 
                         <TextView
                             android:id="@+id/categoriesCountText"
@@ -84,7 +84,7 @@
                             android:layout_height="wrap_content"
                             android:text="0 total"
                             android:textSize="13sp"
-                            android:textColor="#71717A"
+                            android:textColor="@color/text_secondary_light"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
@@ -94,7 +94,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Manage"
-                        android:textColor="#2D3142"
+                        android:textColor="@color/text_primary_light"
                         android:textSize="13sp"
                         app:cornerRadius="14dp"
                         app:backgroundTint="@color/white"
@@ -125,7 +125,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light">
 
@@ -138,18 +138,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Export Data"
+                    android:text="Data"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#2D3142"
+                    android:textColor="@color/text_primary_light"
                     android:layout_marginBottom="6dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Download your transaction history as a CSV file"
+                    android:text="Export or import your transaction history as a CSV file"
                     android:textSize="13sp"
-                    android:textColor="#71717A"
+                    android:textColor="@color/text_secondary_light"
                     android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.button.MaterialButton
@@ -158,10 +158,24 @@
                     android:layout_height="52dp"
                     android:text="Export to CSV"
                     android:textSize="15sp"
+                    android:layout_marginBottom="10dp"
                     app:icon="@android:drawable/ic_menu_save"
                     app:iconTint="@color/white"
                     app:cornerRadius="16dp"
                     app:backgroundTint="@color/emerald_500" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/import_csv_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Import from CSV"
+                    android:textSize="15sp"
+                    android:textColor="@color/primary_indigo"
+                    app:cornerRadius="16dp"
+                    app:backgroundTint="@color/white"
+                    app:strokeColor="@color/primary_indigo"
+                    app:strokeWidth="1dp"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -172,7 +186,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light">
 
@@ -188,7 +202,7 @@
                     android:text="Appearance"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#2D3142"
+                    android:textColor="@color/text_primary_light"
                     android:layout_marginBottom="14dp" />
 
                 <!-- Dark Mode Toggle Row -->
@@ -205,7 +219,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="#F4F4F5"
+                        app:cardBackgroundColor="@color/color_icon_bg"
                         app:cardElevation="0dp"
                         android:layout_marginEnd="12dp">
 
@@ -230,14 +244,14 @@
                             android:layout_height="wrap_content"
                             android:text="Dark Mode"
                             android:textSize="14sp"
-                            android:textColor="#2D3142" />
+                            android:textColor="@color/text_primary_light" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Toggle appearance"
                             android:textSize="12sp"
-                            android:textColor="#71717A" />
+                            android:textColor="@color/text_secondary_light" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -246,6 +260,74 @@
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"
                         app:trackTint="@color/primary_indigo" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_light"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Default Currency Row -->
+                <LinearLayout
+                    android:id="@+id/defaultCurrencyRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/rounded_surface_variant"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_menu_manage"
+                            android:scaleType="centerInside"
+                            android:tint="#71717A"
+                            android:padding="9dp"
+                            android:contentDescription="Currency" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Default Currency"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Used for all calculations &amp; display"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary_light" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/defaultCurrencyValue"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="₹ INR"
+                        android:textSize="14sp"
+                        android:textColor="@color/primary_indigo"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -257,7 +339,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light">
 
@@ -273,7 +355,7 @@
                     android:text="About Finora"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="#2D3142"
+                    android:textColor="@color/text_primary_light"
                     android:layout_marginBottom="6dp" />
 
                 <TextView
@@ -281,7 +363,7 @@
                     android:layout_height="wrap_content"
                     android:text="Version 1.0.0"
                     android:textSize="13sp"
-                    android:textColor="#71717A"
+                    android:textColor="@color/text_secondary_light"
                     android:layout_marginBottom="4dp" />
 
                 <TextView
@@ -289,7 +371,114 @@
                     android:layout_height="wrap_content"
                     android:text="Automatically extract and manage your UPI payment transactions with ease."
                     android:textSize="13sp"
-                    android:textColor="#71717A" />
+                    android:textColor="@color/text_secondary_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Beta Section -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="2dp"
+            app:cardBackgroundColor="@color/card_background_light"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/border_light">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Beta"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary_light" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="BETA"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:paddingStart="8dp"
+                        android:paddingEnd="8dp"
+                        android:paddingTop="3dp"
+                        android:paddingBottom="3dp"
+                        android:background="@drawable/badge_background"
+                        android:backgroundTint="#F59E0B" />
+                </LinearLayout>
+
+                <!-- Save Screenshots Toggle Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/rounded_surface_variant"
+                    android:clipToOutline="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_menu_camera"
+                            android:scaleType="centerInside"
+                            android:tint="#71717A"
+                            android:padding="9dp"
+                            android:contentDescription="Save screenshots" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Save Processed Screenshots"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Saved to Downloads/Finora/Screenshots"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary_light" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/saveScreenshotsSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/white"
+                        app:trackTint="@color/primary_indigo" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

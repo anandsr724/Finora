@@ -25,7 +25,7 @@
             android:text="Transactions"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="#2D3142"
+            android:textColor="@color/text_primary_light"
             android:layout_marginBottom="14dp" />
 
         <!-- Search Bar -->
@@ -34,7 +34,7 @@
             android:layout_height="52dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="0dp"
             android:layout_marginBottom="12dp">
 
@@ -61,7 +61,7 @@
                     android:layout_weight="1"
                     android:hint="Search transactions..."
                     android:textSize="14sp"
-                    android:textColor="#2D3142"
+                    android:textColor="@color/text_primary_light"
                     android:textColorHint="#A1A1AA"
                     android:background="@null"
                     android:inputType="text"
@@ -76,7 +76,7 @@
             android:layout_height="52dp"
             app:cardCornerRadius="16dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="0dp"
             android:layout_marginBottom="12dp">
 
@@ -104,7 +104,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="14sp"
-                    android:textColor="#2D3142"
+                    android:textColor="@color/text_primary_light"
                     android:background="@null"
                     android:spinnerMode="dropdown"
                     android:popupBackground="@drawable/dropdown_popup_bg" />
@@ -117,6 +117,39 @@
                     android:contentDescription="Expand" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- Sort Button Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sort by"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary_light" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/sortButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:text="Newest First"
+                android:textAllCaps="false"
+                android:textSize="12sp"
+                android:textColor="@color/primary_indigo"
+                app:backgroundTint="@color/white"
+                app:cornerRadius="12dp"
+                app:strokeColor="@color/border_light"
+                app:strokeWidth="1dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+        </LinearLayout>
 
         <!-- Category Filter Pills Row -->
         <LinearLayout
@@ -245,7 +278,7 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             app:cardCornerRadius="48dp"
-            app:cardBackgroundColor="#F4F4F5"
+            app:cardBackgroundColor="@color/color_icon_bg"
             app:cardElevation="0dp"
             android:layout_marginBottom="16dp">
 
@@ -265,7 +298,7 @@
             android:text="No transactions found"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#2D3142"
+            android:textColor="@color/text_primary_light"
             android:layout_marginBottom="8dp" />
 
         <TextView
@@ -274,7 +307,7 @@
             android:layout_height="wrap_content"
             android:text="Upload a payment screenshot to add your first transaction"
             android:textSize="14sp"
-            android:textColor="#71717A"
+            android:textColor="@color/text_secondary_light"
             android:gravity="center" />
     </LinearLayout>
 </LinearLayout>

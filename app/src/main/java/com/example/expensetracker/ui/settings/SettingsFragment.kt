@@ -2,8 +2,10 @@ package com.example.expensetracker.ui.settings
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
+import androidx.appcompat.app.AppCompatDelegate
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
@@ -40,9 +42,11 @@ class SettingsFragment : Fragment() {
     private lateinit var categoriesCountText: TextView
     private lateinit var categoryPreviewContainer: LinearLayout
     private lateinit var darkModeSwitch: SwitchMaterial
+    private lateinit var saveScreenshotsSwitch: SwitchMaterial
 
     companion object {
         private const val STORAGE_PERMISSION_CODE = 1002
+        private const val IMPORT_CSV_REQUEST = 1005
     }
 
     override fun onCreateView(
@@ -67,6 +71,7 @@ class SettingsFragment : Fragment() {
         categoriesCountText = view.findViewById(R.id.categoriesCountText)
         categoryPreviewContainer = view.findViewById(R.id.categoryPreviewContainer)
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch)
+        saveScreenshotsSwitch = view.findViewById(R.id.saveScreenshotsSwitch)
 
         manageCategoriesButton.setOnClickListener {
             showManageCategoriesSheet()
@@ -76,8 +81,50 @@ class SettingsFragment : Fragment() {
             exportCsvToDownloads()
         }
 
+        view.findViewById<MaterialButton>(R.id.import_csv_button).setOnClickListener {
+            val intent = android.content.Intent(android.content.Intent.ACTION_GET_CONTENT).apply {
+                type = "text/csv"
+                addCategory(android.content.Intent.CATEGORY_OPENABLE)
+            }
+            @Suppress("DEPRECATION")
+            startActivityForResult(android.content.Intent.createChooser(intent, "Select CSV file"), IMPORT_CSV_REQUEST)
+        }
+
         view.findViewById<MaterialButton>(R.id.clear_all_data_button).setOnClickListener {
             confirmClearAllData()
+        }
+
+        setupCurrencySetting(view)
+        setupSaveScreenshotsSwitch()
+    }
+
+    private fun setupCurrencySetting(view: View) {
+        val currencyRow = view.findViewById<LinearLayout>(R.id.defaultCurrencyRow)
+        val currencyValue = view.findViewById<TextView>(R.id.defaultCurrencyValue)
+
+        fun refreshDisplay() {
+            val code = com.example.expensetracker.CurrencyManager.getDefault(requireContext())
+            val info = com.example.expensetracker.CurrencyManager.getInfo(code)
+            currencyValue.text = "${info?.symbol ?: code}  $code"
+        }
+        refreshDisplay()
+
+        currencyRow.setOnClickListener {
+            val currencies = com.example.expensetracker.CurrencyManager.CURRENCIES
+            val items = currencies.map { "${it.symbol}  ${it.code} — ${it.name}" }.toTypedArray()
+            val currentCode = com.example.expensetracker.CurrencyManager.getDefault(requireContext())
+            val currentIdx = currencies.indexOfFirst { it.code == currentCode }.coerceAtLeast(0)
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Default Currency")
+                .setSingleChoiceItems(items, currentIdx) { dialog, idx ->
+                    com.example.expensetracker.CurrencyManager.setDefault(
+                        requireContext(), currencies[idx].code
+                    )
+                    refreshDisplay()
+                    dialog.dismiss()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
@@ -315,9 +362,13 @@ class SettingsFragment : Fragment() {
     }
 
     private fun confirmDeleteCategory(category: Category, onDeleted: () -> Unit) {
+        val affectedCount = csvManager.getAllTransactions().count { it.category == category.id }
+        val warningLine = if (affectedCount > 0)
+            "\n\n$affectedCount transaction${if (affectedCount == 1) "" else "s"} using this category will show as Uncategorized."
+        else ""
         android.app.AlertDialog.Builder(requireContext())
             .setTitle("Delete Category")
-            .setMessage("Are you sure you want to delete \"${category.name}\"?")
+            .setMessage("Are you sure you want to delete \"${category.name}\"?$warningLine")
             .setPositiveButton("Delete") { _, _ ->
                 val success = categoryManager.deleteCategory(category.id)
                 if (success) {
@@ -331,16 +382,26 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
-    private fun setupDarkModeSwitch() {
-        val currentNightMode = resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
-        darkModeSwitch.isChecked = currentNightMode == Configuration.UI_MODE_NIGHT_YES
+    private fun setupSaveScreenshotsSwitch() {
+        val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
+        saveScreenshotsSwitch.isChecked = prefs.getBoolean("beta_save_screenshots", false)
+        saveScreenshotsSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("beta_save_screenshots", isChecked).apply()
+            val msg = if (isChecked) "Screenshots will be saved to Downloads/Finora/Screenshots"
+                      else "Screenshot saving disabled"
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+        }
+    }
 
-        darkModeSwitch.setOnCheckedChangeListener { _, _ ->
-            Toast.makeText(
-                requireContext(),
-                "Dark mode toggle requires app restart. This feature will be fully implemented soon.",
-                Toast.LENGTH_LONG
-            ).show()
+    private fun setupDarkModeSwitch() {
+        val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
+        darkModeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
+
+        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("dark_mode", isChecked).apply()
+            AppCompatDelegate.setDefaultNightMode(
+                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+            )
         }
     }
 
@@ -396,6 +457,20 @@ class SettingsFragment : Fragment() {
                     requireContext(), "Storage permission needed for export", Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: android.content.Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == IMPORT_CSV_REQUEST && resultCode == android.app.Activity.RESULT_OK && data?.data != null) {
+            val uri = data.data!!
+            val (imported, skipped) = csvManager.importFromCsv(uri)
+            val msg = if (imported > 0)
+                "Imported $imported transaction${if (imported == 1) "" else "s"}${if (skipped > 0) " ($skipped skipped)" else ""}"
+            else
+                "No new transactions found"
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_LONG).show()
         }
     }
 

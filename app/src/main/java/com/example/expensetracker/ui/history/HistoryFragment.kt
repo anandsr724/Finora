@@ -1,7 +1,7 @@
 package com.example.expensetracker.ui.history
 
-import android.app.Activity
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
@@ -26,6 +26,7 @@ import com.example.expensetracker.CSVManager
 import com.example.expensetracker.Category
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
+import com.example.expensetracker.CurrencyManager
 import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
@@ -52,17 +53,43 @@ class HistoryFragment : Fragment() {
     private lateinit var activeCategoryFiltersContainer: LinearLayout
     private lateinit var categoryFilterPillsContainer: LinearLayout
 
+    private enum class SortOption(val label: String) {
+        DATE_DESC("Newest First"),
+        DATE_ASC("Oldest First"),
+        AMOUNT_DESC("Amount: High-Low"),
+        AMOUNT_ASC("Amount: Low-High")
+    }
+
     private var allTransactions: List<PaymentTransaction> = emptyList()
     private val selectedCategories = mutableSetOf<String>()
     private var searchQuery: String = ""
     private var selectedMonthIndex = 0 // 0 = All Time
+    private var currentSort = SortOption.DATE_DESC
     private val categoryPillMap = mutableMapOf<String, MaterialButton>()
     private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
     private lateinit var filterCategoriesBadge: TextView
 
-    companion object {
-        private const val EDIT_REQUEST_CODE = 1001
+    private val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val data = result.data ?: return@registerForActivityResult
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val editingId = data.getStringExtra("editingId") ?: return@registerForActivityResult
+            val updatedTransaction = PaymentTransaction(
+                id = editingId,
+                amount = data.getStringExtra("amount") ?: "",
+                recipient = data.getStringExtra("recipient") ?: "",
+                note = data.getStringExtra("note") ?: "",
+                dateTime = data.getStringExtra("dateTime") ?: "",
+                transactionId = data.getStringExtra("transactionId") ?: "",
+                bankInfo = data.getStringExtra("bankInfo") ?: "",
+                category = data.getStringExtra("category") ?: "cat_other",
+                currency = data.getStringExtra("currency") ?: CurrencyManager.getDefault(requireContext()),
+                type = data.getStringExtra("type") ?: "expense"
+            )
+            csvManager.updateTransaction(updatedTransaction)
+            Toast.makeText(requireContext(), "Transaction updated", Toast.LENGTH_SHORT).show()
+            loadTransactions()
+        }
     }
 
     override fun onCreateView(
@@ -97,6 +124,21 @@ class HistoryFragment : Fragment() {
 
         filterCategoriesBadge = view.findViewById(R.id.filterCategoriesBadge)
         filterCategoriesButton.setOnClickListener { showCategoryFilterSheet() }
+
+        val sortButton = view.findViewById<MaterialButton>(R.id.sortButton)
+        sortButton.setOnClickListener {
+            val options = SortOption.values().map { it.label }.toTypedArray()
+            val currentIdx = currentSort.ordinal
+            androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                .setTitle("Sort by")
+                .setSingleChoiceItems(options, currentIdx) { dialog, idx ->
+                    currentSort = SortOption.values()[idx]
+                    sortButton.text = currentSort.label
+                    filterTransactions()
+                    dialog.dismiss()
+                }
+                .show()
+        }
 
         filterAllButton.setOnClickListener {
             selectedCategories.clear()
@@ -332,6 +374,7 @@ class HistoryFragment : Fragment() {
             val matchesSearch = searchQuery.isEmpty() ||
                     tx.recipient.lowercase().contains(searchQuery) ||
                     tx.note.lowercase().contains(searchQuery) ||
+                    tx.amount.contains(searchQuery) ||
                     categoryManager.getCategoryDisplayName(tx.category).lowercase().contains(searchQuery)
 
             val matchesMonth = if (selectedMonthIndex == 0 || selectedMonthIndex > monthYearPairs.size) {
@@ -363,8 +406,15 @@ class HistoryFragment : Fragment() {
         } else {
             recyclerView.visibility = View.VISIBLE
             emptyStateLayout.visibility = View.GONE
-            val sorted = filtered.sortedByDescending { tx ->
-                try { dateFormat.parse(tx.dateTime)?.time ?: 0L } catch (e: Exception) { 0L }
+            val sorted = when (currentSort) {
+                SortOption.DATE_DESC -> filtered.sortedByDescending { tx ->
+                    try { dateFormat.parse(tx.dateTime)?.time ?: 0L } catch (e: Exception) { 0L }
+                }
+                SortOption.DATE_ASC -> filtered.sortedBy { tx ->
+                    try { dateFormat.parse(tx.dateTime)?.time ?: Long.MAX_VALUE } catch (e: Exception) { Long.MAX_VALUE }
+                }
+                SortOption.AMOUNT_DESC -> filtered.sortedByDescending { CurrencyManager.parseAmount(it.amount) }
+                SortOption.AMOUNT_ASC -> filtered.sortedBy { CurrencyManager.parseAmount(it.amount) }
             }
             recyclerView.adapter = TransactionHistoryAdapter(sorted, categoryManager) { transaction ->
                 showTransactionDetailSheet(transaction)
@@ -382,10 +432,10 @@ class HistoryFragment : Fragment() {
         sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
             .setImageResource(CategoryIconHelper.getIconResId(transaction.category))
 
-        val numericAmount = transaction.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
-        val currencySymbol = if (transaction.currency == "INR") "Rs." else transaction.currency
+        val numericAmount = CurrencyManager.parseAmount(transaction.amount)
+        val currencySymbol = CurrencyManager.getSymbol(transaction.currency)
         sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            if (numericAmount != null) "$currencySymbol${fmt.format(numericAmount)}" else transaction.amount
+            "$currencySymbol${fmt.format(numericAmount)}"
 
         sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
             categoryManager.getCategoryDisplayName(transaction.category)
@@ -445,28 +495,10 @@ class HistoryFragment : Fragment() {
             putExtra("category", transaction.category)
             putExtra("transactionId", transaction.transactionId)
             putExtra("editingId", transaction.id)
+            putExtra("currency", transaction.currency)
+            putExtra("type", transaction.type)
         }
-        startActivityForResult(intent, EDIT_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            val editingId = data.getStringExtra("editingId") ?: return
-            val updatedTransaction = PaymentTransaction(
-                id = editingId,
-                amount = data.getStringExtra("amount") ?: "",
-                recipient = data.getStringExtra("recipient") ?: "",
-                note = data.getStringExtra("note") ?: "",
-                dateTime = data.getStringExtra("dateTime") ?: "",
-                transactionId = data.getStringExtra("transactionId") ?: "",
-                bankInfo = data.getStringExtra("bankInfo") ?: "",
-                category = data.getStringExtra("category") ?: "cat_other"
-            )
-            csvManager.updateTransaction(updatedTransaction)
-            Toast.makeText(requireContext(), "Transaction updated", Toast.LENGTH_SHORT).show()
-            loadTransactions()
-        }
+        editLauncher.launch(intent)
     }
 
     private fun confirmDeleteTransaction(transaction: PaymentTransaction) {

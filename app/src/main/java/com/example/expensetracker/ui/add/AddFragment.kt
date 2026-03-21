@@ -1,8 +1,7 @@
 package com.example.expensetracker.ui.add
 
-import android.app.Activity
-import android.app.Activity.RESULT_OK
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -21,6 +20,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.expensetracker.*
+import com.example.expensetracker.CurrencyManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -28,7 +28,11 @@ import java.text.NumberFormat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
+import android.content.ContentValues
+import android.content.Context
+import android.os.Environment
 import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -49,12 +53,43 @@ class AddFragment : Fragment() {
     private var pendingDateTime = ""
     private var pendingTransactionId = ""
     private var pendingBankInfo = ""
+    private var pendingCurrency = ""
     private lateinit var csvManager: CSVManager
     private lateinit var categoryManager: CategoryManager
+    private lateinit var ocrProgressBar: android.widget.ProgressBar
+    private lateinit var retryManualButton: MaterialButton
 
-    companion object {
-        private const val EDIT_REQUEST_CODE = 1001
-        private const val PICK_IMAGE_REQUEST = 1003
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val imageUri = result.data?.data
+            if (imageUri != null) convertToBitmap(imageUri)
+        }
+    }
+
+    private val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val data = result.data
+        if (result.resultCode == android.app.Activity.RESULT_CANCELED) {
+            if (pendingAmount.isNotEmpty() || pendingRecipient.isNotEmpty()) {
+                val restoredCurrency = pendingCurrency.ifEmpty { CurrencyManager.getDefault(requireContext()) }
+                displayParsedResults(
+                    pendingAmount, pendingRecipient, pendingNote,
+                    pendingDateTime, pendingTransactionId, pendingBankInfo,
+                    emptyList(), emptyList(), currency = restoredCurrency, instant = true
+                )
+            }
+        } else if (result.resultCode == android.app.Activity.RESULT_OK && data != null) {
+            val updatedAmount = data.getStringExtra("amount") ?: ""
+            val updatedRecipient = data.getStringExtra("recipient") ?: ""
+            val updatedDateTime = data.getStringExtra("dateTime") ?: ""
+            val updatedTransactionId = data.getStringExtra("transactionId") ?: ""
+            val updatedNote = data.getStringExtra("note") ?: ""
+            val updatedBankInfo = data.getStringExtra("bankInfo") ?: ""
+            val updatedCategory = data.getStringExtra("category") ?: "cat_other"
+            val updatedCurrency = data.getStringExtra("currency") ?: CurrencyManager.getDefault(requireContext())
+            val updatedType = data.getStringExtra("type") ?: "expense"
+            savePaymentDetails(updatedAmount, updatedRecipient, updatedNote,
+                updatedDateTime, updatedTransactionId, updatedBankInfo, updatedCategory, updatedCurrency, updatedType)
+        }
     }
 
     override fun onCreateView(
@@ -74,6 +109,9 @@ class AddFragment : Fragment() {
         imagePreviewCard = view.findViewById(R.id.imagePreviewCard)
         processButtonCard = view.findViewById(R.id.processButtonCard)
         statusCard = view.findViewById(R.id.statusCard)
+        ocrProgressBar = view.findViewById(R.id.ocrProgressBar)
+        retryManualButton = view.findViewById(R.id.retryManualButton)
+        retryManualButton.setOnClickListener { openManualEntryForm() }
 
         val selectImageButton = view.findViewById<Button>(R.id.selectImageButton)
         selectImageButton.setOnClickListener {
@@ -102,7 +140,7 @@ class AddFragment : Fragment() {
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        galleryLauncher.launch(intent)
     }
 
     private fun convertToBitmap(uri: Uri) {
@@ -135,7 +173,9 @@ class AddFragment : Fragment() {
         }
 
         statusCard.visibility = View.VISIBLE
-        statusText.text = "Processing image with ML Kit Text Recognition..."
+        statusText.text = "Processing image…"
+        ocrProgressBar.visibility = View.VISIBLE
+        retryManualButton.visibility = View.GONE
         processButton.isEnabled = false
 
         try {
@@ -144,24 +184,30 @@ class AddFragment : Fragment() {
             textRecognizer.process(image)
                 .addOnSuccessListener { visionText ->
                     processButton.isEnabled = true
+                    ocrProgressBar.visibility = View.GONE
 
                     if (visionText.text.isNotBlank()) {
-                        statusText.text = "SUCCESS! Processing extracted text..."
-
+                        statusText.text = "Extracting details…"
+                        betaSaveScreenshot(bitmap)
                         val detailedText = buildDetailedText(visionText)
                         parsePaymentInfo(visionText.text, detailedText)
                     } else {
-                        statusText.text = "No text found in the image"
+                        statusText.text = "No text found in this image. Try a clearer screenshot or enter details manually."
+                        retryManualButton.visibility = View.VISIBLE
                     }
                 }
                 .addOnFailureListener { e ->
                     processButton.isEnabled = true
-                    statusText.text = "ML Kit OCR failed: ${e.message}"
+                    ocrProgressBar.visibility = View.GONE
+                    statusText.text = "Could not read image: ${e.message}"
+                    retryManualButton.visibility = View.VISIBLE
                 }
 
         } catch (e: IOException) {
             processButton.isEnabled = true
+            ocrProgressBar.visibility = View.GONE
             statusText.text = "Error processing image: ${e.message}"
+            retryManualButton.visibility = View.VISIBLE
         }
     }
 
@@ -192,20 +238,33 @@ class AddFragment : Fragment() {
     private fun parsePaymentInfo(rawText: String, detailedText: String) {
         val lines = rawText.split("\n").map { it.trim() }.filter { it.isNotEmpty() }
         var amount = ""
+        var detectedCurrency = CurrencyManager.getDefault(requireContext())
         var recipient = ""
         var note = ""
         var transactionId = ""
         var dateTime = ""
         var bankInfo = ""
 
-        val amountPatterns = listOf(
-            Regex("""₹\s*([0-9,]+(?:\.[0-9]{1,2})?)"""),
-            Regex("""Rs\.?\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
-            Regex("""INR\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
-            Regex("""([0-9,]+(?:\.[0-9]{1,2})?)\s*₹"""),
-            Regex("""^([0-9]+(?:\.[0-9]{1,2})?)$"""),
-            Regex("""Amount.*?₹\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
-            Regex("""Amount.*?([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE)
+        // Pair of (regex, detected currency code) — null currency means use app default
+        val currencyAmountPatterns = listOf(
+            Pair(Regex("""₹\s*([0-9,]+(?:\.[0-9]{1,2})?)"""), "INR"),
+            Pair(Regex("""Rs\.?\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "INR"),
+            Pair(Regex("""INR\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "INR"),
+            Pair(Regex("""([0-9,]+(?:\.[0-9]{1,2})?)\s*₹"""), "INR"),
+            Pair(Regex("""\$\s*([0-9,]+(?:\.[0-9]{1,2})?)"""), "USD"),
+            Pair(Regex("""USD\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "USD"),
+            Pair(Regex("""([0-9,]+(?:\.[0-9]{1,2})?)\s*USD""", RegexOption.IGNORE_CASE), "USD"),
+            Pair(Regex("""€\s*([0-9,]+(?:\.[0-9]{1,2})?)"""), "EUR"),
+            Pair(Regex("""EUR\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "EUR"),
+            Pair(Regex("""£\s*([0-9,]+(?:\.[0-9]{1,2})?)"""), "GBP"),
+            Pair(Regex("""GBP\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "GBP"),
+            Pair(Regex("""¥\s*([0-9,]+(?:\.[0-9]{1,2})?)"""), "JPY"),
+            Pair(Regex("""JPY\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), "JPY"),
+            // Common OCR misread of ₹ (%, z, or other symbols in decorative fonts)
+            Pair(Regex("""^[%z₹]\s*([0-9,]{1,8}(?:\.[0-9]{1,2})?)$""", RegexOption.IGNORE_CASE), "INR"),
+            Pair(Regex("""Amount.*?([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE), null),
+            // Bare number fallback — capped at 8 digits to avoid matching 12-digit transaction IDs
+            Pair(Regex("""^([0-9]{1,8}(?:\.[0-9]{1,2})?)$"""), null)
         )
 
         val recipientPatterns = listOf(
@@ -228,15 +287,28 @@ class AddFragment : Fragment() {
             val lowerLine = line.lowercase()
 
             if (amount.isEmpty()) {
-                for (pattern in amountPatterns) {
+                // Context of previous line — used to skip bare numbers that follow a transaction ID label
+                val prevLineLower = if (i > 0) lines[i - 1].lowercase() else ""
+                val isAfterIdContext = prevLineLower.contains("transaction") ||
+                        prevLineLower.contains("reference") ||
+                        prevLineLower.contains("utr") ||
+                        prevLineLower.contains("google transaction") ||
+                        prevLineLower.contains("upi transaction")
+
+                for ((pattern, currencyCode) in currencyAmountPatterns) {
                     val match = pattern.find(line)
                     if (match != null) {
                         val foundAmount = match.groupValues[1]
                         val cleanAmount = foundAmount.replace(",", "")
                         val amountValue = cleanAmount.toDoubleOrNull()
 
-                        if (amountValue != null && amountValue >= 0.01 && amountValue <= 100000) {
-                            amount = "₹$foundAmount"
+                        // Skip bare numbers (no currency symbol/keyword) that follow an ID-context line
+                        val isBareNumber = currencyCode == null && !line.contains("Amount", ignoreCase = true)
+                        if (isBareNumber && isAfterIdContext) continue
+
+                        if (amountValue != null && amountValue >= 0.01) {
+                            amount = foundAmount
+                            if (currencyCode != null) detectedCurrency = currencyCode
                             break
                         }
                     }
@@ -247,15 +319,16 @@ class AddFragment : Fragment() {
                 val searchRange = minOf(i + 3, lines.size)
                 for (j in (i + 1) until searchRange) {
                     val nextLine = lines[j]
-                    for (pattern in amountPatterns) {
+                    for ((pattern, currencyCode) in currencyAmountPatterns) {
                         val match = pattern.find(nextLine)
                         if (match != null) {
                             val foundAmount = match.groupValues[1]
                             val cleanAmount = foundAmount.replace(",", "")
                             val amountValue = cleanAmount.toDoubleOrNull()
 
-                            if (amountValue != null && amountValue >= 0.01 && amountValue <= 100000) {
-                                amount = "₹$foundAmount"
+                            if (amountValue != null && amountValue >= 0.01) {
+                                amount = foundAmount
+                                if (currencyCode != null) detectedCurrency = currencyCode
                                 break
                             }
                         }
@@ -312,7 +385,7 @@ class AddFragment : Fragment() {
 
         bankInfo = findBankInfo(lines)
 
-        displayParsedResults(amount, recipient, note, dateTime, transactionId, bankInfo, lines, transactionIdCandidates)
+        displayParsedResults(amount, recipient, note, dateTime, transactionId, bankInfo, lines, transactionIdCandidates, currency = detectedCurrency)
     }
 
     private fun normalizeDateTimeFormat(rawDateTime: String): String {
@@ -554,7 +627,8 @@ class AddFragment : Fragment() {
     private fun launchEditActivity(
         amount: String, recipient: String, note: String,
         dateTime: String, transactionId: String, bankInfo: String,
-        category: String = "cat_other"
+        category: String = "cat_other",
+        currency: String = CurrencyManager.getDefault(requireContext())
     ) {
         val intent = Intent(requireActivity(), EditPaymentActivity::class.java).apply {
             putExtra("amount", amount)
@@ -564,8 +638,9 @@ class AddFragment : Fragment() {
             putExtra("transactionId", transactionId)
             putExtra("bankInfo", bankInfo)
             putExtra("category", category)
+            putExtra("currency", currency)
         }
-        startActivityForResult(intent, EDIT_REQUEST_CODE)
+        editLauncher.launch(intent)
     }
 
     private fun openManualEntryForm() {
@@ -580,13 +655,14 @@ class AddFragment : Fragment() {
             putExtra("category", "cat_other")
             putExtra("isManualEntry", true)  // Flag to indicate this is manual entry
         }
-        startActivityForResult(intent, EDIT_REQUEST_CODE)
+        editLauncher.launch(intent)
     }
 
     private fun displayParsedResults(
         amount: String, recipient: String, note: String,
         dateTime: String, transactionId: String, bankInfo: String,
         lines: List<String>, transactionIdCandidates: List<Pair<String, Int>>,
+        currency: String = CurrencyManager.getDefault(requireContext()),
         instant: Boolean = false
     ) {
         statusCard.visibility = View.GONE
@@ -605,12 +681,14 @@ class AddFragment : Fragment() {
             .setImageResource(CategoryIconHelper.getIconResId("cat_other"))
 
         // Amount
-        val numericAmount = amount.replace("₹", "").replace("Rs.", "").replace(",", "").toDoubleOrNull()
+        val numericAmount = CurrencyManager.parseAmount(amount)
+        val currencySymbol = CurrencyManager.getSymbol(currency)
         sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            if (numericAmount != null) "₹${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
+            if (numericAmount > 0) "$currencySymbol${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
 
         // Category badge
-        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text = "Uncategorized"
+        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
+            categoryManager.getCategoryDisplayName("cat_other")
 
         // Recipient
         sheetView.findViewById<TextView>(R.id.detailRecipient).text = recipient.ifEmpty { "—" }
@@ -641,9 +719,23 @@ class AddFragment : Fragment() {
             sheet.dismiss()
         }
 
-        // Edit button — opens EditPaymentActivity to review/correct before saving
+        // Primary action: Save immediately
         sheetView.findViewById<MaterialButton>(R.id.detailEditButton).apply {
-            text = "Edit"
+            text = "Save"
+            setOnClickListener {
+                sheet.dismiss()
+                savePaymentDetails(amount, recipient, note, dateTime, transactionId, bankInfo,
+                    "cat_other", currency)
+            }
+        }
+
+        // Secondary action: Review & Edit before saving
+        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).apply {
+            text = "Review & Edit"
+            setTextColor(requireContext().getColor(R.color.primary_indigo))
+            backgroundTintList = android.content.res.ColorStateList.valueOf(
+                android.graphics.Color.parseColor("#EDE9FE")
+            )
             setOnClickListener {
                 pendingAmount = amount
                 pendingRecipient = recipient
@@ -651,21 +743,9 @@ class AddFragment : Fragment() {
                 pendingDateTime = dateTime
                 pendingTransactionId = transactionId
                 pendingBankInfo = bankInfo
+                pendingCurrency = currency
                 sheet.dismiss()
-                launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
-            }
-        }
-
-        // Repurpose Delete button as Save
-        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).apply {
-            text = "Save"
-            setTextColor(requireContext().getColor(android.R.color.white))
-            backgroundTintList = android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#6B5DD3")
-            )
-            setOnClickListener {
-                sheet.dismiss()
-                savePaymentDetails(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other")
+                launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other", currency)
             }
         }
 
@@ -675,7 +755,9 @@ class AddFragment : Fragment() {
     private fun savePaymentDetails(
         amount: String, recipient: String, note: String,
         dateTime: String, transactionId: String, bankInfo: String,
-        category: String = "cat_other"
+        category: String = "cat_other",
+        currency: String = CurrencyManager.getDefault(requireContext()),
+        type: String = "expense"
     ) {
         val transaction = PaymentTransaction(
             amount = amount,
@@ -684,7 +766,9 @@ class AddFragment : Fragment() {
             dateTime = dateTime,
             transactionId = transactionId,
             bankInfo = bankInfo,
-            category = category
+            category = category,
+            currency = currency,
+            type = type
         )
 
         val success = csvManager.saveTransaction(transaction)
@@ -692,7 +776,7 @@ class AddFragment : Fragment() {
         if (success) {
             Toast.makeText(requireContext(), "Transaction saved!", Toast.LENGTH_SHORT).show()
             pendingAmount = ""; pendingRecipient = ""; pendingNote = ""
-            pendingDateTime = ""; pendingTransactionId = ""; pendingBankInfo = ""
+            pendingDateTime = ""; pendingTransactionId = ""; pendingBankInfo = ""; pendingCurrency = ""
             // Reset page for next upload
             imagePreviewCard.visibility = View.GONE
             processButtonCard.visibility = View.GONE
@@ -704,38 +788,53 @@ class AddFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    /** Beta: save the processed screenshot to Downloads/Finora/Screenshots if the pref is on. */
+    private fun betaSaveScreenshot(bitmap: Bitmap) {
+        val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
+        if (!prefs.getBoolean("beta_save_screenshots", false)) return
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.data != null) {
-            val imageUri = data.data
-            if (imageUri != null) {
-                convertToBitmap(imageUri)
-            }
-        }
+        val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val filename = "finora_$timestamp.jpg"
 
-        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
-            if (pendingAmount.isNotEmpty() || pendingRecipient.isNotEmpty()) {
-                displayParsedResults(
-                    pendingAmount, pendingRecipient, pendingNote,
-                    pendingDateTime, pendingTransactionId, pendingBankInfo,
-                    emptyList(), emptyList(),
-                    instant = true
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                // API 29+: use MediaStore.Downloads — no permission needed
+                val values = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH,
+                        "${Environment.DIRECTORY_DOWNLOADS}/Finora/Screenshots")
+                }
+                val uri = requireContext().contentResolver
+                    .insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
+                    ?: run {
+                        Log.e("AddFragment", "Beta: MediaStore insert returned null")
+                        return
+                    }
+                requireContext().contentResolver.openOutputStream(uri)?.use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                }
+            } else {
+                // API < 29: WRITE_EXTERNAL_STORAGE is granted via manifest (maxSdkVersion=28)
+                if (androidx.core.content.ContextCompat.checkSelfPermission(
+                        requireContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) != android.content.pm.PackageManager.PERMISSION_GRANTED
+                ) {
+                    Log.w("AddFragment", "Beta: WRITE_EXTERNAL_STORAGE not granted, skipping save")
+                    return
+                }
+                val dir = java.io.File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                    "Finora/Screenshots"
                 )
+                dir.mkdirs()
+                java.io.FileOutputStream(java.io.File(dir, filename)).use { out ->
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out)
+                }
             }
-        }
-
-        if (requestCode == EDIT_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            val updatedAmount = data.getStringExtra("amount") ?: ""
-            val updatedRecipient = data.getStringExtra("recipient") ?: ""
-            val updatedDateTime = data.getStringExtra("dateTime") ?: ""
-            val updatedTransactionId = data.getStringExtra("transactionId") ?: ""
-            val updatedNote = data.getStringExtra("note") ?: ""
-            val updatedBankInfo = data.getStringExtra("bankInfo") ?: ""
-            val updatedCategory = data.getStringExtra("category") ?: "cat_other"
-
-            savePaymentDetails(updatedAmount, updatedRecipient, updatedNote,
-                updatedDateTime, updatedTransactionId, updatedBankInfo, updatedCategory)
+            Log.d("AddFragment", "Beta: screenshot saved → $filename")
+        } catch (e: Exception) {
+            Log.e("AddFragment", "Beta: failed to save screenshot", e)
         }
     }
 

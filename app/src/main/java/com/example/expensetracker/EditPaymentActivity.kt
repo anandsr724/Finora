@@ -46,6 +46,7 @@ class EditPaymentActivity : AppCompatActivity() {
     private lateinit var categorySelector: LinearLayout
     private lateinit var categorySelectorEmoji: ImageView
     private lateinit var categorySelectorName: TextView
+    private lateinit var currencyButton: TextView
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
     private lateinit var backButton: ImageButton
@@ -53,6 +54,10 @@ class EditPaymentActivity : AppCompatActivity() {
     private lateinit var categoryManager: CategoryManager
     private var categories = listOf<Category>()
     private var selectedCategoryId = "cat_other"
+    private var selectedCurrency = "INR"
+    private var selectedType = "expense" // "expense" or "income"
+    private lateinit var typeExpenseButton: MaterialButton
+    private lateinit var typeIncomeButton: MaterialButton
 
     private var selectedDate: Calendar = Calendar.getInstance()
     private var selectedTime: Calendar = Calendar.getInstance()
@@ -97,9 +102,21 @@ class EditPaymentActivity : AppCompatActivity() {
         categorySelector = findViewById(R.id.categorySelector)
         categorySelectorEmoji = findViewById(R.id.categorySelectorEmoji)
         categorySelectorName = findViewById(R.id.categorySelectorName)
+        currencyButton = findViewById(R.id.currencyButton)
         saveButton = findViewById(R.id.saveButton)
         cancelButton = findViewById(R.id.cancelButton)
         backButton = findViewById(R.id.backButton)
+        typeExpenseButton = findViewById(R.id.typeExpenseButton)
+        typeIncomeButton = findViewById(R.id.typeIncomeButton)
+
+        selectedCurrency = intent.getStringExtra("currency") ?: CurrencyManager.getDefault(this)
+        currencyButton.text = CurrencyManager.getSymbol(selectedCurrency)
+        currencyButton.setOnClickListener { showCurrencyPicker() }
+
+        selectedType = intent.getStringExtra("type") ?: "expense"
+        updateTypeButtons()
+        typeExpenseButton.setOnClickListener { selectedType = "expense"; updateTypeButtons() }
+        typeIncomeButton.setOnClickListener { selectedType = "income"; updateTypeButtons() }
 
         val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
         val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paymentMethods)
@@ -243,8 +260,9 @@ class EditPaymentActivity : AppCompatActivity() {
         val note = intent.getStringExtra("note") ?: ""
         val bankInfo = intent.getStringExtra("bankInfo") ?: ""
         selectedCategoryId = intent.getStringExtra("category") ?: "cat_other"
+        // currency already loaded in initializeViews(); button already shows correct symbol
 
-        amountEditText.setText(amount)
+        amountEditText.setText(amount.replace("₹", "").replace(",", "").trim())
         recipientEditText.setText(recipient)
         noteEditText.setText(note)
         transactionIdEditText.setText(transactionId)
@@ -287,7 +305,13 @@ class EditPaymentActivity : AppCompatActivity() {
             amountEditText.requestFocus()
             return
         }
-        if (updatedRecipient.isEmpty()) {
+        val numericAmount = updatedAmount.toDoubleOrNull()
+        if (numericAmount == null || numericAmount <= 0) {
+            amountEditText.error = "Enter a valid amount"
+            amountEditText.requestFocus()
+            return
+        }
+        if (updatedRecipient.isBlank()) {
             recipientEditText.error = "Recipient name is required"
             recipientEditText.requestFocus()
             return
@@ -301,6 +325,8 @@ class EditPaymentActivity : AppCompatActivity() {
             putExtra("note", updatedNote)
             putExtra("bankInfo", updatedBankInfo)
             putExtra("category", updatedCategory)
+            putExtra("currency", selectedCurrency)
+            putExtra("type", selectedType)
             val editingId = intent.getStringExtra("editingId")
             if (editingId != null) putExtra("editingId", editingId)
         }
@@ -318,6 +344,39 @@ class EditPaymentActivity : AppCompatActivity() {
                 overridePendingTransition(0, 0)
             }
         })
+    }
+
+    private fun updateTypeButtons() {
+        val activeColor = resources.getColor(R.color.primary_indigo, null)
+        val inactiveColor = android.graphics.Color.TRANSPARENT
+        val activeText = resources.getColor(android.R.color.white, null)
+        val inactiveText = resources.getColor(R.color.text_secondary_light, null)
+        if (selectedType == "expense") {
+            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(activeColor)
+            typeExpenseButton.setTextColor(activeText)
+            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
+            typeIncomeButton.setTextColor(inactiveText)
+        } else {
+            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(activeColor)
+            typeIncomeButton.setTextColor(activeText)
+            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
+            typeExpenseButton.setTextColor(inactiveText)
+        }
+    }
+
+    private fun showCurrencyPicker() {
+        val currencies = CurrencyManager.CURRENCIES
+        val items = currencies.map { "${it.symbol}  ${it.code} — ${it.name}" }.toTypedArray()
+        val currentIdx = currencies.indexOfFirst { it.code == selectedCurrency }.coerceAtLeast(0)
+        AlertDialog.Builder(this)
+            .setTitle("Select Currency")
+            .setSingleChoiceItems(items, currentIdx) { dialog, idx ->
+                selectedCurrency = currencies[idx].code
+                currencyButton.text = CurrencyManager.getSymbol(selectedCurrency)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun showDateTimePicker() { showDatePicker() }

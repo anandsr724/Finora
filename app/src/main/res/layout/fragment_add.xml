@@ -31,14 +31,14 @@
                 android:text="Add Transaction"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142" />
+                android:textColor="@color/text_primary_light" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Scan a screenshot or enter details manually"
                 android:textSize="13sp"
-                android:textColor="#71717A"
+                android:textColor="@color/text_secondary_light"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -95,7 +95,7 @@
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light"
             android:visibility="gone">
@@ -118,7 +118,7 @@
                     android:layout_height="wrap_content"
                     android:padding="14dp"
                     android:textSize="12sp"
-                    android:textColor="#71717A" />
+                    android:textColor="@color/text_secondary_light" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -130,7 +130,7 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light"
             android:visibility="gone">
@@ -164,19 +164,59 @@
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
             app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/white"
+            app:cardBackgroundColor="@color/card_background_light"
             app:strokeWidth="1dp"
             app:strokeColor="@color/border_light"
             android:visibility="gone">
 
-            <TextView
-                android:id="@+id/statusText"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="20dp"
-                android:textSize="14sp"
-                android:textColor="#2D3142"
-                android:lineSpacingExtra="4dp" />
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <ProgressBar
+                        android:id="@+id/ocrProgressBar"
+                        android:layout_width="22dp"
+                        android:layout_height="22dp"
+                        android:layout_marginEnd="12dp"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/statusText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:textColor="#2D3142"
+                        android:lineSpacingExtra="4dp" />
+                </LinearLayout>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/retryManualButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="Enter Details Manually"
+                    android:textAllCaps="false"
+                    android:textSize="14sp"
+                    android:textColor="@color/primary_indigo"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:backgroundTint="#EDE9FE"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="0dp"
+                    android:visibility="gone"
+                    style="@style/Widget.MaterialComponents.Button" />
+            </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Save / Edit Buttons -->

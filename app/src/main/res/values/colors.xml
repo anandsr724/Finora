@@ -43,6 +43,13 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
+    <!-- Semantic surface colors (overridden in values-night/colors.xml for dark mode) -->
+    <color name="color_icon_bg">#F4F4F5</color>
+    <color name="color_divider">#F4F4F5</color>
+    <color name="color_separator">#E0E0E0</color>
+    <color name="color_text_medium">#52525B</color>
+    <color name="color_dot_separator">#D4D4D8</color>
+
     <!-- Chart Colors -->
     <color name="chart_color_1">#6B5DD3</color>
     <color name="chart_color_2">#8B7DE8</color>

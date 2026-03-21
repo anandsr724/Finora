@@ -20,11 +20,12 @@ data class PaymentTransaction(
     val bankInfo: String,
     val category: String = "cat_other",
     val createdAt: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
-    val currency: String = "INR"
+    val currency: String = "INR",
+    val type: String = "expense" // "expense" or "income"
 ) {
     // Convert to CSV row
     fun toCsvRow(): String {
-        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt, currency)
+        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt, currency, type)
             .joinToString(",") { escapeCsvField(it) }
     }
 
@@ -53,7 +54,8 @@ data class PaymentTransaction(
                         bankInfo = fields[6],
                         category = if (fields.size > 7) fields[7] else "cat_other",
                         createdAt = if (fields.size > 8) fields[8] else SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
-                        currency = if (fields.size > 9) fields[9] else "INR"
+                        currency = if (fields.size > 9) fields[9] else "INR",
+                        type = if (fields.size > 10) fields[10] else "expense"
                     )
                 } else null
             } catch (e: Exception) {
@@ -109,7 +111,7 @@ data class PaymentTransaction(
         }
 
         fun getCsvHeader(): String {
-            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt,Currency"
+            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt,Currency,Type"
         }
     }
 }
@@ -321,6 +323,35 @@ class CSVManager(private val context: Context) {
         } catch (e: Exception) {
             Log.e(TAG, "Error deleting transaction", e)
             false
+        }
+    }
+
+    // Import transactions from an external CSV URI (merges, skips duplicates by ID)
+    fun importFromCsv(uri: android.net.Uri): Pair<Int, Int> { // (imported, skipped)
+        var imported = 0
+        var skipped = 0
+        return try {
+            val existingIds = getAllTransactions().map { it.id }.toSet()
+            val inputStream = context.contentResolver.openInputStream(uri) ?: return Pair(0, 0)
+            val lines = inputStream.bufferedReader().readLines()
+            val dataLines = if (lines.isNotEmpty()) lines.drop(1) else emptyList()
+            val newTransactions = mutableListOf<PaymentTransaction>()
+            for (line in dataLines) {
+                if (line.trim().isEmpty()) continue
+                val tx = PaymentTransaction.fromCsvRow(line) ?: continue
+                if (tx.id in existingIds) { skipped++; continue }
+                newTransactions.add(tx)
+                imported++
+            }
+            if (newTransactions.isNotEmpty()) {
+                val all = getAllTransactions().toMutableList()
+                all.addAll(newTransactions)
+                rewriteCSV(all)
+            }
+            Pair(imported, skipped)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error importing CSV", e)
+            Pair(imported, skipped)
         }
     }
 

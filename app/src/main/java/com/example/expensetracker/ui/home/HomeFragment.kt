@@ -1,7 +1,7 @@
 package com.example.expensetracker.ui.home
 
-import android.app.Activity
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.CSVManager
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
+import com.example.expensetracker.CurrencyManager
 import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
@@ -27,7 +28,6 @@ import com.example.expensetracker.TransactionHistoryAdapter
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -38,9 +38,46 @@ class HomeFragment : Fragment() {
     private lateinit var categoryManager: CategoryManager
     private lateinit var transactionAdapter: TransactionHistoryAdapter
 
-    companion object {
-        private const val PICK_IMAGE_REQUEST = 1004
-        private const val EDIT_REQUEST_CODE = 1001
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val imageUri = result.data?.data
+            val bundle = android.os.Bundle()
+            bundle.putString("imageUri", imageUri.toString())
+            findNavController().navigate(com.example.expensetracker.R.id.nav_add, bundle)
+        }
+    }
+
+    private val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val data = result.data ?: return@registerForActivityResult
+        if (result.resultCode == android.app.Activity.RESULT_OK) {
+            val amount = data.getStringExtra("amount") ?: ""
+            val recipient = data.getStringExtra("recipient") ?: ""
+            val dateTime = data.getStringExtra("dateTime") ?: ""
+            val transactionId = data.getStringExtra("transactionId") ?: ""
+            val note = data.getStringExtra("note") ?: ""
+            val bankInfo = data.getStringExtra("bankInfo") ?: ""
+            val category = data.getStringExtra("category") ?: "cat_other"
+            val currency = data.getStringExtra("currency") ?: com.example.expensetracker.CurrencyManager.getDefault(requireContext())
+            val type = data.getStringExtra("type") ?: "expense"
+            val editingId = data.getStringExtra("editingId")
+
+            if (editingId != null) {
+                val updatedTransaction = com.example.expensetracker.PaymentTransaction(
+                    id = editingId, amount = amount, recipient = recipient, note = note,
+                    dateTime = dateTime, transactionId = transactionId, bankInfo = bankInfo,
+                    category = category, currency = currency, type = type
+                )
+                csvManager.updateTransaction(updatedTransaction)
+            } else {
+                val transaction = com.example.expensetracker.PaymentTransaction(
+                    amount = amount, recipient = recipient, note = note, dateTime = dateTime,
+                    transactionId = transactionId, bankInfo = bankInfo, category = category,
+                    currency = currency, type = type
+                )
+                csvManager.saveTransaction(transaction)
+            }
+            view?.let { loadData(it) }
+        }
     }
 
     override fun onCreateView(
@@ -71,12 +108,6 @@ class HomeFragment : Fragment() {
             openManualEntryForm()
         }
 
-        // FAB - opens manual entry form directly
-        val fab = view.findViewById<FloatingActionButton>(R.id.fab)
-        fab.setOnClickListener {
-            openManualEntryForm()
-        }
-
         // View All button
         val viewAllButton = view.findViewById<TextView>(R.id.viewAllButton)
         viewAllButton.setOnClickListener {
@@ -97,22 +128,25 @@ class HomeFragment : Fragment() {
         val dateFormat = SimpleDateFormat("EEEE, MMMM d", Locale.ENGLISH)
         dateSubtitle.text = dateFormat.format(Date())
 
-        // Total balance (sum of all transactions)
-        val totalBalance = transactions.sumOf {
-            it.amount.replace("Rs.", "").replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0
+        val defaultCurrency = CurrencyManager.getDefault(requireContext())
+        val sym = CurrencyManager.getSymbol(defaultCurrency)
+
+        // Total spending (sum of expense transactions only, converted to default currency)
+        val totalBalance = transactions.filter { it.type == "expense" }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
         }
         val totalBalanceAmount = view.findViewById<TextView>(R.id.totalBalanceAmount)
-        totalBalanceAmount.text = "₹${numberFormat.format(totalBalance)}"
+        totalBalanceAmount.text = "$sym${numberFormat.format(totalBalance)}"
 
         // Calculate monthly total
-        val monthlyTotal = calculateMonthlyTotal(transactions)
+        val monthlyTotal = calculateMonthlyTotal(transactions, defaultCurrency)
         val thisMonthAmount = view.findViewById<TextView>(R.id.thisMonthAmount)
         val transactionsCount = view.findViewById<TextView>(R.id.transactionsCount)
         val quickStatsContainer = view.findViewById<LinearLayout>(R.id.quickStatsContainer)
         val emptyStateCard = view.findViewById<MaterialCardView>(R.id.emptyStateCard)
         val viewAllButton = view.findViewById<TextView>(R.id.viewAllButton)
 
-        thisMonthAmount.text = "₹${numberFormat.format(monthlyTotal)}"
+        thisMonthAmount.text = "$sym${numberFormat.format(monthlyTotal)}"
         transactionsCount.text = transactions.size.toString()
 
         // Show/hide empty state
@@ -148,27 +182,27 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun calculateMonthlyTotal(transactions: List<com.example.expensetracker.PaymentTransaction>): Double {
+    private fun calculateMonthlyTotal(
+        transactions: List<com.example.expensetracker.PaymentTransaction>,
+        defaultCurrency: String = CurrencyManager.getDefault(requireContext())
+    ): Double {
         val calendar = Calendar.getInstance()
         val currentMonth = calendar.get(Calendar.MONTH)
         val currentYear = calendar.get(Calendar.YEAR)
         val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
 
         return transactions.filter { transaction ->
+            if (transaction.type != "expense") return@filter false
             try {
                 val date = dateFormat.parse(transaction.dateTime)
                 if (date != null) {
                     calendar.time = date
-                    val transactionMonth = calendar.get(Calendar.MONTH)
-                    val transactionYear = calendar.get(Calendar.YEAR)
-                    transactionMonth == currentMonth && transactionYear == currentYear
-                } else {
-                    false
-                }
-            } catch (e: Exception) {
-                false
-            }
-        }.sumOf { it.amount.replace("₹", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
+                    calendar.get(Calendar.MONTH) == currentMonth && calendar.get(Calendar.YEAR) == currentYear
+                } else false
+            } catch (e: Exception) { false }
+        }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
+        }
     }
 
     override fun onResume() {
@@ -187,10 +221,10 @@ class HomeFragment : Fragment() {
         sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
             .setImageResource(CategoryIconHelper.getIconResId(transaction.category))
 
-        val numericAmount = transaction.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
-        val currencySymbol = if (transaction.currency == "INR") "Rs." else transaction.currency
+        val numericAmount = CurrencyManager.parseAmount(transaction.amount)
+        val currencySymbol = CurrencyManager.getSymbol(transaction.currency)
         sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            if (numericAmount != null) "$currencySymbol${fmt.format(numericAmount)}" else transaction.amount
+            "$currencySymbol${fmt.format(numericAmount)}"
 
         sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
             categoryManager.getCategoryDisplayName(transaction.category)
@@ -250,8 +284,10 @@ class HomeFragment : Fragment() {
             putExtra("category", transaction.category)
             putExtra("transactionId", transaction.transactionId)
             putExtra("editingId", transaction.id)
+            putExtra("currency", transaction.currency)
+            putExtra("type", transaction.type)
         }
-        startActivityForResult(intent, EDIT_REQUEST_CODE)
+        editLauncher.launch(intent)
     }
 
     private fun confirmDeleteTransaction(transaction: PaymentTransaction) {
@@ -269,7 +305,7 @@ class HomeFragment : Fragment() {
 
     private fun openFilePicker() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(intent, PICK_IMAGE_REQUEST)
+        imagePickerLauncher.launch(intent)
     }
 
     private fun openManualEntryForm() {
@@ -283,60 +319,6 @@ class HomeFragment : Fragment() {
             putExtra("category", "cat_other")
             putExtra("isManualEntry", true)
         }
-        startActivityForResult(intent, EDIT_REQUEST_CODE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
-            val imageUri = data.data
-            // Navigate to AddFragment with the image URI
-            val bundle = android.os.Bundle()
-            bundle.putString("imageUri", imageUri.toString())
-            findNavController().navigate(R.id.nav_add, bundle)
-        }
-
-        if (requestCode == EDIT_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
-            // Save the transaction data returned from EditPaymentActivity
-            val amount = data.getStringExtra("amount") ?: ""
-            val recipient = data.getStringExtra("recipient") ?: ""
-            val dateTime = data.getStringExtra("dateTime") ?: ""
-            val transactionId = data.getStringExtra("transactionId") ?: ""
-            val note = data.getStringExtra("note") ?: ""
-            val bankInfo = data.getStringExtra("bankInfo") ?: ""
-            val category = data.getStringExtra("category") ?: "cat_other"
-            val editingId = data.getStringExtra("editingId")
-
-            if (editingId != null) {
-                // Update existing transaction
-                val updatedTransaction = com.example.expensetracker.PaymentTransaction(
-                    id = editingId,
-                    amount = amount,
-                    recipient = recipient,
-                    note = note,
-                    dateTime = dateTime,
-                    transactionId = transactionId,
-                    bankInfo = bankInfo,
-                    category = category
-                )
-                csvManager.updateTransaction(updatedTransaction)
-            } else {
-                // Save new transaction
-                val transaction = com.example.expensetracker.PaymentTransaction(
-                    amount = amount,
-                    recipient = recipient,
-                    note = note,
-                    dateTime = dateTime,
-                    transactionId = transactionId,
-                    bankInfo = bankInfo,
-                    category = category
-                )
-                csvManager.saveTransaction(transaction)
-            }
-            
-            // Refresh data when transaction is saved
-            view?.let { loadData(it) }
-        }
+        editLauncher.launch(intent)
     }
 }

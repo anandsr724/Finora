@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/card_background_light"
     android:paddingBottom="24dp">
 
     <!-- Handle bar -->
@@ -14,7 +14,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
         android:layout_marginBottom="4dp"
-        android:background="#E0E0E0" />
+        android:background="@color/color_separator" />
 
     <!-- Header -->
     <LinearLayout
@@ -26,7 +26,7 @@
         android:paddingEnd="12dp"
         android:paddingTop="8dp"
         android:paddingBottom="16dp"
-        android:background="@color/white">
+        android:background="@color/card_background_light">
 
         <TextView
             android:layout_width="0dp"
@@ -35,13 +35,13 @@
             android:text="Transaction Details"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:textColor="#2D3142" />
+            android:textColor="@color/text_primary_light" />
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="40dp"
             android:layout_height="40dp"
             app:cardCornerRadius="14dp"
-            app:cardBackgroundColor="#F4F4F5"
+            app:cardBackgroundColor="@color/color_icon_bg"
             app:cardElevation="0dp">
 
             <ImageButton
@@ -96,7 +96,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="28sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142"
+                android:textColor="@color/text_primary_light"
                 android:layout_marginBottom="6dp" />
 
             <TextView
@@ -134,7 +134,7 @@
                 android:layout_height="wrap_content"
                 android:text="Recipient"
                 android:textSize="11sp"
-                android:textColor="#A1A1AA"
+                android:textColor="@color/text_tertiary_light"
                 android:layout_marginBottom="3dp" />
 
             <TextView
@@ -143,13 +143,13 @@
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142"
+                android:textColor="@color/text_primary_light"
                 android:maxLines="1"
                 android:ellipsize="end" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#F4F4F5"/>
+            android:background="@color/color_divider"/>
 
         <!-- Note (conditional) -->
         <LinearLayout
@@ -166,7 +166,7 @@
                 android:layout_height="wrap_content"
                 android:text="Note"
                 android:textSize="11sp"
-                android:textColor="#A1A1AA"
+                android:textColor="@color/text_tertiary_light"
                 android:layout_marginBottom="3dp" />
 
             <TextView
@@ -174,13 +174,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="#52525B"
+                android:textColor="@color/color_text_medium"
                 android:maxLines="2"
                 android:ellipsize="end" />
         </LinearLayout>
 
         <View android:id="@+id/detailNoteDivider" android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#F4F4F5" android:visibility="gone"/>
+            android:background="@color/color_divider" android:visibility="gone"/>
 
         <!-- Date & Time -->
         <LinearLayout
@@ -195,7 +195,7 @@
                 android:layout_height="wrap_content"
                 android:text="Date &amp; Time"
                 android:textSize="11sp"
-                android:textColor="#A1A1AA"
+                android:textColor="@color/text_tertiary_light"
                 android:layout_marginBottom="3dp" />
 
             <TextView
@@ -203,11 +203,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="#52525B" />
+                android:textColor="@color/color_text_medium" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#F4F4F5"/>
+            android:background="@color/color_divider"/>
 
         <!-- Payment Method -->
         <LinearLayout
@@ -222,7 +222,7 @@
                 android:layout_height="wrap_content"
                 android:text="Payment Method"
                 android:textSize="11sp"
-                android:textColor="#A1A1AA"
+                android:textColor="@color/text_tertiary_light"
                 android:layout_marginBottom="3dp" />
 
             <TextView
@@ -230,11 +230,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="#52525B" />
+                android:textColor="@color/color_text_medium" />
         </LinearLayout>
 
         <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="#F4F4F5"/>
+            android:background="@color/color_divider"/>
 
         <!-- Transaction ID -->
         <LinearLayout
@@ -249,7 +249,7 @@
                 android:layout_height="wrap_content"
                 android:text="Transaction ID"
                 android:textSize="11sp"
-                android:textColor="#A1A1AA"
+                android:textColor="@color/text_tertiary_light"
                 android:layout_marginBottom="3dp" />
 
             <TextView
@@ -257,7 +257,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="#71717A"
+                android:textColor="@color/text_secondary_light"
                 android:maxLines="1"
                 android:ellipsize="middle" />
         </LinearLayout>

@@ -21,7 +21,7 @@
     </style>
 
     <!-- Bottom sheet with no entrance/exit animation -->
-    <style name="BottomSheetDialog.NoAnim" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+    <style name="BottomSheetDialog.NoAnim" parent="Theme.MaterialComponents.DayNight.BottomSheetDialog">
         <item name="android:windowAnimationStyle">@style/Animation.BottomSheet.NoAnim</item>
     </style>
 

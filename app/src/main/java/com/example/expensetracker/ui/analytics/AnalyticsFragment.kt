@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.example.expensetracker.CSVManager
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
+import com.example.expensetracker.CurrencyManager
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.github.mikephil.charting.charts.LineChart
@@ -57,6 +58,9 @@ class AnalyticsFragment : Fragment() {
     private lateinit var emptyStateMessage: TextView
     private lateinit var additionalStatsContainer: LinearLayout
     private lateinit var categoryLegend: LinearLayout
+    private lateinit var avgMomContainer: LinearLayout
+    private lateinit var avgTransactionAmount: TextView
+    private lateinit var momChangeText: TextView
 
     private var showByCategory = false
     private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
@@ -110,6 +114,9 @@ class AnalyticsFragment : Fragment() {
         emptyStateMessage = view.findViewById(R.id.emptyStateMessage)
         additionalStatsContainer = view.findViewById(R.id.additionalStatsContainer)
         categoryLegend = view.findViewById(R.id.categoryLegend)
+        avgMomContainer = view.findViewById(R.id.avgMomContainer)
+        avgTransactionAmount = view.findViewById(R.id.avgTransactionAmount)
+        momChangeText = view.findViewById(R.id.momChangeText)
 
         // Listener is installed inside rebuildMonthSpinner; nothing to set here
 
@@ -197,7 +204,10 @@ class AnalyticsFragment : Fragment() {
             textSize = 11f
             setDrawAxisLine(false)
             valueFormatter = object : ValueFormatter() {
-                override fun getFormattedValue(value: Float) = "₹${value.toInt()}"
+                override fun getFormattedValue(value: Float): String {
+                    val sym = CurrencyManager.getSymbol(CurrencyManager.getDefault(requireContext()))
+                    return "$sym${value.toInt()}"
+                }
             }
         }
         lineChart.axisRight.isEnabled = false
@@ -232,7 +242,7 @@ class AnalyticsFragment : Fragment() {
         }
 
         hideEmptyState()
-        updateSummaryCards(filteredTransactions)
+        updateSummaryCards(filteredTransactions, selectedMonth, allTransactions)
         updateCategoryChart(filteredTransactions)
         updateMonthlyTrend(allTransactions)
     }
@@ -242,7 +252,8 @@ class AnalyticsFragment : Fragment() {
         categoryChartCard.visibility = View.GONE
         monthlyTrendCard.visibility = View.GONE
         additionalStatsContainer.visibility = View.GONE
-        totalSpentAmount.text = "Rs.0"
+        avgMomContainer.visibility = View.GONE
+        totalSpentAmount.text = "${CurrencyManager.getSymbol(CurrencyManager.getDefault(requireContext()))}0"
         transactionCountText.text = "0"
         emptyStateMessage.text = if (isAllTime)
             "Add transactions to see your spending analytics"
@@ -254,23 +265,74 @@ class AnalyticsFragment : Fragment() {
         emptyStateLayout.visibility = View.GONE
     }
 
-    private fun updateSummaryCards(filteredTransactions: List<PaymentTransaction>) {
+    private fun updateSummaryCards(
+        filteredTransactions: List<PaymentTransaction>,
+        selectedMonthIdx: Int = 0,
+        allTransactions: List<PaymentTransaction> = emptyList()
+    ) {
         val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        val defaultCurrency = CurrencyManager.getDefault(requireContext())
+        val sym = CurrencyManager.getSymbol(defaultCurrency)
+
         val totalSpent = filteredTransactions.sumOf {
-            it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
         }
-        totalSpentAmount.text = "Rs.${fmt.format(totalSpent)}"
+        totalSpentAmount.text = "$sym${fmt.format(totalSpent)}"
         transactionCountText.text = filteredTransactions.size.toString()
 
+        // Average per transaction
+        val count = filteredTransactions.size
+        val avg = if (count > 0) totalSpent / count else 0.0
+        avgTransactionAmount.text = "$sym${fmt.format(avg)}"
+
+        // Month-over-month change
+        if (selectedMonthIdx > 0 && selectedMonthIdx <= monthYearPairs.size && allTransactions.isNotEmpty()) {
+            val (curYear, curMonth) = monthYearPairs[selectedMonthIdx - 1]
+            val cal = Calendar.getInstance()
+            cal.set(curYear, curMonth, 1)
+            cal.add(Calendar.MONTH, -1)
+            val prevYear = cal.get(Calendar.YEAR)
+            val prevMonth = cal.get(Calendar.MONTH)
+            val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+            val prevTotal = allTransactions.filter { tx ->
+                try {
+                    val d = dateFormat.parse(tx.dateTime) ?: return@filter false
+                    cal.time = d
+                    cal.get(Calendar.MONTH) == prevMonth && cal.get(Calendar.YEAR) == prevYear
+                } catch (e: Exception) { false }
+            }.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
+
+            if (prevTotal > 0.0) {
+                val pct = ((totalSpent - prevTotal) / prevTotal) * 100.0
+                val sign = if (pct >= 0) "+" else ""
+                momChangeText.text = "$sign${fmt.format(pct.toInt())}%"
+                momChangeText.setTextColor(resources.getColor(
+                    if (pct <= 0) android.R.color.holo_green_dark else android.R.color.holo_red_dark, null
+                ))
+            } else {
+                momChangeText.text = "New"
+                momChangeText.setTextColor(resources.getColor(R.color.primary_indigo, null))
+            }
+            avgMomContainer.visibility = View.VISIBLE
+        } else if (selectedMonthIdx == 0 && count > 0) {
+            momChangeText.text = "—"
+            momChangeText.setTextColor(resources.getColor(R.color.text_secondary_light, null))
+            avgMomContainer.visibility = View.VISIBLE
+        } else {
+            avgMomContainer.visibility = View.GONE
+        }
+
         val categoryTotals = filteredTransactions.groupBy { it.category }
-            .mapValues { (_, txns) -> txns.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 } }
+            .mapValues { (_, txns) ->
+                txns.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
+            }
 
         val topCat = categoryTotals.maxByOrNull { it.value }
         if (topCat != null) {
             val category = categoryManager.getCategoryById(topCat.key)
             topCategoryName.text = category?.name ?: topCat.key
             topCategoryIcon.setImageResource(CategoryIconHelper.getIconResId(topCat.key))
-            topCategoryAmount.text = "Rs.${fmt.format(topCat.value)}"
+            topCategoryAmount.text = "$sym${fmt.format(topCat.value)}"
             topCategoryCard.visibility = View.VISIBLE
             additionalStatsContainer.visibility = View.VISIBLE
         } else {
@@ -284,8 +346,8 @@ class AnalyticsFragment : Fragment() {
         if (recentExpense != null) {
             recentExpenseRecipient.text = recentExpense.recipient
             recentExpenseIcon.setImageResource(CategoryIconHelper.getIconResId(recentExpense.category))
-            val num = recentExpense.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull()
-            recentExpenseAmount.text = if (num != null) "Rs.${fmt.format(num)}" else recentExpense.amount
+            val converted = CurrencyManager.convert(CurrencyManager.parseAmount(recentExpense.amount), recentExpense.currency, defaultCurrency)
+            recentExpenseAmount.text = "$sym${fmt.format(converted)}"
             recentExpenseCard.visibility = View.VISIBLE
             additionalStatsContainer.visibility = View.VISIBLE
         } else {
@@ -294,8 +356,11 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun updateCategoryChart(transactions: List<PaymentTransaction>) {
+        val defaultCurrency = CurrencyManager.getDefault(requireContext())
         val categoryTotals = transactions.groupBy { it.category }
-            .mapValues { (_, txns) -> txns.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 } }
+            .mapValues { (_, txns) ->
+                txns.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
+            }
             .toList().sortedByDescending { it.second }
 
         if (categoryTotals.isEmpty()) { categoryChartCard.visibility = View.GONE; return }
@@ -349,6 +414,7 @@ class AnalyticsFragment : Fragment() {
     ) {
         categoryLegend.removeAllViews()
         val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        val sym = CurrencyManager.getSymbol(CurrencyManager.getDefault(requireContext()))
         val density = resources.displayMetrics.density
 
         val allRows = mainCategories.mapIndexed { idx, (catId, amount) ->
@@ -389,7 +455,7 @@ class AnalyticsFragment : Fragment() {
             }
 
             val amountView = android.widget.TextView(requireContext()).apply {
-                text = "₹${fmt.format(amount)}"
+                text = "$sym${fmt.format(amount)}"
                 textSize = 13f
                 setTextColor(Color.parseColor("#71717A"))
             }
@@ -410,6 +476,7 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun updateMonthlyTrend(allTransactions: List<PaymentTransaction>) {
+        val defaultCurrency = CurrencyManager.getDefault(requireContext())
         val monthLabels = mutableListOf<String>()
         val calendar = Calendar.getInstance()
         val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
@@ -437,7 +504,7 @@ class AnalyticsFragment : Fragment() {
                             d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
                                     && calendar.get(Calendar.YEAR) == year
                         } catch (e: Exception) { false }
-                    }.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
+                    }.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
                     Entry(mIdx.toFloat(), total.toFloat())
                 }
                 LineDataSet(entries, categoryManager.getCategoryById(catId)?.name ?: catId).apply {
@@ -461,7 +528,7 @@ class AnalyticsFragment : Fragment() {
                         d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
                                 && calendar.get(Calendar.YEAR) == year
                     } catch (e: Exception) { false }
-                }.sumOf { it.amount.replace("Rs.", "").replace(",", "").toDoubleOrNull() ?: 0.0 }
+                }.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
                 Entry(mIdx.toFloat(), total.toFloat())
             }
             if (entries.all { it.y == 0f }) { monthlyTrendCard.visibility = View.GONE; return }
