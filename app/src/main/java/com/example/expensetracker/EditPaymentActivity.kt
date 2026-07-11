@@ -23,9 +23,11 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import android.content.res.Configuration
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -65,6 +67,9 @@ class EditPaymentActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
+                Configuration.UI_MODE_NIGHT_YES
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDark
         setContentView(R.layout.activity_edit_payment)
 
         // Apply status bar height to header and nav bar height to footer
@@ -268,8 +273,8 @@ class EditPaymentActivity : AppCompatActivity() {
         transactionIdEditText.setText(transactionId)
 
         val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
-        val paymentIndex = paymentMethods.indexOf(bankInfo)
-        if (paymentIndex != -1) bankEditText.setSelection(paymentIndex)
+        val paymentIndex = paymentMethods.indexOfFirst { it.equals(bankInfo, ignoreCase = true) }
+        bankEditText.setSelection(if (paymentIndex != -1) paymentIndex else paymentMethods.size - 1)
 
         updateCategorySelectorDisplay()
 

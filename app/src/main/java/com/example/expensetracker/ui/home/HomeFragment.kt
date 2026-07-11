@@ -131,23 +131,28 @@ class HomeFragment : Fragment() {
         val defaultCurrency = CurrencyManager.getDefault(requireContext())
         val sym = CurrencyManager.getSymbol(defaultCurrency)
 
-        // Total spending (sum of expense transactions only, converted to default currency)
-        val totalBalance = transactions.filter { it.type == "expense" }.sumOf {
+        // Net balance = total income − total expenses
+        val totalIncome  = transactions.filter { it.type == "income" }.sumOf {
             CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
         }
+        val totalExpense = transactions.filter { it.type == "expense" }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
+        }
+        val netBalance = totalIncome - totalExpense
         val totalBalanceAmount = view.findViewById<TextView>(R.id.totalBalanceAmount)
-        totalBalanceAmount.text = "$sym${numberFormat.format(totalBalance)}"
+        totalBalanceAmount.text = "$sym${numberFormat.format(netBalance)}"
 
-        // Calculate monthly total
-        val monthlyTotal = calculateMonthlyTotal(transactions, defaultCurrency)
+        // Monthly expense and monthly income
+        val monthlyExpense = calculateMonthlyTotal(transactions, defaultCurrency)
+        val monthlyIncome  = calculateMonthlyIncome(transactions, defaultCurrency)
         val thisMonthAmount = view.findViewById<TextView>(R.id.thisMonthAmount)
         val transactionsCount = view.findViewById<TextView>(R.id.transactionsCount)
         val quickStatsContainer = view.findViewById<LinearLayout>(R.id.quickStatsContainer)
         val emptyStateCard = view.findViewById<MaterialCardView>(R.id.emptyStateCard)
         val viewAllButton = view.findViewById<TextView>(R.id.viewAllButton)
 
-        thisMonthAmount.text = "$sym${numberFormat.format(monthlyTotal)}"
-        transactionsCount.text = transactions.size.toString()
+        thisMonthAmount.text = "$sym${numberFormat.format(monthlyExpense)}"
+        transactionsCount.text = "$sym${numberFormat.format(monthlyIncome)}"
 
         // Show/hide empty state
         if (transactions.isEmpty()) {
@@ -193,6 +198,29 @@ class HomeFragment : Fragment() {
 
         return transactions.filter { transaction ->
             if (transaction.type != "expense") return@filter false
+            try {
+                val date = dateFormat.parse(transaction.dateTime)
+                if (date != null) {
+                    calendar.time = date
+                    calendar.get(Calendar.MONTH) == currentMonth && calendar.get(Calendar.YEAR) == currentYear
+                } else false
+            } catch (e: Exception) { false }
+        }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
+        }
+    }
+
+    private fun calculateMonthlyIncome(
+        transactions: List<com.example.expensetracker.PaymentTransaction>,
+        defaultCurrency: String = CurrencyManager.getDefault(requireContext())
+    ): Double {
+        val calendar = Calendar.getInstance()
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentYear = calendar.get(Calendar.YEAR)
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+
+        return transactions.filter { transaction ->
+            if (transaction.type != "income") return@filter false
             try {
                 val date = dateFormat.parse(transaction.dateTime)
                 if (date != null) {

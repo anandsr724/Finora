@@ -97,7 +97,7 @@
                         android:textColor="@color/text_primary_light"
                         android:textSize="13sp"
                         app:cornerRadius="14dp"
-                        app:backgroundTint="@color/white"
+                        app:backgroundTint="@color/card_background_light"
                         app:strokeColor="@color/border_light"
                         app:strokeWidth="1dp"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -172,10 +172,102 @@
                     android:textSize="15sp"
                     android:textColor="@color/primary_indigo"
                     app:cornerRadius="16dp"
-                    app:backgroundTint="@color/white"
+                    app:backgroundTint="@color/card_background_light"
                     app:strokeColor="@color/primary_indigo"
                     app:strokeWidth="1dp"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/border_light"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Upload Statement row -->
+                <LinearLayout
+                    android:id="@+id/uploadStatementRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/rounded_surface_variant"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="#EDE9FE"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_menu_upload"
+                            android:tint="@color/primary_indigo"
+                            android:scaleType="centerInside"
+                            android:padding="10dp"
+                            android:contentDescription="Upload statement" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Upload Statement"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary_light"
+                                android:layout_marginEnd="8dp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="NEW"
+                                android:textSize="9sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/white"
+                                android:paddingStart="6dp"
+                                android:paddingEnd="6dp"
+                                android:paddingTop="2dp"
+                                android:paddingBottom="2dp"
+                                android:background="@drawable/badge_background"
+                                android:backgroundTint="@color/primary_indigo" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Import past transactions from bank statements in bulk"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary_light"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_arrow_back"
+                        android:tint="@color/text_secondary_light"
+                        android:scaleType="centerInside"
+                        android:rotation="180"
+                        android:contentDescription="Open" />
+                </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -460,20 +552,77 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Save Processed Screenshots"
+                            android:text="OCR Data Capture"
                             android:textSize="14sp"
                             android:textColor="@color/text_primary_light" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Saved to Downloads/Finora/Screenshots"
+                            android:text="Saves screenshot + OCR predictions on each recorded transaction"
                             android:textSize="12sp"
                             android:textColor="@color/text_secondary_light" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/saveScreenshotsSwitch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/white"
+                        app:trackTint="@color/primary_indigo" />
+                </LinearLayout>
+
+                <!-- Get Feedback Toggle Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="12dp"
+                    android:background="@drawable/rounded_surface_variant"
+                    android:clipToOutline="true">
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardElevation="0dp"
+                        android:layout_marginEnd="12dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:src="@android:drawable/ic_menu_edit"
+                            android:scaleType="centerInside"
+                            android:tint="#71717A"
+                            android:padding="9dp"
+                            android:contentDescription="Get feedback" />
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Get Feedback"
+                            android:textSize="14sp"
+                            android:textColor="@color/text_primary_light" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ask for OCR accuracy rating after each save (requires OCR Data Capture)"
+                            android:textSize="12sp"
+                            android:textColor="@color/text_secondary_light" />
+                    </LinearLayout>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/feedbackSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"

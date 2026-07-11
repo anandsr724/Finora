@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background_light">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        app:elevation="0dp"
+        android:background="@color/background_light">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/text_primary_light"
+            app:title="Import Statement"
+            app:titleTextColor="@color/text_primary_light"
+            android:background="@color/background_light" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- State switcher -->
+    <ViewFlipper
+        android:id="@+id/stateFlipper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <!-- ══ STATE 0: UPLOAD ══ -->
+        <ScrollView
+            android:id="@+id/scrollContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="140dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload your bank statement to import past transactions in bulk."
+                    android:textSize="14sp"
+                    android:textColor="@color/text_secondary_light"
+                    android:layout_marginBottom="24dp" />
+
+                <!-- Upload drop zone -->
+                <LinearLayout
+                    android:id="@+id/uploadZone"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@drawable/upload_zone_background"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:layout_width="52dp"
+                        android:layout_height="52dp"
+                        android:src="@android:drawable/ic_menu_upload"
+                        android:tint="@color/primary_indigo"
+                        android:scaleType="centerInside"
+                        android:layout_marginBottom="12dp"
+                        android:contentDescription="Upload" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to upload statement"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_indigo"
+                        android:layout_marginBottom="6dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PDF or Excel (XLSX) formats"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary_light"
+                        android:layout_marginBottom="20dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/browseFilesButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="44dp"
+                        android:text="Browse Files"
+                        android:textSize="14sp"
+                        android:textColor="@color/white"
+                        app:cornerRadius="12dp"
+                        app:backgroundTint="@color/primary_indigo" />
+                </LinearLayout>
+
+                <!-- Selected file card (hidden until picked) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/selectedFileCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:visibility="gone"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/card_background_light"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_light">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:padding="16dp">
+
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="44dp"
+                            android:layout_height="44dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardBackgroundColor="#EDE9FE"
+                            app:cardElevation="0dp"
+                            android:layout_marginEnd="12dp">
+
+                            <ImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@android:drawable/ic_menu_agenda"
+                                android:tint="@color/primary_indigo"
+                                android:scaleType="centerInside"
+                                android:padding="10dp"
+                                android:contentDescription="File" />
+                        </com.google.android.material.card.MaterialCardView>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/selectedFileName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="14sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/text_primary_light"
+                                android:maxLines="1"
+                                android:ellipsize="middle" />
+
+                            <TextView
+                                android:id="@+id/selectedFileSize"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:textColor="@color/text_secondary_light"
+                                android:layout_marginTop="2dp" />
+                        </LinearLayout>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/removeFileButton"
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:insetTop="0dp"
+                            android:insetBottom="0dp"
+                            android:text="✕"
+                            android:textSize="13sp"
+                            android:textColor="@color/text_secondary_light"
+                            app:cornerRadius="18dp"
+                            app:backgroundTint="#F4F4F5"
+                            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Supported formats row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Formats: "
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary_light" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="PDF"
+                        android:textSize="12sp"
+                        android:textColor="#DC2626"
+                        android:textStyle="bold"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:background="@drawable/badge_background"
+                        android:backgroundTint="#FEE2E2"
+                        android:layout_marginEnd="6dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="XLSX"
+                        android:textSize="12sp"
+                        android:textColor="#059669"
+                        android:textStyle="bold"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="4dp"
+                        android:background="@drawable/badge_background"
+                        android:backgroundTint="#D1FAE5"
+                        android:layout_marginEnd="6dp" />
+                </LinearLayout>
+
+                <!-- Supported Banks -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/card_background_light"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_light">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Supported Banks"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary_light"
+                            android:layout_marginBottom="14dp" />
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:layout_marginBottom="10dp">
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SBI" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HDFC" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📱" android:textSize="16sp" android:layout_marginEnd="6dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPay" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ICICI" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Axis" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                            </LinearLayout>
+
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
+                                android:layout_weight="1" android:orientation="horizontal"
+                                android:gravity="center_vertical" android:padding="10dp"
+                                android:background="@drawable/rounded_surface_variant">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="18sp" android:textColor="@color/text_secondary_light" android:layout_marginEnd="4dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="More" android:textSize="13sp" android:textColor="@color/text_secondary_light"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- How it works -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="20dp"
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="@color/card_background_light"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/border_light">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="How it works"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_primary_light"
+                            android:layout_marginBottom="16dp" />
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="1"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upload" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your bank statement file" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
+                            <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="2"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto-detect" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Finora reads and extracts transactions" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                            </LinearLayout>
+                        </LinearLayout>
+
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                            android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="3"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
+                            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review &amp; Import" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confirm before saving to Finora" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ══ STATE 1: PARSING ══ -->
+        <LinearLayout
+            android:id="@+id/parsingState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <ProgressBar
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginBottom="24dp"
+                android:indeterminateTint="@color/primary_indigo" />
+
+            <TextView
+                android:id="@+id/parsingStatusText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Reading statement..."
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary_light"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="This may take a few seconds"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary_light" />
+        </LinearLayout>
+
+        <!-- ══ STATE 2: REVIEW ══ -->
+        <FrameLayout
+            android:id="@+id/reviewState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Sticky header -->
+            <LinearLayout
+                android:id="@+id/reviewHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:background="@color/background_light"
+                android:elevation="2dp">
+
+                <CheckBox
+                    android:id="@+id/selectAllCheckbox"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="@color/primary_indigo"
+                    android:layout_marginEnd="10dp"
+                    android:checked="true" />
+
+                <TextView
+                    android:id="@+id/reviewSummaryText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary_light"
+                    android:text="0 transactions found" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reviewList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="58dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="140dp"
+                android:clipToPadding="false"
+                android:scrollbars="none" />
+        </FrameLayout>
+
+        <!-- ══ STATE 3: ERROR ══ -->
+        <LinearLayout
+            android:id="@+id/errorState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⚠️"
+                android:textSize="48sp"
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:id="@+id/errorMessageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary_light"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary_light"
+                android:gravity="center"
+                android:layout_marginBottom="28dp"
+                android:text="Supported: SBI Bank PDF/XLSX · Google Pay PDF" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/tryAgainButton"
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:text="Try another file"
+                app:cornerRadius="12dp"
+                app:backgroundTint="@color/primary_indigo" />
+        </LinearLayout>
+
+    </ViewFlipper>
+
+    <!-- Fixed bottom bar -->
+    <LinearLayout
+        android:id="@+id/bottomBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="bottom"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="24dp"
+        android:background="@color/background_light"
+        android:elevation="4dp">
+
+        <!-- UPLOAD bottom content -->
+        <LinearLayout
+            android:id="@+id/uploadBottomContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/importButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Process Statement"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:alpha="0.5"
+                app:cornerRadius="18dp"
+                app:backgroundTint="@color/primary_indigo"
+                app:icon="@android:drawable/ic_menu_upload"
+                app:iconTint="@color/white" />
+        </LinearLayout>
+
+        <!-- REVIEW bottom content -->
+        <LinearLayout
+            android:id="@+id/reviewBottomContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/selectedCountText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/text_secondary_light"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:text="0 of 0 selected" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/confirmImportButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Import transactions"
+                android:textSize="16sp"
+                android:enabled="false"
+                android:alpha="0.5"
+                app:cornerRadius="18dp"
+                app:backgroundTint="@color/primary_indigo" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

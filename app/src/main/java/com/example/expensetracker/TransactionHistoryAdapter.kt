@@ -1,5 +1,6 @@
 package com.example.expensetracker
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,7 +41,11 @@ class TransactionHistoryAdapter(
         val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
         val numericAmount = CurrencyManager.parseAmount(tx.amount)
         val currencySymbol = CurrencyManager.getSymbol(tx.currency)
-        holder.amountTextView.text = "$currencySymbol${numberFormat.format(numericAmount)}"
+        val isIncome = tx.type == "income"
+        holder.amountTextView.text = "${if (isIncome) "+" else "-"}$currencySymbol${numberFormat.format(numericAmount)}"
+        holder.amountTextView.setTextColor(
+            if (isIncome) Color.parseColor("#10B981") else Color.parseColor("#EF4444")
+        )
 
         // Recipient
         holder.recipientTextView.text = tx.recipient

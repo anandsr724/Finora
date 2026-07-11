@@ -62,6 +62,10 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:2.9.6")
     // Charting library
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    // PDF parsing for bank statement import
+    implementation("com.github.TomRoush:PdfBox-Android:2.0.7.0")
+    // Pull-to-refresh
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
     // Compose support (for future upgrades)
     implementation(libs.androidx.core.ktx)

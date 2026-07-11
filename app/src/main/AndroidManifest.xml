@@ -57,6 +57,11 @@
             android:exported="false"
             android:label="Settings" />
 
+        <activity
+            android:name=".StatementImportActivity"
+            android:exported="false"
+            android:label="Import Statement" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />

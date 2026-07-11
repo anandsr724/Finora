@@ -8,6 +8,7 @@
         <item name="colorOnSecondary">@color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
+        <item name="android:colorBackground">@color/background_light</item>
         <item name="colorSurface">@color/card_background_dark</item>
         <item name="colorOnSurface">@color/text_primary_dark</item>
         <item name="colorSurfaceVariant">@color/card_background_dark_secondary</item>

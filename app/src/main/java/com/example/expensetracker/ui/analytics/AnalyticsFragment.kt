@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import android.widget.Spinner
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.expensetracker.CSVManager
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
@@ -62,6 +63,7 @@ class AnalyticsFragment : Fragment() {
     private lateinit var avgTransactionAmount: TextView
     private lateinit var momChangeText: TextView
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var showByCategory = false
     private val monthYearPairs = mutableListOf<Pair<Int, Int>>() // (year, month) for spinner positions 1+
 
@@ -94,6 +96,12 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun setupViews(view: View) {
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout)
+        swipeRefreshLayout.setColorSchemeResources(R.color.primary_indigo)
+        swipeRefreshLayout.setOnRefreshListener {
+            loadData()
+            swipeRefreshLayout.isRefreshing = false
+        }
         monthSpinner = view.findViewById(R.id.monthSpinner)
         pieChart = view.findViewById(R.id.pieChart)
         lineChart = view.findViewById(R.id.lineChart)
@@ -123,8 +131,8 @@ class AnalyticsFragment : Fragment() {
         chartToggleButton.setOnClickListener {
             showByCategory = !showByCategory
             chartToggleButton.text = if (showByCategory) "By Category" else "Total"
-            val allTransactions = csvManager.getAllTransactions()
-            updateMonthlyTrend(allTransactions)
+            val expenseTransactions = csvManager.getAllTransactions().filter { it.type == "expense" }
+            updateMonthlyTrend(expenseTransactions)
         }
     }
 
@@ -220,12 +228,14 @@ class AnalyticsFragment : Fragment() {
     }
 
     private fun renderData(selectedMonth: Int, allTransactions: List<com.example.expensetracker.PaymentTransaction>) {
+        // Analytics is spending-focused — only consider expense transactions throughout
+        val expenseTransactions = allTransactions.filter { it.type == "expense" }
         val filteredTransactions = if (selectedMonth == 0 || selectedMonth > monthYearPairs.size) {
-            allTransactions
+            expenseTransactions
         } else {
             val (targetYear, targetMonth) = monthYearPairs[selectedMonth - 1]
             val cal = Calendar.getInstance()
-            allTransactions.filter { transaction ->
+            expenseTransactions.filter { transaction ->
                 try {
                     val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(transaction.dateTime)
                     if (date != null) {
@@ -242,9 +252,9 @@ class AnalyticsFragment : Fragment() {
         }
 
         hideEmptyState()
-        updateSummaryCards(filteredTransactions, selectedMonth, allTransactions)
+        updateSummaryCards(filteredTransactions, selectedMonth, expenseTransactions)
         updateCategoryChart(filteredTransactions)
-        updateMonthlyTrend(allTransactions)
+        updateMonthlyTrend(expenseTransactions)
     }
 
     private fun showEmptyState(isAllTime: Boolean) {
@@ -295,6 +305,7 @@ class AnalyticsFragment : Fragment() {
             val prevMonth = cal.get(Calendar.MONTH)
             val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
             val prevTotal = allTransactions.filter { tx ->
+                if (tx.type != "expense") return@filter false
                 try {
                     val d = dateFormat.parse(tx.dateTime) ?: return@filter false
                     cal.time = d

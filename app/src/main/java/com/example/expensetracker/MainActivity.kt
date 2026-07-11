@@ -9,6 +9,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updatePadding
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -28,8 +29,10 @@ class MainActivity : AppCompatActivity() {
         )
 
         super.onCreate(savedInstanceState)
-        // Enable edge-to-edge: activity content extends behind transparent status bar
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        // In dark mode the system must use light (white) icons — no scrim applied
+        val isDark = prefs.getBoolean("dark_mode", false)
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDark
         setContentView(R.layout.activity_main)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)

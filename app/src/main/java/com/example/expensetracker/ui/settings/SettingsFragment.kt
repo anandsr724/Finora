@@ -43,6 +43,7 @@ class SettingsFragment : Fragment() {
     private lateinit var categoryPreviewContainer: LinearLayout
     private lateinit var darkModeSwitch: SwitchMaterial
     private lateinit var saveScreenshotsSwitch: SwitchMaterial
+    private lateinit var feedbackSwitch: SwitchMaterial
 
     companion object {
         private const val STORAGE_PERMISSION_CODE = 1002
@@ -72,6 +73,7 @@ class SettingsFragment : Fragment() {
         categoryPreviewContainer = view.findViewById(R.id.categoryPreviewContainer)
         darkModeSwitch = view.findViewById(R.id.darkModeSwitch)
         saveScreenshotsSwitch = view.findViewById(R.id.saveScreenshotsSwitch)
+        feedbackSwitch = view.findViewById(R.id.feedbackSwitch)
 
         manageCategoriesButton.setOnClickListener {
             showManageCategoriesSheet()
@@ -94,8 +96,13 @@ class SettingsFragment : Fragment() {
             confirmClearAllData()
         }
 
+        view.findViewById<LinearLayout>(R.id.uploadStatementRow).setOnClickListener {
+            startActivity(android.content.Intent(requireContext(), com.example.expensetracker.StatementImportActivity::class.java))
+        }
+
         setupCurrencySetting(view)
-        setupSaveScreenshotsSwitch()
+        setupDevTrackingSwitch()
+        setupFeedbackSwitch()
     }
 
     private fun setupCurrencySetting(view: View) {
@@ -382,13 +389,23 @@ class SettingsFragment : Fragment() {
             .show()
     }
 
-    private fun setupSaveScreenshotsSwitch() {
+    private fun setupDevTrackingSwitch() {
         val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
-        saveScreenshotsSwitch.isChecked = prefs.getBoolean("beta_save_screenshots", false)
+        saveScreenshotsSwitch.isChecked = prefs.getBoolean("dev_tracking_enabled", false)
         saveScreenshotsSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("beta_save_screenshots", isChecked).apply()
-            val msg = if (isChecked) "Screenshots will be saved to Downloads/Finora/Screenshots"
-                      else "Screenshot saving disabled"
+            prefs.edit().putBoolean("dev_tracking_enabled", isChecked).apply()
+            val msg = if (isChecked) "OCR data capture enabled"
+                      else "OCR data capture disabled"
+            Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun setupFeedbackSwitch() {
+        val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
+        feedbackSwitch.isChecked = prefs.getBoolean("feedback_enabled", false)
+        feedbackSwitch.setOnCheckedChangeListener { _, isChecked ->
+            prefs.edit().putBoolean("feedback_enabled", isChecked).apply()
+            val msg = if (isChecked) "Feedback prompt enabled" else "Feedback prompt disabled"
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
         }
     }
