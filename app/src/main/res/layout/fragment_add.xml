@@ -9,7 +9,7 @@
     android:paddingEnd="20dp"
     android:paddingBottom="100dp"
     android:clipToPadding="false"
-    android:background="@color/background_light">
+    android:background="@drawable/bg_luminous_glow">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -29,16 +29,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add Transaction"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light" />
+                android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Scan a screenshot or enter details manually"
                 android:textSize="13sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="@color/color_on_surface_muted"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
@@ -51,6 +49,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/selectImageButton"
+                style="@style/Widget.Finora.Button.Primary"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
@@ -60,17 +59,13 @@
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:text="Upload"
-                android:textAllCaps="false"
                 android:textSize="14sp"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/primary_indigo"
-                app:cornerRadius="16dp"
                 app:icon="@drawable/ic_upload"
-                app:iconTint="@color/white"
-                app:strokeWidth="0dp" />
+                app:iconTint="@color/color_on_primary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/manualEntryButton"
+                style="@style/Widget.Finora.Button.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="48dp"
                 android:layout_weight="1"
@@ -79,12 +74,7 @@
                 android:insetLeft="0dp"
                 android:insetRight="0dp"
                 android:text="Add Manual"
-                android:textAllCaps="false"
-                android:textSize="14sp"
-                android:textColor="@color/gradient_start"
-                app:backgroundTint="@color/white"
-                app:cornerRadius="16dp"
-                app:strokeWidth="0dp" />
+                android:textSize="14sp" />
         </LinearLayout>
 
         <!-- Image Preview Card -->
@@ -94,32 +84,60 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/color_glass_fill_l2"
             app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light"
+            app:strokeColor="@color/color_glass_border"
             android:visibility="gone">
 
-            <LinearLayout
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_height="wrap_content">
 
-                <ImageView
-                    android:id="@+id/imageView"
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="320dp"
-                    android:scaleType="centerCrop"
-                    android:contentDescription="Payment screenshot preview" />
-
-                <TextView
-                    android:id="@+id/imageInfoText"
-                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="14dp"
-                    android:textSize="12sp"
-                    android:textColor="@color/text_secondary_light" />
-            </LinearLayout>
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="320dp"
+                        android:scaleType="centerCrop"
+                        android:contentDescription="Payment screenshot preview" />
+
+                    <TextView
+                        android:id="@+id/imageInfoText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="14dp"
+                        android:textSize="12sp"
+                        android:textColor="@color/color_on_surface_muted" />
+                </LinearLayout>
+
+                <!-- Decorative remove badge (visual only, mirrors mockup; not wired to a click
+                     action to avoid touching image-handling logic) -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="12dp"
+                    android:clickable="false"
+                    android:focusable="false"
+                    app:cardCornerRadius="14dp"
+                    app:cardBackgroundColor="#992D3142"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp">
+
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:padding="7dp"
+                        android:src="@drawable/ic_close"
+                        app:tint="@color/color_on_surface"
+                        android:contentDescription="Remove image" />
+                </com.google.android.material.card.MaterialCardView>
+            </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <!-- Process Button Card -->
@@ -129,10 +147,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/color_glass_fill_l2"
             app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light"
+            app:strokeColor="@color/color_glass_border"
             android:visibility="gone">
 
             <LinearLayout
@@ -143,15 +161,11 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/processButton"
+                    style="@style/Widget.Finora.Button.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:text="Extract Details"
                     android:textSize="15sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/white"
-                    app:backgroundTint="@color/primary_indigo"
-                    app:cornerRadius="16dp"
-                    app:strokeWidth="0dp"
                     android:enabled="false" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -163,10 +177,10 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
             app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/color_glass_fill_l2"
             app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light"
+            app:strokeColor="@color/color_glass_border"
             android:visibility="gone">
 
             <LinearLayout
@@ -186,6 +200,7 @@
                         android:layout_width="22dp"
                         android:layout_height="22dp"
                         android:layout_marginEnd="12dp"
+                        android:indeterminateTint="@color/color_primary"
                         android:visibility="gone" />
 
                     <TextView
@@ -194,28 +209,23 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:textSize="14sp"
-                        android:textColor="#2D3142"
+                        android:textColor="@color/color_on_surface_muted"
                         android:lineSpacingExtra="4dp" />
                 </LinearLayout>
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/retryManualButton"
+                    style="@style/Widget.Finora.Button.Secondary"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="16dp"
                     android:text="Enter Details Manually"
-                    android:textAllCaps="false"
                     android:textSize="14sp"
-                    android:textColor="@color/primary_indigo"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    app:backgroundTint="#EDE9FE"
-                    app:cornerRadius="16dp"
-                    app:strokeWidth="0dp"
-                    android:visibility="gone"
-                    style="@style/Widget.MaterialComponents.Button" />
+                    android:visibility="gone" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -229,30 +239,23 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/saveButton"
+                style="@style/Widget.Finora.Button.Primary"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 android:text="Save"
-                android:textSize="15sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                app:backgroundTint="@color/primary_indigo"
-                app:cornerRadius="16dp"
-                app:strokeWidth="0dp" />
+                android:textSize="15sp" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/editButton"
+                style="@style/Widget.Finora.Button.Secondary"
                 android:layout_width="0dp"
                 android:layout_height="52dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:text="Review &amp; Edit"
-                android:textSize="15sp"
-                android:textColor="@color/primary_indigo"
-                app:backgroundTint="#EDE9FE"
-                app:cornerRadius="16dp"
-                app:strokeWidth="0dp" />
+                android:textSize="15sp" />
         </LinearLayout>
 
     </LinearLayout>

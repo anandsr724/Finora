@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="glass_card_corner_radius">24dp</dimen>
+    <dimen name="glass_pill_corner_radius">999dp</dimen>
+    <dimen name="glass_card_border_width">1dp</dimen>
+</resources>

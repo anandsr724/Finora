@@ -87,6 +87,20 @@ object CategoryIconHelper {
         "cat_hospital", "cat_pill", "cat_stethoscope", "cat_book", "cat_school",
         "cat_other"
     )
+
+    // Luminous Finance chart palette, used everywhere a category needs a semantic tint
+    // (transaction row icon badges, category badges, analytics legend/pie, statement review rows).
+    private val tintPalette = intArrayOf(
+        R.color.chart_color_1, R.color.chart_color_2, R.color.chart_color_3, R.color.chart_color_4,
+        R.color.chart_color_5, R.color.chart_color_6, R.color.chart_color_7, R.color.chart_color_8
+    )
+
+    // Deterministic hash-based assignment so every category id (predefined or custom) gets a
+    // stable color without needing a hand-maintained per-id map.
+    fun getIconTintColorRes(categoryId: String): Int {
+        val index = Math.floorMod(categoryId.hashCode(), tintPalette.size)
+        return tintPalette[index]
+    }
 }
 
 class CategoryManager(private val context: Context) {

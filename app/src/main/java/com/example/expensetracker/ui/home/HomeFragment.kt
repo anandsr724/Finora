@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,9 +26,10 @@ import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
+import com.example.expensetracker.ui.common.GlassCardView
+import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -96,14 +98,14 @@ class HomeFragment : Fragment() {
     }
 
     private fun setupViews(view: View) {
-        // Upload button - opens file picker directly
-        val uploadButton = view.findViewById<MaterialButton>(R.id.uploadButton)
+        // Upload action tile - opens file picker directly
+        val uploadButton = view.findViewById<View>(R.id.uploadButton)
         uploadButton.setOnClickListener {
             openFilePicker()
         }
 
-        // Manual Entry button - opens edit form directly
-        val manualEntryButton = view.findViewById<MaterialButton>(R.id.manualEntryButton)
+        // Add Manual action tile - opens edit form directly
+        val manualEntryButton = view.findViewById<View>(R.id.manualEntryButton)
         manualEntryButton.setOnClickListener {
             openManualEntryForm()
         }
@@ -122,37 +124,69 @@ class HomeFragment : Fragment() {
     private fun loadData(view: View) {
         val transactions = csvManager.getAllTransactions()
         val numberFormat = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        val now = Date()
 
-        // Date subtitle
-        val dateSubtitle = view.findViewById<TextView>(R.id.dateSubtitle)
-        val dateFormat = SimpleDateFormat("EEEE, MMMM d", Locale.ENGLISH)
-        dateSubtitle.text = dateFormat.format(Date())
+        val totalSpendingLabel = view.findViewById<TextView>(R.id.totalSpendingLabel)
+        totalSpendingLabel.text = "Total Spending • ${SimpleDateFormat("MMMM", Locale.ENGLISH).format(now)}"
 
         val defaultCurrency = CurrencyManager.getDefault(requireContext())
         val sym = CurrencyManager.getSymbol(defaultCurrency)
 
-        // Net balance = total income − total expenses
-        val totalIncome  = transactions.filter { it.type == "income" }.sumOf {
-            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
-        }
-        val totalExpense = transactions.filter { it.type == "expense" }.sumOf {
-            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
-        }
-        val netBalance = totalIncome - totalExpense
-        val totalBalanceAmount = view.findViewById<TextView>(R.id.totalBalanceAmount)
-        totalBalanceAmount.text = "$sym${numberFormat.format(netBalance)}"
-
-        // Monthly expense and monthly income
+        // Monthly expense and monthly income (current calendar month, matches the "Total
+        // Spending • <month>" label — this is this month's spend, not an all-time total)
         val monthlyExpense = calculateMonthlyTotal(transactions, defaultCurrency)
         val monthlyIncome  = calculateMonthlyIncome(transactions, defaultCurrency)
+        val prevMonthExpense = calculatePreviousMonthTotal(transactions, defaultCurrency)
+        val prevMonthIncome = calculatePreviousMonthIncome(transactions, defaultCurrency)
+
+        val totalBalanceAmount = view.findViewById<TextView>(R.id.totalBalanceAmount)
+        totalBalanceAmount.text = "$sym${numberFormat.format(monthlyExpense)}"
+
+        // Hero trend badge: this month's spending vs last month's (real MoM comparison, same
+        // technique AnalyticsFragment already uses — not a fabricated figure)
+        val heroTrendContainer = view.findViewById<LinearLayout>(R.id.heroTrendContainer)
+        val heroTrendIcon = view.findViewById<ImageView>(R.id.heroTrendIcon)
+        val heroTrendText = view.findViewById<TextView>(R.id.heroTrendText)
+        if (prevMonthExpense > 0.0) {
+            val pct = ((monthlyExpense - prevMonthExpense) / prevMonthExpense) * 100.0
+            val increased = pct >= 0
+            val trendColor = ContextCompat.getColor(requireContext(), if (increased) R.color.color_expense else R.color.color_income)
+            heroTrendText.text = "${kotlin.math.abs(pct).toInt()}% from last month"
+            heroTrendText.setTextColor(trendColor)
+            heroTrendIcon.setImageResource(if (increased) R.drawable.ic_trending_up else R.drawable.ic_trending_down)
+            heroTrendIcon.setColorFilter(trendColor)
+            heroTrendContainer.visibility = View.VISIBLE
+        } else {
+            heroTrendContainer.visibility = View.GONE
+        }
+
         val thisMonthAmount = view.findViewById<TextView>(R.id.thisMonthAmount)
         val transactionsCount = view.findViewById<TextView>(R.id.transactionsCount)
         val quickStatsContainer = view.findViewById<LinearLayout>(R.id.quickStatsContainer)
-        val emptyStateCard = view.findViewById<MaterialCardView>(R.id.emptyStateCard)
+        val emptyStateCard = view.findViewById<GlassCardView>(R.id.emptyStateCard)
         val viewAllButton = view.findViewById<TextView>(R.id.viewAllButton)
 
         thisMonthAmount.text = "$sym${numberFormat.format(monthlyExpense)}"
         transactionsCount.text = "$sym${numberFormat.format(monthlyIncome)}"
+
+        // Income / Expense trend captions vs last month
+        val incomeTrendText = view.findViewById<TextView>(R.id.incomeTrendText)
+        if (prevMonthIncome > 0.0) {
+            val pct = ((monthlyIncome - prevMonthIncome) / prevMonthIncome) * 100.0
+            incomeTrendText.text = "${if (pct >= 0) "+" else ""}${pct.toInt()}% vs last month"
+            incomeTrendText.visibility = View.VISIBLE
+        } else {
+            incomeTrendText.visibility = View.GONE
+        }
+
+        val expenseTrendText = view.findViewById<TextView>(R.id.expenseTrendText)
+        if (prevMonthExpense > 0.0) {
+            val pct = ((monthlyExpense - prevMonthExpense) / prevMonthExpense) * 100.0
+            expenseTrendText.text = "${if (pct >= 0) "+" else ""}${pct.toInt()}% vs last month"
+            expenseTrendText.visibility = View.VISIBLE
+        } else {
+            expenseTrendText.visibility = View.GONE
+        }
 
         // Show/hide empty state
         if (transactions.isEmpty()) {
@@ -233,6 +267,54 @@ class HomeFragment : Fragment() {
         }
     }
 
+    private fun calculatePreviousMonthTotal(
+        transactions: List<com.example.expensetracker.PaymentTransaction>,
+        defaultCurrency: String = CurrencyManager.getDefault(requireContext())
+    ): Double {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -1)
+        val prevMonth = calendar.get(Calendar.MONTH)
+        val prevYear = calendar.get(Calendar.YEAR)
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+
+        return transactions.filter { transaction ->
+            if (transaction.type != "expense") return@filter false
+            try {
+                val date = dateFormat.parse(transaction.dateTime)
+                if (date != null) {
+                    calendar.time = date
+                    calendar.get(Calendar.MONTH) == prevMonth && calendar.get(Calendar.YEAR) == prevYear
+                } else false
+            } catch (e: Exception) { false }
+        }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
+        }
+    }
+
+    private fun calculatePreviousMonthIncome(
+        transactions: List<com.example.expensetracker.PaymentTransaction>,
+        defaultCurrency: String = CurrencyManager.getDefault(requireContext())
+    ): Double {
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.MONTH, -1)
+        val prevMonth = calendar.get(Calendar.MONTH)
+        val prevYear = calendar.get(Calendar.YEAR)
+        val dateFormat = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH)
+
+        return transactions.filter { transaction ->
+            if (transaction.type != "income") return@filter false
+            try {
+                val date = dateFormat.parse(transaction.dateTime)
+                if (date != null) {
+                    calendar.time = date
+                    calendar.get(Calendar.MONTH) == prevMonth && calendar.get(Calendar.YEAR) == prevYear
+                } else false
+            } catch (e: Exception) { false }
+        }.sumOf {
+            CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         // Refresh data when returning to this fragment
@@ -246,13 +328,28 @@ class HomeFragment : Fragment() {
 
         val fmt = NumberFormat.getNumberInstance(java.util.Locale("en", "IN"))
 
-        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
-            .setImageResource(CategoryIconHelper.getIconResId(transaction.category))
+        // Category dot — tinted to the category's semantic color (matches TransactionHistoryAdapter)
+        val categoryColor = ContextCompat.getColor(
+            requireContext(),
+            CategoryIconHelper.getIconTintColorRes(transaction.category)
+        )
+        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
+            setImageResource(R.drawable.shape_circle)
+            setColorFilter(categoryColor)
+        }
 
+        val isIncome = transaction.type == "income"
         val numericAmount = CurrencyManager.parseAmount(transaction.amount)
         val currencySymbol = CurrencyManager.getSymbol(transaction.currency)
-        sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            "$currencySymbol${fmt.format(numericAmount)}"
+        sheetView.findViewById<TextView>(R.id.detailAmount).apply {
+            text = "${if (isIncome) "+" else "-"}$currencySymbol${fmt.format(numericAmount)}"
+            setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (isIncome) R.color.color_income else R.color.color_expense
+                )
+            )
+        }
 
         sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
             categoryManager.getCategoryDisplayName(transaction.category)
@@ -299,6 +396,7 @@ class HomeFragment : Fragment() {
             confirmDeleteTransaction(transaction)
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 

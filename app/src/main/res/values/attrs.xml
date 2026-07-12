@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GlassCardView">
+        <attr name="glassLevel" format="enum">
+            <enum name="level2" value="2" />
+            <enum name="level3" value="3" />
+        </attr>
+        <attr name="glassCornerRadius" format="dimension" />
+    </declare-styleable>
+</resources>

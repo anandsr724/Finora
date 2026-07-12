@@ -1,305 +1,308 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/card_background_light"
-    android:paddingBottom="24dp">
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp">
 
-    <!-- Handle bar -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="4dp"
-        android:background="@color/color_separator" />
-
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp"
-        android:background="@color/card_background_light">
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
-        <TextView
-            android:layout_width="0dp"
+        <!-- Drag handle -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/shape_drag_handle" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Transaction Details"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary_light" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            app:cardCornerRadius="14dp"
-            app:cardBackgroundColor="@color/color_icon_bg"
-            app:cardElevation="0dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Transaction Details"
+                android:textAppearance="@style/TextAppearance.Finora.BodyLg"
+                android:textStyle="bold"
+                android:textColor="@color/color_on_surface" />
 
             <ImageButton
                 android:id="@+id/closeDetailSheetButton"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/shape_circle"
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:tint="#71717A"
-                android:padding="10dp"
+                android:scaleType="fitCenter"
+                android:padding="8dp"
+                android:tint="@color/color_on_surface_muted"
                 android:contentDescription="Close" />
-        </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
+        </LinearLayout>
 
-    <!-- Amount + Category Row -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingBottom="20dp">
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            app:cardCornerRadius="20dp"
-            app:cardBackgroundColor="#EDE9FE"
-            app:cardElevation="0dp"
-            android:layout_marginEnd="16dp">
-
-            <ImageView
-                android:id="@+id/detailCategoryIcon"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp"
-                android:scaleType="centerInside"
-                android:tint="@color/primary_indigo"
-                android:contentDescription="Category" />
-        </com.google.android.material.card.MaterialCardView>
-
+        <!-- Amount + Category badge (centered) -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingTop="4dp"
+            android:paddingBottom="20dp">
 
             <TextView
                 android:id="@+id/detailAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
-                android:layout_marginBottom="6dp" />
+                android:textAppearance="@style/TextAppearance.Finora.NumericXl" />
 
-            <TextView
-                android:id="@+id/detailCategoryBadge"
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="11sp"
-                android:textColor="@color/primary_indigo"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="10dp"
                 android:background="@drawable/category_badge_background"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp" />
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp">
+
+                <ImageView
+                    android:id="@+id/detailCategoryIcon"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:src="@drawable/shape_circle"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:id="@+id/detailCategoryBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.Finora.LabelSm"
+                    android:textColor="@color/color_on_surface_muted" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Details List -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
+
+            <!-- Recipient -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Recipient"
+                    android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                    android:textColor="@color/color_on_surface_muted" />
+
+                <TextView
+                    android:id="@+id/detailRecipient"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_on_surface"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_glass_border" />
+
+            <!-- Note (conditional) -->
+            <LinearLayout
+                android:id="@+id/detailNoteRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Note"
+                    android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                    android:textColor="@color/color_on_surface_muted" />
+
+                <TextView
+                    android:id="@+id/detailNote"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_on_surface"
+                    android:maxLines="2"
+                    android:ellipsize="end"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <View
+                android:id="@+id/detailNoteDivider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_glass_border"
+                android:visibility="gone" />
+
+            <!-- Date & Time -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Date &amp; Time"
+                    android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                    android:textColor="@color/color_on_surface_muted" />
+
+                <TextView
+                    android:id="@+id/detailDateTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_on_surface"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_glass_border" />
+
+            <!-- Payment Method -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Payment Method"
+                    android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                    android:textColor="@color/color_on_surface_muted" />
+
+                <TextView
+                    android:id="@+id/detailPaymentMethod"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_on_surface"
+                    android:gravity="end" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/color_glass_border" />
+
+            <!-- Transaction ID -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="14dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Transaction ID"
+                    android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                    android:textColor="@color/color_on_surface_muted" />
+
+                <TextView
+                    android:id="@+id/detailTransactionId"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="@color/color_on_surface_muted"
+                    android:maxLines="1"
+                    android:ellipsize="middle"
+                    android:gravity="end" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="20dp">
+
+            <!-- Edit button (glass ghost pill) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detailEditButton"
+                style="@style/Widget.Finora.Button.Secondary"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:text="Edit"
+                android:textSize="14sp" />
+
+            <!-- Delete button (coral-tinted destructive pill) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/detailDeleteButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:text="Delete"
+                android:textColor="@color/color_expense"
+                android:textSize="14sp"
+                android:textAllCaps="false"
+                app:backgroundTint="@color/color_expense_container"
+                app:strokeColor="@color/color_expense"
+                app:strokeWidth="1dp"
+                app:cornerRadius="999dp" />
         </LinearLayout>
     </LinearLayout>
-
-    <!-- Details List -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp">
-
-        <!-- Recipient -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Recipient"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary_light"
-                android:layout_marginBottom="3dp" />
-
-            <TextView
-                android:id="@+id/detailRecipient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
-                android:maxLines="1"
-                android:ellipsize="end" />
-        </LinearLayout>
-
-        <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/color_divider"/>
-
-        <!-- Note (conditional) -->
-        <LinearLayout
-            android:id="@+id/detailNoteRow"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Note"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary_light"
-                android:layout_marginBottom="3dp" />
-
-            <TextView
-                android:id="@+id/detailNote"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/color_text_medium"
-                android:maxLines="2"
-                android:ellipsize="end" />
-        </LinearLayout>
-
-        <View android:id="@+id/detailNoteDivider" android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/color_divider" android:visibility="gone"/>
-
-        <!-- Date & Time -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date &amp; Time"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary_light"
-                android:layout_marginBottom="3dp" />
-
-            <TextView
-                android:id="@+id/detailDateTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/color_text_medium" />
-        </LinearLayout>
-
-        <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/color_divider"/>
-
-        <!-- Payment Method -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Payment Method"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary_light"
-                android:layout_marginBottom="3dp" />
-
-            <TextView
-                android:id="@+id/detailPaymentMethod"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/color_text_medium" />
-        </LinearLayout>
-
-        <View android:layout_width="match_parent" android:layout_height="1dp"
-            android:background="@color/color_divider"/>
-
-        <!-- Transaction ID -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Transaction ID"
-                android:textSize="11sp"
-                android:textColor="@color/text_tertiary_light"
-                android:layout_marginBottom="3dp" />
-
-            <TextView
-                android:id="@+id/detailTransactionId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary_light"
-                android:maxLines="1"
-                android:ellipsize="middle" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="16dp">
-
-        <!-- Edit button (purple tinted) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/detailEditButton"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Edit"
-            android:textColor="@color/primary_indigo"
-            android:textSize="14sp"
-            app:backgroundTint="#EDE9FE"
-            app:cornerRadius="16dp"
-            app:strokeWidth="0dp"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
-
-        <!-- Delete button (red tinted) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/detailDeleteButton"
-            android:layout_width="0dp"
-            android:layout_height="52dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Delete"
-            android:textColor="#EF4444"
-            android:textSize="14sp"
-            app:backgroundTint="#FEE2E2"
-            app:cornerRadius="16dp"
-            app:strokeWidth="0dp"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
-    </LinearLayout>
-</LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/background_light"
+    android:background="@drawable/bg_luminous_glow"
     android:clipToPadding="false">
 
     <LinearLayout
@@ -27,169 +27,181 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="20dp">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="18dp">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/shape_circle_gradient" />
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
                 android:text="Reports"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
-                android:layout_marginBottom="4dp" />
+                android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Analyze your spending patterns"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary_light"
-                android:layout_marginBottom="16dp" />
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_notifications"
+                android:tint="@color/color_primary"
+                android:contentDescription="Notifications" />
+        </LinearLayout>
 
-            <!-- Month Selector -->
-            <com.google.android.material.card.MaterialCardView
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Analyze your spending patterns"
+            android:textSize="13sp"
+            android:textColor="@color/color_on_surface_muted"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Month Selector -->
+        <com.example.expensetracker.ui.common.GlassCardView
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="16dp"
+            app:glassLevel="level2"
+            app:glassCornerRadius="16dp">
+
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="2dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="0dp">
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="14dp"
+                android:paddingEnd="14dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_calendar_month"
+                    android:tint="@color/color_primary"
+                    android:layout_marginEnd="10dp"
+                    android:contentDescription="Calendar" />
+
+                <Spinner
+                    android:id="@+id/monthSpinner"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_on_surface"
+                    android:background="@null"
+                    android:spinnerMode="dropdown"
+                    android:popupBackground="@drawable/dropdown_popup_bg" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_chevron_down"
+                    android:tint="@color/color_on_surface_muted"
+                    android:contentDescription="Expand" />
+            </LinearLayout>
+        </com.example.expensetracker.ui.common.GlassCardView>
+
+        <!-- Total Spent — full width -->
+        <com.example.expensetracker.ui.common.GlassCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:background="@drawable/analytics_total_spent_gradient">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:paddingStart="14dp"
-                    android:paddingEnd="14dp">
+                    android:layout_marginBottom="8dp">
 
                     <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_calendar_month"
-                        android:tint="#71717A"
-                        android:layout_marginEnd="10dp"
-                        android:contentDescription="Calendar" />
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_wallet"
+                        android:tint="#E6FFFFFF"
+                        android:layout_marginEnd="6dp"
+                        android:contentDescription="Wallet" />
 
-                    <Spinner
-                        android:id="@+id/monthSpinner"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:textSize="14sp"
-                        android:textColor="@color/text_primary_light"
-                        android:background="@null"
-                        android:spinnerMode="dropdown"
-                        android:popupBackground="@drawable/dropdown_popup_bg" />
-
-                    <ImageView
-                        android:layout_width="20dp"
-                        android:layout_height="20dp"
-                        android:src="@drawable/ic_chevron_down"
-                        android:tint="#71717A"
-                        android:contentDescription="Expand" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="TOTAL SPENT"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.08"
+                        android:textColor="#E6FFFFFF" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
 
-        <!-- Summary Cards 2x2 grid -->
+                <TextView
+                    android:id="@+id/totalSpentAmount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹0"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:fontFamily="@font/hanken_grotesk"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+        </com.example.expensetracker.ui.common.GlassCardView>
+
+        <!-- 1. Transactions + 2. Avg per Txn -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginBottom="12dp">
 
-            <!-- Total Spent Card (purple gradient) -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Transactions -->
+            <com.example.expensetracker.ui.common.GlassCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
-                app:cardCornerRadius="28dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@android:color/transparent">
+                app:glassLevel="level2"
+                app:glassCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp"
-                    android:background="@drawable/balance_card_gradient">
+                    android:gravity="center"
+                    android:padding="18dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical"
-                        android:layout_marginBottom="8dp">
-
-                        <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_wallet"
-                            android:tint="#CCFFFFFF"
-                            android:layout_marginEnd="6dp"
-                            android:contentDescription="Wallet" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Total Spent"
-                            android:textSize="12sp"
-                            android:textColor="#CCFFFFFF" />
-                    </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/totalSpentAmount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="₹0"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Transactions Count Card (white) -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="8dp">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
                             android:src="@drawable/ic_trending_up"
-                            android:tint="#71717A"
+                            android:tint="@color/color_on_surface_muted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Transactions" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Transactions"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:text="TRANSACTIONS"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08"
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
 
                     <TextView
@@ -199,145 +211,113 @@
                         android:text="0"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary_light" />
+                        android:fontFamily="@font/hanken_grotesk"
+                        android:textColor="@color/color_on_surface" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
 
-        <!-- Average & MoM Row -->
-        <LinearLayout
-            android:id="@+id/avgMomContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="12dp"
-            android:visibility="gone">
-
-            <!-- Average Card -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Avg per Txn"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="6dp" />
-
-                    <TextView
-                        android:id="@+id/avgTransactionAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="—"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary_light" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- MoM Change Card -->
-            <com.google.android.material.card.MaterialCardView
+            <!-- Average -->
+            <com.example.expensetracker.ui.common.GlassCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light">
+                app:glassLevel="level2"
+                app:glassCornerRadius="20dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="vs Last Month"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="6dp" />
-
-                    <TextView
-                        android:id="@+id/momChangeText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="—"
-                        android:textSize="18sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/text_primary_light" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-        </LinearLayout>
-
-        <!-- Top Category and Recent Expense Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone"
-            android:id="@+id/additionalStatsContainer">
-
-            <!-- Top Category Card (white) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/topCategoryCard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:gravity="center"
+                    android:padding="18dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:gravity="center_vertical"
                         android:layout_marginBottom="8dp">
 
                         <ImageView
-                            android:layout_width="20dp"
-                            android:layout_height="20dp"
-                            android:src="@drawable/ic_wallet"
-                            android:tint="#71717A"
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_analytics"
+                            android:tint="@color/color_on_surface_muted"
+                            android:layout_marginEnd="6dp"
+                            android:contentDescription="Average" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AVG PER TXN"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08"
+                            android:textColor="@color/color_on_surface_muted" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/avgTransactionAmount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="—"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/hanken_grotesk"
+                        android:textColor="@color/color_on_surface" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
+        </LinearLayout>
+
+        <!-- 3. Top Category + 4. vs Last Month -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <!-- Top Category — own visibility toggle -->
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:id="@+id/topCategoryCard"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                app:glassLevel="level2"
+                app:glassCornerRadius="20dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="18dp">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_category"
+                            android:tint="@color/color_on_surface_muted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Top category" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Top Category"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:text="TOP CATEGORY"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08"
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -346,14 +326,22 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
 
-                        <ImageView
-                            android:id="@+id/topCategoryIcon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:scaleType="centerInside"
-                            android:tint="@color/primary_indigo"
-                            android:layout_marginEnd="8dp"
-                            android:contentDescription="Category icon" />
+                        <FrameLayout
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:background="@drawable/shape_circle"
+                            android:backgroundTint="@color/color_glass_fill_l2"
+                            android:layout_marginEnd="8dp">
+
+                            <ImageView
+                                android:id="@+id/topCategoryIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:padding="7dp"
+                                android:scaleType="centerInside"
+                                android:tint="@color/color_primary"
+                                android:contentDescription="Category icon" />
+                        </FrameLayout>
 
                         <LinearLayout
                             android:layout_width="0dp"
@@ -368,7 +356,7 @@
                                 android:text="Category"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary_light"
+                                android:textColor="@color/color_on_surface"
                                 android:maxLines="1"
                                 android:ellipsize="end" />
 
@@ -377,97 +365,77 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="₹0"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_secondary_light" />
+                                android:textSize="11sp"
+                                android:textColor="@color/color_on_surface_muted" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </com.example.expensetracker.ui.common.GlassCardView>
 
-            <!-- Recent Expense Card (white) -->
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/recentExpenseCard"
+            <!-- vs Last Month — own visibility toggle -->
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:id="@+id/momCard"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/card_background_light"
-                app:strokeWidth="1dp"
-                app:strokeColor="@color/border_light"
+                app:glassLevel="level2"
+                app:glassCornerRadius="20dp"
                 android:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Recent Expense"
-                        android:textSize="12sp"
-                        android:textColor="@color/text_secondary_light"
-                        android:layout_marginBottom="8dp" />
+                    android:gravity="center"
+                    android:padding="18dp">
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="8dp">
 
                         <ImageView
-                            android:id="@+id/recentExpenseIcon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:scaleType="centerInside"
-                            android:tint="@color/primary_indigo"
-                            android:layout_marginEnd="8dp"
-                            android:contentDescription="Recent expense icon" />
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@drawable/ic_trending_down"
+                            android:tint="@color/color_on_surface_muted"
+                            android:layout_marginEnd="6dp"
+                            android:contentDescription="vs Last Month" />
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id="@+id/recentExpenseRecipient"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Recipient"
-                                android:textSize="13sp"
-                                android:textStyle="bold"
-                                android:textColor="@color/text_primary_light"
-                                android:maxLines="1"
-                                android:ellipsize="end" />
-
-                            <TextView
-                                android:id="@+id/recentExpenseAmount"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="₹0"
-                                android:textSize="12sp"
-                                android:textColor="@color/text_secondary_light" />
-                        </LinearLayout>
+                            android:text="VS LAST MONTH"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.08"
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/momChangeText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="—"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/hanken_grotesk"
+                        android:textColor="@color/color_on_surface" />
                 </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+            </com.example.expensetracker.ui.common.GlassCardView>
         </LinearLayout>
 
         <!-- Spending by Category Card -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:id="@+id/categoryChartCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light"
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -482,7 +450,8 @@
                     android:text="Spending by Category"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary_light"
+                    android:fontFamily="@font/hanken_grotesk"
+                    android:textColor="@color/color_on_surface"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Pie Chart -->
@@ -499,18 +468,15 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- Monthly Trend Card -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:id="@+id/monthlyTrendCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light"
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -534,18 +500,26 @@
                         android:text="Monthly Spending Trend"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary_light" />
+                        android:fontFamily="@font/hanken_grotesk"
+                        android:textColor="@color/color_on_surface" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/chartToggleButton"
                         android:layout_width="wrap_content"
-                        android:layout_height="36dp"
+                        android:layout_height="30dp"
                         android:text="Total"
-                        android:textSize="12sp"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        app:backgroundTint="@color/primary_indigo"
-                        app:cornerRadius="10dp"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:letterSpacing="0.05"
+                        android:textAllCaps="true"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:paddingStart="14dp"
+                        android:paddingEnd="14dp"
+                        android:textColor="@color/color_primary"
+                        app:backgroundTint="@color/color_glass_fill_l2"
+                        app:cornerRadius="999dp"
+                        app:strokeWidth="0dp"
                         style="@style/Widget.MaterialComponents.Button" />
                 </LinearLayout>
 
@@ -555,7 +529,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="256dp" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- Empty State -->
         <LinearLayout
@@ -567,12 +541,11 @@
             android:padding="32dp"
             android:visibility="gone">
 
-            <com.google.android.material.card.MaterialCardView
+            <com.example.expensetracker.ui.common.GlassCardView
                 android:layout_width="96dp"
                 android:layout_height="96dp"
-                app:cardCornerRadius="48dp"
-                app:cardBackgroundColor="@color/color_icon_bg"
-                app:cardElevation="0dp"
+                app:glassLevel="level2"
+                app:glassCornerRadius="48dp"
                 android:layout_marginBottom="16dp">
 
                 <ImageView
@@ -580,10 +553,10 @@
                     android:layout_height="match_parent"
                     android:src="@android:drawable/ic_menu_sort_by_size"
                     android:scaleType="centerInside"
-                    android:tint="#A1A1AA"
+                    android:tint="@color/color_on_surface_faint"
                     android:padding="24dp"
                     android:contentDescription="No data" />
-            </com.google.android.material.card.MaterialCardView>
+            </com.example.expensetracker.ui.common.GlassCardView>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -591,7 +564,7 @@
                 android:text="No data yet"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
+                android:textColor="@color/color_on_surface"
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -600,7 +573,7 @@
                 android:layout_height="wrap_content"
                 android:text="Add transactions to see your spending analytics"
                 android:textSize="14sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="@color/color_on_surface_muted"
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>

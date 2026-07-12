@@ -7,9 +7,9 @@
     android:layout_margin="4dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
-    app:strokeWidth="2dp"
-    app:strokeColor="?attr/colorOutline"
-    app:cardBackgroundColor="?attr/colorSurface"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/color_glass_border"
+    app:cardBackgroundColor="@color/color_glass_fill_l2"
     android:clickable="true"
     android:focusable="true">
 
@@ -21,23 +21,42 @@
         android:padding="12dp">
 
         <!-- Icon circle -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/categoryIconCard"
+        <FrameLayout
             android:layout_width="56dp"
             android:layout_height="56dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:cardBackgroundColor="#EEF2FF"
             android:layout_marginBottom="8dp">
 
-            <ImageView
-                android:id="@+id/categoryPickerIcon"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/categoryIconCard"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:padding="14dp"
-                android:scaleType="centerInside"
-                android:tint="@color/primary_indigo" />
-        </com.google.android.material.card.MaterialCardView>
+                app:cardCornerRadius="28dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/color_glass_fill_l3">
+
+                <ImageView
+                    android:id="@+id/categoryPickerIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="14dp"
+                    android:scaleType="centerInside"
+                    android:tint="@color/color_primary" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Multi-select checkmark badge (filter sheet only; gone by default) -->
+            <ImageView
+                android:id="@+id/categoryPickerCheck"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="top|end"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/color_primary"
+                android:padding="3dp"
+                android:src="@drawable/ic_check"
+                android:tint="@color/color_on_primary"
+                android:visibility="gone"
+                android:contentDescription="Selected" />
+        </FrameLayout>
 
         <TextView
             android:id="@+id/categoryPickerName"
@@ -45,7 +64,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textSize="12sp"
-            android:textColor="?attr/colorOnSurface"
+            android:fontFamily="@font/inter"
+            android:textColor="@color/color_on_surface"
             android:maxLines="2"
             android:ellipsize="end" />
 

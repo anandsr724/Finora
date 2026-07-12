@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "brand-gradient" from the Analytics v2 / Reports - Refined Layout reference:
+     linear-gradient(135deg, #8083ff 0%, #3c0091 100%) — distinct from balance_card_gradient
+     (used by Home's hero card), so kept as its own drawable rather than overwriting it.
+     Rendered translucent in Stitch (glows against the background rather than a flat opaque
+     fill), so the gradient stops carry alpha rather than being fully opaque. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="135"
+                android:startColor="#B38083FF"
+                android:endColor="#B33C0091" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="24dp" />
+            <stroke android:width="1dp" android:color="#33FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

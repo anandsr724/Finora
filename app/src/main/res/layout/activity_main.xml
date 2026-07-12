@@ -31,12 +31,6 @@
             app:defaultNavHost="true"
             app:navGraph="@navigation/nav_graph" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottom_nav_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:menu="@menu/bottom_nav_menu" />
-
     </LinearLayout>
 
     <!-- Status bar gradient scrim: fades content that scrolls into the transparent status bar.
@@ -49,5 +43,23 @@
         android:importantForAccessibility="no"
         android:clickable="false"
         android:focusable="false" />
+
+    <!-- Bottom nav bar: full-width, flush to the bottom edge, translucent glass fill with a
+         top border only — matches the Stitch "Final Finora" reference exactly (not a floating
+         margined pill). Add is a normal 5th item in the row, not a raised FAB. -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:background="@drawable/bg_nav_bar"
+        app:elevation="0dp"
+        app:itemIconTint="@color/nav_item_color"
+        app:itemTextColor="@color/nav_item_color"
+        app:itemRippleColor="@color/color_glass_fill_l2"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
 
 </FrameLayout>

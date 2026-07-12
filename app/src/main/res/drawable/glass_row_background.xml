@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dark "surface" row background for inline settings rows (Upload Statement, Default Currency).
+     Scoped to fragment_settings.xml only — rounded_surface_variant.xml is still shared with
+     screens that haven't been migrated to Luminous Finance yet, so it's left untouched. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_surface_high" />
+    <corners android:radius="16dp" />
+</shape>

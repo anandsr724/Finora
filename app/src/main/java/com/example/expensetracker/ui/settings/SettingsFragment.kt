@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatDelegate
 import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.Bundle
@@ -30,6 +29,7 @@ import com.example.expensetracker.Category
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.R
+import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -41,7 +41,6 @@ class SettingsFragment : Fragment() {
     private lateinit var manageCategoriesButton: MaterialButton
     private lateinit var categoriesCountText: TextView
     private lateinit var categoryPreviewContainer: LinearLayout
-    private lateinit var darkModeSwitch: SwitchMaterial
     private lateinit var saveScreenshotsSwitch: SwitchMaterial
     private lateinit var feedbackSwitch: SwitchMaterial
 
@@ -62,7 +61,6 @@ class SettingsFragment : Fragment() {
 
         setupViews(view)
         loadCategoryPreview()
-        setupDarkModeSwitch()
 
         return view
     }
@@ -71,7 +69,6 @@ class SettingsFragment : Fragment() {
         manageCategoriesButton = view.findViewById(R.id.manageCategoriesButton)
         categoriesCountText = view.findViewById(R.id.categoriesCountText)
         categoryPreviewContainer = view.findViewById(R.id.categoryPreviewContainer)
-        darkModeSwitch = view.findViewById(R.id.darkModeSwitch)
         saveScreenshotsSwitch = view.findViewById(R.id.saveScreenshotsSwitch)
         feedbackSwitch = view.findViewById(R.id.feedbackSwitch)
 
@@ -141,9 +138,15 @@ class SettingsFragment : Fragment() {
         categoryPreviewContainer.removeAllViews()
         categories.forEach { category ->
             val chip = layoutInflater.inflate(R.layout.item_category_chip, categoryPreviewContainer, false)
-            chip.findViewById<ImageView>(R.id.chipIcon)
-                .setImageResource(CategoryIconHelper.getIconResId(category))
-            chip.findViewById<android.widget.TextView>(R.id.chipName).text = category.name
+            val tint = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(category.id))
+            chip.findViewById<ImageView>(R.id.chipIcon).apply {
+                setImageResource(CategoryIconHelper.getIconResId(category))
+                setColorFilter(tint)
+            }
+            chip.findViewById<android.widget.TextView>(R.id.chipName).apply {
+                text = category.name
+                setTextColor(tint)
+            }
             categoryPreviewContainer.addView(chip)
         }
     }
@@ -197,6 +200,7 @@ class SettingsFragment : Fragment() {
             refreshSheet()
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -219,16 +223,20 @@ class SettingsFragment : Fragment() {
         val iconPadding = (12 * density).toInt()
         val iconViews = mutableListOf<Pair<FrameLayout, ImageView>>()
 
-        fun makeBackground(filled: Boolean) = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 12 * density
-            setColor(if (filled) Color.parseColor("#6B5DD3") else Color.parseColor("#EDE9FE"))
+        // Each swatch is filled with its own category tint color (CategoryIconHelper); a ring
+        // border indicates the current selection instead of swapping fill color.
+        fun makeBackground(key: String, selected: Boolean) = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(key)))
+            if (selected) {
+                setStroke((2.5f * density).toInt(), ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+            }
         }
         fun updateSelection(selectedIdx: Int) {
             iconViews.forEachIndexed { idx, (frame, img) ->
-                val sel = idx == selectedIdx
-                frame.background = makeBackground(sel)
-                img.setColorFilter(if (sel) Color.WHITE else Color.parseColor("#6B5DD3"))
+                val key = iconOptions[idx].first
+                frame.background = makeBackground(key, idx == selectedIdx)
+                img.setColorFilter(Color.WHITE)
             }
         }
 
@@ -236,12 +244,12 @@ class SettingsFragment : Fragment() {
             val frame = FrameLayout(requireContext()).apply {
                 layoutParams = GridLayout.LayoutParams(
                     GridLayout.spec(GridLayout.UNDEFINED),
-                    GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                    GridLayout.spec(GridLayout.UNDEFINED)
                 ).apply {
-                    width = 0; height = cellSize
+                    width = cellSize; height = cellSize
                     setMargins(cellMargin, cellMargin, cellMargin, cellMargin)
                 }
-                background = makeBackground(false)
+                background = makeBackground(key, false)
             }
             val img = ImageView(requireContext()).apply {
                 layoutParams = FrameLayout.LayoutParams(
@@ -251,7 +259,7 @@ class SettingsFragment : Fragment() {
                 setImageResource(resId)
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                setColorFilter(Color.parseColor("#6B5DD3"))
+                setColorFilter(Color.WHITE)
             }
             frame.addView(img)
             frame.setOnClickListener { selectedIconKey = key; updateSelection(idx) }
@@ -276,6 +284,7 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -307,16 +316,20 @@ class SettingsFragment : Fragment() {
         val iconPadding = (12 * density).toInt()
         val iconViews = mutableListOf<Pair<FrameLayout, ImageView>>()
 
-        fun makeBackground(filled: Boolean) = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 12 * density
-            setColor(if (filled) Color.parseColor("#6B5DD3") else Color.parseColor("#EDE9FE"))
+        // Each swatch is filled with its own category tint color (CategoryIconHelper); a ring
+        // border indicates the current selection instead of swapping fill color.
+        fun makeBackground(key: String, selected: Boolean) = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(key)))
+            if (selected) {
+                setStroke((2.5f * density).toInt(), ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+            }
         }
         fun updateSelection(selectedIdx: Int) {
             iconViews.forEachIndexed { idx, (frame, img) ->
-                val sel = idx == selectedIdx
-                frame.background = makeBackground(sel)
-                img.setColorFilter(if (sel) Color.WHITE else Color.parseColor("#6B5DD3"))
+                val key = iconOptions[idx].first
+                frame.background = makeBackground(key, idx == selectedIdx)
+                img.setColorFilter(Color.WHITE)
             }
         }
 
@@ -324,12 +337,12 @@ class SettingsFragment : Fragment() {
             val frame = FrameLayout(requireContext()).apply {
                 layoutParams = GridLayout.LayoutParams(
                     GridLayout.spec(GridLayout.UNDEFINED),
-                    GridLayout.spec(GridLayout.UNDEFINED, 1f)
+                    GridLayout.spec(GridLayout.UNDEFINED)
                 ).apply {
-                    width = 0; height = cellSize
+                    width = cellSize; height = cellSize
                     setMargins(cellMargin, cellMargin, cellMargin, cellMargin)
                 }
-                background = makeBackground(false)
+                background = makeBackground(key, false)
             }
             val img = ImageView(requireContext()).apply {
                 layoutParams = FrameLayout.LayoutParams(
@@ -339,7 +352,7 @@ class SettingsFragment : Fragment() {
                 setImageResource(resId)
                 scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                setColorFilter(Color.parseColor("#6B5DD3"))
+                setColorFilter(Color.WHITE)
             }
             frame.addView(img)
             frame.setOnClickListener { selectedIconKey = key; updateSelection(idx) }
@@ -365,6 +378,7 @@ class SettingsFragment : Fragment() {
             }
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -407,18 +421,6 @@ class SettingsFragment : Fragment() {
             prefs.edit().putBoolean("feedback_enabled", isChecked).apply()
             val msg = if (isChecked) "Feedback prompt enabled" else "Feedback prompt disabled"
             Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun setupDarkModeSwitch() {
-        val prefs = requireContext().getSharedPreferences("finora_prefs", Context.MODE_PRIVATE)
-        darkModeSwitch.isChecked = prefs.getBoolean("dark_mode", false)
-
-        darkModeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            prefs.edit().putBoolean("dark_mode", isChecked).apply()
-            AppCompatDelegate.setDefaultNightMode(
-                if (isChecked) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
-            )
         }
     }
 
@@ -514,8 +516,13 @@ class SettingsFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category = categories[position]
             holder.emoji.setImageResource(CategoryIconHelper.getIconResId(category))
+            holder.emoji.setColorFilter(
+                ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(category.id))
+            )
             holder.name.text = category.name
-            holder.type.text = if (category.isPredefined) "Default category" else "Custom"
+            holder.type.text = "DEFAULT"
+            holder.type.visibility = if (category.isPredefined) View.VISIBLE else View.GONE
+            holder.deleteButton.visibility = if (category.isPredefined) View.GONE else View.VISIBLE
             holder.editButton.setOnClickListener { onEdit(category) }
             holder.deleteButton.setOnClickListener { onDelete(category) }
         }

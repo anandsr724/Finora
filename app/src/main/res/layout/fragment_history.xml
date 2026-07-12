@@ -4,14 +4,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background_light">
+    android:background="@drawable/bg_luminous_glow">
 
     <!-- Header with Search -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@color/background_light"
         android:paddingTop="24dp"
         android:paddingStart="20dp"
         android:paddingEnd="20dp"
@@ -19,23 +18,41 @@
         android:clipChildren="false"
         android:clipToPadding="false">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Transactions"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary_light"
-            android:layout_marginBottom="14dp" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="18dp">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/shape_circle_gradient" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:text="Transactions"
+                android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_notifications"
+                android:tint="@color/color_primary"
+                android:contentDescription="Notifications" />
+        </LinearLayout>
 
         <!-- Search Bar -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="0dp"
+            app:glassLevel="level2"
+            app:glassCornerRadius="16dp"
             android:layout_marginBottom="12dp">
 
             <LinearLayout
@@ -50,7 +67,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
-                    android:tint="#A1A1AA"
+                    android:tint="@color/color_on_surface_muted"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="Search" />
 
@@ -59,66 +76,18 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:hint="Search transactions..."
+                    android:hint="Search merchants or notes..."
                     android:textSize="14sp"
-                    android:textColor="@color/text_primary_light"
-                    android:textColorHint="#A1A1AA"
+                    android:textColor="@color/color_on_surface"
+                    android:textColorHint="@color/color_on_surface_faint"
                     android:background="@null"
                     android:inputType="text"
                     android:imeOptions="actionSearch"
                     android:singleLine="true" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
-        <!-- Month Selector (full-width, with calendar icon + chevron) -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="52dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="0dp"
-            android:layout_marginBottom="12dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:clickable="true"
-                android:focusable="true">
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_calendar_month"
-                    android:tint="#71717A"
-                    android:layout_marginEnd="10dp"
-                    android:contentDescription="Calendar" />
-
-                <Spinner
-                    android:id="@+id/historyMonthSpinner"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:textColor="@color/text_primary_light"
-                    android:background="@null"
-                    android:spinnerMode="dropdown"
-                    android:popupBackground="@drawable/dropdown_popup_bg" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@drawable/ic_chevron_down"
-                    android:tint="#71717A"
-                    android:contentDescription="Expand" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Sort Button Row -->
+        <!-- Month Selector + Sort — same row, per the Stitch reference -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -126,112 +95,162 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="12dp">
 
-            <TextView
+            <com.example.expensetracker.ui.common.GlassCardView
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_weight="1"
-                android:text="Sort by"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary_light" />
+                android:layout_marginEnd="10dp"
+                app:glassLevel="level2"
+                app:glassCornerRadius="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="14dp"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_calendar_month"
+                        android:tint="@color/color_on_surface_muted"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="Calendar" />
+
+                    <Spinner
+                        android:id="@+id/historyMonthSpinner"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:textSize="13sp"
+                        android:textColor="@color/color_on_surface_muted"
+                        android:background="@null"
+                        android:spinnerMode="dropdown"
+                        android:popupBackground="@drawable/dropdown_popup_bg" />
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_chevron_down"
+                        android:tint="@color/color_on_surface_muted"
+                        android:contentDescription="Expand" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/sortButton"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="wrap_content"
-                android:layout_height="36dp"
+                android:layout_height="48dp"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="Newest First"
                 android:textAllCaps="false"
-                android:textSize="12sp"
-                android:textColor="@color/primary_indigo"
-                app:backgroundTint="@color/white"
+                android:textSize="13sp"
+                android:textColor="@color/color_on_surface_muted"
+                app:icon="@drawable/ic_sort"
+                app:iconGravity="textEnd"
+                app:iconTint="@color/color_on_surface_muted"
+                app:iconSize="18dp"
+                app:iconPadding="6dp"
+                app:backgroundTint="@color/color_glass_fill_l2"
                 app:cornerRadius="12dp"
-                app:strokeColor="@color/border_light"
-                app:strokeWidth="1dp"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                app:strokeColor="@color/color_glass_border"
+                app:strokeWidth="1dp" />
         </LinearLayout>
 
-        <!-- Category Filter Pills Row -->
-        <LinearLayout
+        <!-- Category Filter Pills Row — horizontally scrollable, icon+label chips -->
+        <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:scrollbars="none"
             android:clipChildren="false"
             android:clipToPadding="false">
 
-            <!-- All pill — same 44×44dp square as icon pills -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/filterAllButton"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginEnd="6dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:text="All"
-                android:textAllCaps="false"
-                android:textSize="12sp"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
-                app:backgroundTint="@color/primary_indigo"
-                app:cornerRadius="14dp"
-                app:strokeWidth="0dp"
-                style="@style/Widget.MaterialComponents.Button" />
-
-            <!-- Static category icon pills -->
             <LinearLayout
-                android:id="@+id/categoryFilterPillsContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical" />
-
-            <!-- More filters button with badge overlay -->
-            <FrameLayout
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_marginStart="6dp"
+                android:gravity="center_vertical"
                 android:clipChildren="false"
                 android:clipToPadding="false">
 
+                <!-- All pill -->
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/filterCategoriesButton"
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
+                    android:id="@+id/filterAllButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="8dp"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:insetLeft="0dp"
-                    android:insetRight="0dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    app:backgroundTint="@color/white"
-                    app:cornerRadius="14dp"
-                    app:icon="@drawable/ic_more_vert"
-                    app:iconTint="#71717A"
-                    app:iconSize="20dp"
-                    app:iconPadding="0dp"
-                    app:strokeColor="@color/border_light"
-                    app:strokeWidth="1dp"
-                    android:contentDescription="Filter by category"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
-                <TextView
-                    android:id="@+id/filterCategoriesBadge"
-                    android:layout_width="18dp"
-                    android:layout_height="18dp"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="-5dp"
-                    android:layout_marginEnd="-5dp"
-                    android:background="@drawable/badge_background"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="20dp"
+                    android:text="All"
+                    android:textAllCaps="false"
+                    android:textSize="13sp"
                     android:textStyle="bold"
-                    android:gravity="center"
-                    android:visibility="gone" />
-            </FrameLayout>
-        </LinearLayout>
+                    android:textColor="@color/color_on_primary"
+                    app:backgroundTint="@color/color_primary"
+                    app:cornerRadius="999dp"
+                    app:strokeWidth="0dp"
+                    style="@style/Widget.MaterialComponents.Button" />
+
+                <!-- Dynamic category icon+label chips -->
+                <LinearLayout
+                    android:id="@+id/categoryFilterPillsContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical" />
+
+                <!-- More filters button with badge overlay -->
+                <FrameLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filterCategoriesButton"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:insetLeft="0dp"
+                        android:insetRight="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        app:backgroundTint="@color/color_glass_fill_l2"
+                        app:cornerRadius="999dp"
+                        app:icon="@drawable/ic_more_horiz"
+                        app:iconTint="@color/color_on_surface_muted"
+                        app:iconSize="20dp"
+                        app:iconPadding="0dp"
+                        app:strokeColor="@color/color_glass_border"
+                        app:strokeWidth="1dp"
+                        android:contentDescription="Filter by category"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+
+                    <TextView
+                        android:id="@+id/filterCategoriesBadge"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="-5dp"
+                        android:layout_marginEnd="-5dp"
+                        android:background="@drawable/badge_background"
+                        android:textColor="@color/color_on_primary"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:visibility="gone" />
+                </FrameLayout>
+            </LinearLayout>
+        </HorizontalScrollView>
 
         <!-- Active category filters display (horizontal scrollable chips) -->
         <HorizontalScrollView
@@ -260,7 +279,7 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingTop="8dp"
-        android:paddingBottom="16dp"
+        android:paddingBottom="110dp"
         android:clipToPadding="false" />
 
     <!-- Empty State -->
@@ -274,40 +293,53 @@
         android:padding="32dp"
         android:visibility="gone">
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            app:cardCornerRadius="48dp"
-            app:cardBackgroundColor="@color/color_icon_bg"
-            app:cardElevation="0dp"
-            android:layout_marginBottom="16dp">
+        <com.example.expensetracker.ui.common.GlassCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@android:drawable/ic_menu_view"
-                android:scaleType="centerInside"
-                android:tint="#A1A1AA"
-                android:padding="24dp"
-                android:contentDescription="No transactions" />
-        </com.google.android.material.card.MaterialCardView>
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="No transactions found"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="@color/text_primary_light"
-            android:layout_marginBottom="8dp" />
+                <FrameLayout
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:background="@drawable/shape_circle"
+                    android:layout_marginBottom="16dp">
 
-        <TextView
-            android:id="@+id/emptyStateMessage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Upload a payment screenshot to add your first transaction"
-            android:textSize="14sp"
-            android:textColor="@color/text_secondary_light"
-            android:gravity="center" />
+                    <ImageView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@android:drawable/ic_menu_view"
+                        android:scaleType="centerInside"
+                        android:tint="@color/color_on_surface_faint"
+                        android:padding="20dp"
+                        android:contentDescription="No transactions" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No transactions found"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_on_surface"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:id="@+id/emptyStateMessage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upload a payment screenshot to add your first transaction"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_on_surface_muted"
+                    android:gravity="center" />
+            </LinearLayout>
+        </com.example.expensetracker.ui.common.GlassCardView>
     </LinearLayout>
 </LinearLayout>

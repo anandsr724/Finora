@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background_light">
+    android:background="@drawable/bg_luminous_glow">
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
@@ -13,17 +13,17 @@
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:elevation="0dp"
-        android:background="@color/background_light">
+        android:background="@android:color/transparent">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/text_primary_light"
+            app:navigationIconTint="@color/color_on_surface"
             app:title="Import Statement"
-            app:titleTextColor="@color/text_primary_light"
-            android:background="@color/background_light" />
+            app:titleTextColor="@color/color_on_surface"
+            android:background="@android:color/transparent" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- State switcher -->
@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:text="Upload your bank statement to import past transactions in bulk."
                     android:textSize="14sp"
-                    android:textColor="@color/text_secondary_light"
+                    android:textColor="@color/color_on_surface_muted"
                     android:layout_marginBottom="24dp" />
 
                 <!-- Upload drop zone -->
@@ -65,27 +65,34 @@
                     android:layout_height="200dp"
                     android:orientation="vertical"
                     android:gravity="center"
-                    android:background="@drawable/upload_zone_background"
+                    android:background="@drawable/dashed_border_glass"
                     android:clickable="true"
                     android:focusable="true"
                     android:layout_marginBottom="16dp">
 
-                    <ImageView
-                        android:layout_width="52dp"
-                        android:layout_height="52dp"
-                        android:src="@android:drawable/ic_menu_upload"
-                        android:tint="@color/primary_indigo"
-                        android:scaleType="centerInside"
-                        android:layout_marginBottom="12dp"
-                        android:contentDescription="Upload" />
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/shape_circle"
+                        android:layout_marginBottom="14dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="15dp"
+                            android:src="@drawable/ic_upload"
+                            android:tint="@color/color_primary"
+                            android:scaleType="centerInside"
+                            android:contentDescription="Upload" />
+                    </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tap to upload statement"
+                        android:text="Tap to browse files"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/primary_indigo"
+                        android:textColor="@color/color_on_surface"
                         android:layout_marginBottom="6dp" />
 
                     <TextView
@@ -93,18 +100,18 @@
                         android:layout_height="wrap_content"
                         android:text="PDF or Excel (XLSX) formats"
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary_light"
+                        android:textColor="@color/color_on_surface_muted"
                         android:layout_marginBottom="20dp" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/browseFilesButton"
+                        style="@style/Widget.Finora.Button.Secondary"
                         android:layout_width="wrap_content"
                         android:layout_height="44dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:text="Browse Files"
-                        android:textSize="14sp"
-                        android:textColor="@color/white"
-                        app:cornerRadius="12dp"
-                        app:backgroundTint="@color/primary_indigo" />
+                        android:textSize="14sp" />
                 </LinearLayout>
 
                 <!-- Selected file card (hidden until picked) -->
@@ -115,10 +122,10 @@
                     android:layout_marginBottom="16dp"
                     android:visibility="gone"
                     app:cardCornerRadius="16dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/card_background_light"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/color_surface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="@color/border_light">
+                    app:strokeColor="@color/color_glass_border">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -131,7 +138,7 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             app:cardCornerRadius="12dp"
-                            app:cardBackgroundColor="#EDE9FE"
+                            app:cardBackgroundColor="@color/color_glass_fill_l3"
                             app:cardElevation="0dp"
                             android:layout_marginEnd="12dp">
 
@@ -139,7 +146,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:src="@android:drawable/ic_menu_agenda"
-                                android:tint="@color/primary_indigo"
+                                android:tint="@color/color_primary"
                                 android:scaleType="centerInside"
                                 android:padding="10dp"
                                 android:contentDescription="File" />
@@ -157,7 +164,7 @@
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary_light"
+                                android:textColor="@color/color_on_surface"
                                 android:maxLines="1"
                                 android:ellipsize="middle" />
 
@@ -166,7 +173,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
-                                android:textColor="@color/text_secondary_light"
+                                android:textColor="@color/color_on_surface_muted"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
 
@@ -178,9 +185,9 @@
                             android:insetBottom="0dp"
                             android:text="✕"
                             android:textSize="13sp"
-                            android:textColor="@color/text_secondary_light"
+                            android:textColor="@color/color_on_surface_muted"
                             app:cornerRadius="18dp"
-                            app:backgroundTint="#F4F4F5"
+                            app:backgroundTint="@color/color_glass_fill_l2"
                             style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -198,21 +205,21 @@
                         android:layout_height="wrap_content"
                         android:text="Formats: "
                         android:textSize="13sp"
-                        android:textColor="@color/text_secondary_light" />
+                        android:textColor="@color/color_on_surface_muted" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="PDF"
                         android:textSize="12sp"
-                        android:textColor="#DC2626"
+                        android:textColor="@color/color_expense"
                         android:textStyle="bold"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:background="@drawable/badge_background"
-                        android:backgroundTint="#FEE2E2"
+                        android:background="@drawable/category_badge_background"
+                        android:backgroundTint="@color/color_expense_container"
                         android:layout_marginEnd="6dp" />
 
                     <TextView
@@ -220,27 +227,24 @@
                         android:layout_height="wrap_content"
                         android:text="XLSX"
                         android:textSize="12sp"
-                        android:textColor="#059669"
+                        android:textColor="@color/color_income"
                         android:textStyle="bold"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
                         android:paddingTop="4dp"
                         android:paddingBottom="4dp"
-                        android:background="@drawable/badge_background"
-                        android:backgroundTint="#D1FAE5"
+                        android:background="@drawable/category_badge_background"
+                        android:backgroundTint="@color/color_income_container"
                         android:layout_marginEnd="6dp" />
                 </LinearLayout>
 
                 <!-- Supported Banks -->
-                <com.google.android.material.card.MaterialCardView
+                <com.example.expensetracker.ui.common.GlassCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/card_background_light"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/border_light">
+                    app:glassLevel="level2"
+                    app:glassCornerRadius="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -254,7 +258,7 @@
                             android:text="Supported Banks"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary_light"
+                            android:textColor="@color/color_on_surface"
                             android:layout_marginBottom="14dp" />
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -263,25 +267,25 @@
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SBI" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SBI" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HDFC" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HDFC" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant">
+                                android:background="@drawable/glass_chip_background">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📱" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPay" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPay" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -291,40 +295,37 @@
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ICICI" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ICICI" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant" android:layout_marginEnd="8dp">
+                                android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Axis" android:textSize="13sp" android:textColor="@color/text_primary_light" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Axis" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
-                                android:background="@drawable/rounded_surface_variant">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="18sp" android:textColor="@color/text_secondary_light" android:layout_marginEnd="4dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="More" android:textSize="13sp" android:textColor="@color/text_secondary_light"/>
+                                android:background="@drawable/glass_chip_background">
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="18sp" android:textColor="@color/color_on_surface_muted" android:layout_marginEnd="4dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="More" android:textSize="13sp" android:textColor="@color/color_on_surface_muted"/>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                </com.example.expensetracker.ui.common.GlassCardView>
 
                 <!-- How it works -->
-                <com.google.android.material.card.MaterialCardView
+                <com.example.expensetracker.ui.common.GlassCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="20dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="2dp"
-                    app:cardBackgroundColor="@color/card_background_light"
-                    app:strokeWidth="1dp"
-                    app:strokeColor="@color/border_light">
+                    app:glassLevel="level2"
+                    app:glassCornerRadius="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -338,43 +339,43 @@
                             android:text="How it works"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary_light"
+                            android:textColor="@color/color_on_surface"
                             android:layout_marginBottom="16dp" />
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
                             <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="1"
-                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upload" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your bank statement file" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upload" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your bank statement file" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="14dp">
                             <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="2"
-                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto-detect" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Finora reads and extracts transactions" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto-detect" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Finora reads and extracts transactions" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
                             </LinearLayout>
                         </LinearLayout>
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                             android:orientation="horizontal" android:gravity="center_vertical">
                             <TextView android:layout_width="32dp" android:layout_height="32dp" android:text="3"
-                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/primary_indigo"
+                                android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review &amp; Import" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/text_primary_light"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confirm before saving to Finora" android:textSize="12sp" android:textColor="@color/text_secondary_light"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review &amp; Import" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confirm before saving to Finora" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                </com.example.expensetracker.ui.common.GlassCardView>
 
             </LinearLayout>
         </ScrollView>
@@ -388,28 +389,45 @@
             android:gravity="center"
             android:padding="32dp">
 
-            <ProgressBar
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_marginBottom="24dp"
-                android:indeterminateTint="@color/primary_indigo" />
-
-            <TextView
-                android:id="@+id/parsingStatusText"
-                android:layout_width="wrap_content"
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:layout_width="260dp"
                 android:layout_height="wrap_content"
-                android:text="Reading statement..."
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
-                android:layout_marginBottom="8dp" />
+                app:glassLevel="level2"
+                app:glassCornerRadius="24dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="This may take a few seconds"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary_light" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="32dp">
+
+                    <ProgressBar
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginBottom="20dp"
+                        android:indeterminateTint="@color/color_primary" />
+
+                    <TextView
+                        android:id="@+id/parsingStatusText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Reading statement..."
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/color_on_surface"
+                        android:gravity="center"
+                        android:layout_marginBottom="8dp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="This may take a few seconds"
+                        android:textSize="13sp"
+                        android:textColor="@color/color_on_surface_muted"
+                        android:gravity="center" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
         </LinearLayout>
 
         <!-- ══ STATE 2: REVIEW ══ -->
@@ -423,32 +441,43 @@
                 android:id="@+id/reviewHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
-                android:background="@color/background_light"
+                android:orientation="vertical"
+                android:background="@color/color_surface_low"
                 android:elevation="2dp">
 
-                <CheckBox
-                    android:id="@+id/selectAllCheckbox"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:buttonTint="@color/primary_indigo"
-                    android:layout_marginEnd="10dp"
-                    android:checked="true" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp">
 
-                <TextView
-                    android:id="@+id/reviewSummaryText"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/text_primary_light"
-                    android:text="0 transactions found" />
+                    <CheckBox
+                        android:id="@+id/selectAllCheckbox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:buttonTint="@color/color_primary"
+                        android:layout_marginEnd="10dp"
+                        android:checked="true" />
+
+                    <TextView
+                        android:id="@+id/reviewSummaryText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/color_on_surface"
+                        android:text="0 transactions found" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/color_glass_border" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -472,20 +501,28 @@
             android:gravity="center"
             android:padding="32dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚠️"
-                android:textSize="48sp"
-                android:layout_marginBottom="16dp" />
+            <FrameLayout
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:background="@drawable/shape_circle"
+                android:backgroundTint="@color/color_expense_container"
+                android:layout_marginBottom="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="⚠️"
+                    android:textSize="34sp"
+                    android:gravity="center" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/errorMessageText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="15sp"
+                android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_primary_light"
+                android:textColor="@color/color_on_surface"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
@@ -493,18 +530,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="@color/color_on_surface_muted"
                 android:gravity="center"
                 android:layout_marginBottom="28dp"
                 android:text="Supported: SBI Bank PDF/XLSX · Google Pay PDF" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/tryAgainButton"
+                style="@style/Widget.Finora.Button.Primary"
                 android:layout_width="wrap_content"
-                android:layout_height="44dp"
-                android:text="Try another file"
-                app:cornerRadius="12dp"
-                app:backgroundTint="@color/primary_indigo" />
+                android:layout_height="48dp"
+                android:text="Try another file" />
         </LinearLayout>
 
     </ViewFlipper>
@@ -520,7 +556,7 @@
         android:paddingEnd="20dp"
         android:paddingTop="12dp"
         android:paddingBottom="24dp"
-        android:background="@color/background_light"
+        android:background="@color/color_bg"
         android:elevation="4dp">
 
         <!-- UPLOAD bottom content -->
@@ -532,16 +568,15 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/importButton"
+                style="@style/Widget.Finora.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Process Statement"
                 android:textSize="16sp"
                 android:enabled="false"
                 android:alpha="0.5"
-                app:cornerRadius="18dp"
-                app:backgroundTint="@color/primary_indigo"
-                app:icon="@android:drawable/ic_menu_upload"
-                app:iconTint="@color/white" />
+                app:icon="@drawable/ic_upload"
+                app:iconTint="@color/color_on_primary" />
         </LinearLayout>
 
         <!-- REVIEW bottom content -->
@@ -557,21 +592,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="@color/color_on_surface_muted"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
                 android:text="0 of 0 selected" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/confirmImportButton"
+                style="@style/Widget.Finora.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
                 android:text="Import transactions"
                 android:textSize="16sp"
                 android:enabled="false"
-                android:alpha="0.5"
-                app:cornerRadius="18dp"
-                app:backgroundTint="@color/primary_indigo" />
+                android:alpha="0.5" />
         </LinearLayout>
 
     </LinearLayout>

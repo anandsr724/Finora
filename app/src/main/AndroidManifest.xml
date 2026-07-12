@@ -49,15 +49,6 @@
             android:label="Edit Payment Details" />
 
         <activity
-            android:name=".TransactionHistoryActivity"
-            android:exported="false"
-            android:label="Transaction History" />
-        <activity
-            android:name=".SettingsActivity"
-            android:exported="false"
-            android:label="Settings" />
-
-        <activity
             android:name=".StatementImportActivity"
             android:exported="false"
             android:label="Import Statement" />

@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,6 +32,7 @@ import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
+import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -211,36 +213,33 @@ class HistoryFragment : Fragment() {
         categoryFilterPillsContainer.removeAllViews()
         categoryPillMap.clear()
 
+        // Row now scrolls horizontally (matches the Stitch reference), so every used category
+        // gets a pill — no more fitting a fixed count before overflowing into "more".
         val usedCategoryIds = allTransactions.map { it.category }.distinct()
         val density = resources.displayMetrics.density
 
-        // Dynamically fit as many pills as possible between the All button and the dots button
-        val screenWidthPx = resources.displayMetrics.widthPixels
-        val hPaddingPx = (40 * density)           // 20dp start + 20dp end fragment margin
-        val allBtnPx   = (44 + 6) * density       // All pill + marginEnd
-        val dotsBtnPx  = (6 + 44) * density       // marginStart + dots button
-        val pillStepPx = (44 + 6) * density       // each pill width + marginEnd
-        val availablePx = screenWidthPx - hPaddingPx - allBtnPx - dotsBtnPx
-        val maxPills = maxOf(1, (availablePx / pillStepPx).toInt())
-
-        usedCategoryIds.take(maxPills).forEach { catId ->
+        usedCategoryIds.forEach { catId ->
             val pill = MaterialButton(
                 requireContext(), null,
                 com.google.android.material.R.attr.materialButtonOutlinedStyle
             ).apply {
-                val size = (44 * density).toInt()
-                layoutParams = LinearLayout.LayoutParams(size, size).apply {
-                    marginEnd = (6 * density).toInt()
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    (40 * density).toInt()
+                ).apply {
+                    marginEnd = (8 * density).toInt()
                 }
-                setPadding(0, 0, 0, 0)
+                setPadding((16 * density).toInt(), 0, (16 * density).toInt(), 0)
                 insetTop = 0
                 insetBottom = 0
                 setIconResource(CategoryIconHelper.getIconResId(catId))
-                iconSize = (20 * density).toInt()
+                iconSize = (18 * density).toInt()
                 iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
-                iconPadding = 0
-                text = ""
-                cornerRadius = (14 * density).toInt()
+                iconPadding = (8 * density).toInt()
+                text = categoryManager.getCategoryDisplayName(catId)
+                textSize = 13f
+                isAllCaps = false
+                cornerRadius = (999 * density).toInt()
             }
             updatePillState(pill, selectedCategories.contains(catId))
             pill.setOnClickListener {
@@ -267,34 +266,36 @@ class HistoryFragment : Fragment() {
     private fun updatePillState(pill: MaterialButton, selected: Boolean) {
         if (selected) {
             pill.backgroundTintList = ColorStateList.valueOf(
-                resources.getColor(R.color.primary_indigo, null)
+                resources.getColor(R.color.color_primary, null)
             )
-            pill.iconTint = ColorStateList.valueOf(resources.getColor(R.color.white, null))
+            pill.iconTint = ColorStateList.valueOf(resources.getColor(R.color.color_on_primary, null))
+            pill.setTextColor(resources.getColor(R.color.color_on_primary, null))
             pill.strokeWidth = 0
         } else {
-            pill.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.white, null))
+            pill.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.color_glass_fill_l2, null))
             pill.iconTint = ColorStateList.valueOf(
-                resources.getColor(R.color.primary_indigo, null)
+                resources.getColor(R.color.color_primary, null)
             )
+            pill.setTextColor(resources.getColor(R.color.color_on_surface, null))
             pill.strokeWidth = (1 * resources.displayMetrics.density).toInt()
-            pill.strokeColor = resources.getColorStateList(R.color.border_light, null)
+            pill.strokeColor = resources.getColorStateList(R.color.color_glass_border, null)
         }
     }
 
     private fun updateAllButtonState() {
         if (selectedCategories.isEmpty()) {
             filterAllButton.backgroundTintList = ColorStateList.valueOf(
-                resources.getColor(R.color.primary_indigo, null)
+                resources.getColor(R.color.color_primary, null)
             )
-            filterAllButton.setTextColor(resources.getColor(R.color.white, null))
+            filterAllButton.setTextColor(resources.getColor(R.color.color_on_primary, null))
             filterAllButton.strokeWidth = 0
         } else {
             filterAllButton.backgroundTintList = ColorStateList.valueOf(
-                resources.getColor(R.color.white, null)
+                resources.getColor(R.color.color_glass_fill_l2, null)
             )
-            filterAllButton.setTextColor(resources.getColor(R.color.text_secondary_light, null))
+            filterAllButton.setTextColor(resources.getColor(R.color.color_on_surface_muted, null))
             filterAllButton.strokeWidth = (1 * resources.displayMetrics.density).toInt()
-            filterAllButton.strokeColor = resources.getColorStateList(R.color.border_light, null)
+            filterAllButton.strokeColor = resources.getColorStateList(R.color.color_glass_border, null)
         }
         updateDotsButtonBadge()
     }
@@ -351,6 +352,7 @@ class HistoryFragment : Fragment() {
             sheet.dismiss()
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -530,6 +532,7 @@ class HistoryFragment : Fragment() {
             val iconCard: MaterialCardView = itemView.findViewById(R.id.categoryIconCard)
             val icon: ImageView = itemView.findViewById(R.id.categoryPickerIcon)
             val name: TextView = itemView.findViewById(R.id.categoryPickerName)
+            val check: ImageView = itemView.findViewById(R.id.categoryPickerCheck)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -541,30 +544,28 @@ class HistoryFragment : Fragment() {
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category = categories[position]
             val isSelected = selectedIds.contains(category.id)
+            val tint = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(category.id))
 
             holder.icon.setImageResource(CategoryIconHelper.getIconResId(category.id))
             holder.name.text = category.name
+            holder.check.visibility = if (isSelected) View.VISIBLE else View.GONE
 
             if (isSelected) {
-                holder.card.setCardBackgroundColor(resources.getColor(R.color.primary_indigo, null))
-                holder.card.strokeWidth = 0
-                holder.iconCard.setCardBackgroundColor(
-                    android.graphics.Color.parseColor("#5448B0")
-                )
+                holder.card.setCardBackgroundColor(withAlpha(tint, 0x26))
+                holder.card.strokeColor = tint
+                holder.card.strokeWidth = (2 * resources.displayMetrics.density).toInt()
+                holder.iconCard.setCardBackgroundColor(tint)
                 holder.icon.imageTintList = ColorStateList.valueOf(
-                    resources.getColor(R.color.white, null)
+                    resources.getColor(R.color.color_on_primary, null)
                 )
-                holder.name.setTextColor(resources.getColor(R.color.white, null))
+                holder.name.setTextColor(resources.getColor(R.color.color_on_surface, null))
             } else {
-                holder.card.setCardBackgroundColor(resources.getColor(R.color.white, null))
+                holder.card.setCardBackgroundColor(resources.getColor(R.color.color_glass_fill_l2, null))
+                holder.card.strokeColor = resources.getColor(R.color.color_glass_border, null)
                 holder.card.strokeWidth = (1 * resources.displayMetrics.density).toInt()
-                holder.iconCard.setCardBackgroundColor(
-                    android.graphics.Color.parseColor("#EEF2FF")
-                )
-                holder.icon.imageTintList = ColorStateList.valueOf(
-                    resources.getColor(R.color.primary_indigo, null)
-                )
-                holder.name.setTextColor(resources.getColor(R.color.text_secondary_light, null))
+                holder.iconCard.setCardBackgroundColor(withAlpha(tint, 0x26))
+                holder.icon.imageTintList = ColorStateList.valueOf(tint)
+                holder.name.setTextColor(resources.getColor(R.color.color_on_surface_muted, null))
             }
 
             holder.card.setOnClickListener {
@@ -579,5 +580,8 @@ class HistoryFragment : Fragment() {
         }
 
         override fun getItemCount() = categories.size
+
+        private fun withAlpha(color: Int, alpha: Int): Int =
+            (color and 0x00FFFFFF) or (alpha shl 24)
     }
 }

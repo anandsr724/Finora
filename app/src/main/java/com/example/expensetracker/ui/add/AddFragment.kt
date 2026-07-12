@@ -30,6 +30,9 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import android.content.Context
+import android.content.DialogInterface
+import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -1362,7 +1365,7 @@ class AddFragment : Fragment() {
 
         var resultDelivered = false
 
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Quick Feedback")
             .setView(dialogView)
             .setPositiveButton("Submit") { _, _ ->
@@ -1383,7 +1386,26 @@ class AddFragment : Fragment() {
                 onResult(null)
             }
             .setOnDismissListener { if (!resultDelivered) onResult(null) }
-            .show()
+            .create()
+
+        dialog.applyGlassBlur()
+
+        // Restyle the native action buttons to match the glass dialog: gradient pill for
+        // Submit, plain muted text for Skip. Visual-only — no submission logic touched.
+        dialog.setOnShowListener {
+            dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.apply {
+                setBackgroundResource(R.drawable.balance_card_gradient)
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_primary))
+                val hPad = (16 * resources.displayMetrics.density).toInt()
+                val vPad = (8 * resources.displayMetrics.density).toInt()
+                setPadding(hPad, vPad, hPad, vPad)
+            }
+            dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.apply {
+                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted))
+            }
+        }
+
+        dialog.show()
     }
 
     override fun onDestroy() {

@@ -1,90 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:paddingBottom="24dp">
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp">
 
-    <!-- Handle bar -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="#E0E0E0" />
-
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="16dp">
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Manage Categories"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:textColor="?attr/colorOnSurface" />
-
-        <ImageButton
-            android:id="@+id/closeCategoriesSheetButton"
+        <!-- Handle bar -->
+        <View
             android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="?attr/colorOnSurfaceVariant"
-            android:contentDescription="Close" />
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/color_glass_border_bright" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Manage Categories"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/hanken_grotesk"
+                android:textColor="@color/color_on_surface" />
+
+            <ImageButton
+                android:id="@+id/closeCategoriesSheetButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/shape_circle"
+                android:padding="10dp"
+                android:tint="@color/color_on_surface_muted"
+                android:contentDescription="Close" />
+        </LinearLayout>
+
+        <!-- Add New Category Button (top, always visible) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addNewCategoryButton"
+            style="@style/Widget.Finora.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:text="+ Add Category" />
+
+        <!-- Restore Defaults Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/restoreDefaultsButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="14dp"
+            android:text="Restore Default Categories"
+            android:textSize="13sp" />
+
+        <!-- Categories RecyclerView -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/manageCategoriesRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="420dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="true" />
+
     </LinearLayout>
-
-    <!-- Add New Category Button (top, always visible) -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/addNewCategoryButton"
-        android:layout_width="match_parent"
-        android:layout_height="52dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="12dp"
-        android:text="+ Add New Category"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:cornerRadius="16dp"
-        app:backgroundTint="@color/primary_indigo"
-        app:strokeWidth="0dp"
-        style="@style/Widget.MaterialComponents.Button" />
-
-    <!-- Restore Defaults Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/restoreDefaultsButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="12dp"
-        android:text="Restore Default Categories"
-        android:textColor="#71717A"
-        android:textSize="13sp"
-        app:cornerRadius="14dp"
-        app:strokeColor="#71717A" />
-
-    <!-- Categories RecyclerView -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/manageCategoriesRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false" />
-
-</LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

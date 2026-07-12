@@ -1,107 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@color/white"
-    android:paddingBottom="24dp">
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp">
 
-    <!-- Handle bar -->
-    <View
-        android:layout_width="40dp"
-        android:layout_height="4dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="8dp"
-        android:background="#E4E4E7" />
-
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingStart="20dp"
-        android:paddingEnd="12dp"
-        android:paddingTop="4dp"
-        android:paddingBottom="16dp">
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
 
+        <!-- Handle bar -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/color_glass_border_bright" />
+
+        <!-- Header -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="12dp">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Filter by Category"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#2D3142" />
+                android:fontFamily="@font/hanken_grotesk"
+                android:textColor="@color/color_on_surface" />
 
-            <TextView
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/clearAllFiltersButton"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Select categories to filter"
+                android:text="Clear All"
                 android:textSize="13sp"
-                android:textColor="#71717A"
-                android:layout_marginTop="2dp" />
+                android:textStyle="bold"
+                android:textAllCaps="false"
+                android:textColor="@color/color_primary"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:layout_marginEnd="4dp" />
+
+            <ImageButton
+                android:id="@+id/closeFilterSheetButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/shape_circle"
+                android:padding="10dp"
+                android:tint="@color/color_on_surface_muted"
+                android:contentDescription="Close" />
         </LinearLayout>
 
-        <ImageButton
-            android:id="@+id/closeFilterSheetButton"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@android:drawable/ic_menu_close_clear_cancel"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:tint="#71717A"
-            android:contentDescription="Close" />
-    </LinearLayout>
+        <!-- Category card grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/filterCategoryGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxHeight="360dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="true" />
 
-    <!-- Category card grid -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/filterCategoryGrid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:paddingBottom="8dp"
-        android:clipToPadding="false" />
-
-    <!-- Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="8dp">
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/clearAllFiltersButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            android:text="Clear All"
-            android:textColor="#71717A"
-            app:backgroundTint="@color/white"
-            app:strokeColor="@color/border_light"
-            app:strokeWidth="1dp"
-            app:cornerRadius="14dp"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
+        <!-- Sticky Apply button -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/applyFiltersButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            android:text="Apply"
-            app:backgroundTint="@color/primary_indigo"
-            app:cornerRadius="14dp"
-            style="@style/Widget.MaterialComponents.Button" />
+            style="@style/Widget.Finora.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:text="Apply" />
+
     </LinearLayout>
-</LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

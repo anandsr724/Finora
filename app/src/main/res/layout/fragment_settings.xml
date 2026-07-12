@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@color/background_light">
+    android:background="@drawable/bg_luminous_glow">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,29 +26,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Settings"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary_light" />
+                android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Manage your preferences"
+                android:text="Manage your financial environment"
                 android:textSize="13sp"
-                android:textColor="@color/text_secondary_light"
+                android:textColor="@color/color_on_surface_muted"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
         <!-- Manage Categories Section -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -76,7 +71,7 @@
                             android:text="Categories"
                             android:textSize="18sp"
                             android:textStyle="bold"
-                            android:textColor="@color/text_primary_light" />
+                            android:textColor="@color/color_on_surface" />
 
                         <TextView
                             android:id="@+id/categoriesCountText"
@@ -84,23 +79,20 @@
                             android:layout_height="wrap_content"
                             android:text="0 total"
                             android:textSize="13sp"
-                            android:textColor="@color/text_secondary_light"
+                            android:textColor="@color/color_on_surface_muted"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
-                    <!-- Outlined Manage button -->
+                    <!-- Ghost pill Manage button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/manageCategoriesButton"
+                        style="@style/Widget.Finora.Button.Secondary"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="40dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
                         android:text="Manage"
-                        android:textColor="@color/text_primary_light"
-                        android:textSize="13sp"
-                        app:cornerRadius="14dp"
-                        app:backgroundTint="@color/card_background_light"
-                        app:strokeColor="@color/border_light"
-                        app:strokeWidth="1dp"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                        android:textSize="13sp" />
                 </LinearLayout>
 
                 <!-- Horizontal scrollable category preview chips -->
@@ -116,18 +108,15 @@
                         android:orientation="horizontal" />
                 </HorizontalScrollView>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
-        <!-- Export Data Section -->
-        <com.google.android.material.card.MaterialCardView
+        <!-- Data Section -->
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -141,7 +130,7 @@
                     android:text="Data"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary_light"
+                    android:textColor="@color/color_on_surface"
                     android:layout_marginBottom="6dp" />
 
                 <TextView
@@ -149,38 +138,32 @@
                     android:layout_height="wrap_content"
                     android:text="Export or import your transaction history as a CSV file"
                     android:textSize="13sp"
-                    android:textColor="@color/text_secondary_light"
+                    android:textColor="@color/color_on_surface_muted"
                     android:layout_marginBottom="16dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/export_csv_button"
+                    style="@style/Widget.Finora.Button.Primary"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:text="Export to CSV"
                     android:textSize="15sp"
                     android:layout_marginBottom="10dp"
                     app:icon="@android:drawable/ic_menu_save"
-                    app:iconTint="@color/white"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/emerald_500" />
+                    app:iconTint="@color/white" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/import_csv_button"
+                    style="@style/Widget.Finora.Button.Secondary"
                     android:layout_width="match_parent"
                     android:layout_height="52dp"
                     android:text="Import from CSV"
-                    android:textSize="15sp"
-                    android:textColor="@color/primary_indigo"
-                    app:cornerRadius="16dp"
-                    app:backgroundTint="@color/card_background_light"
-                    app:strokeColor="@color/primary_indigo"
-                    app:strokeWidth="1dp"
-                    style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
+                    android:textSize="15sp" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/border_light"
+                    android:background="@color/color_glass_border"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="12dp" />
 
@@ -192,7 +175,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:padding="12dp"
-                    android:background="@drawable/rounded_surface_variant"
+                    android:background="@drawable/glass_row_background"
                     android:clickable="true"
                     android:focusable="true">
 
@@ -200,7 +183,7 @@
                         android:layout_width="44dp"
                         android:layout_height="44dp"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="#EDE9FE"
+                        app:cardBackgroundColor="@color/color_glass_fill_l3"
                         app:cardElevation="0dp"
                         android:layout_marginEnd="12dp">
 
@@ -208,7 +191,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@android:drawable/ic_menu_upload"
-                            android:tint="@color/primary_indigo"
+                            android:tint="@color/color_primary"
                             android:scaleType="centerInside"
                             android:padding="10dp"
                             android:contentDescription="Upload statement" />
@@ -232,7 +215,7 @@
                                 android:text="Upload Statement"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/text_primary_light"
+                                android:textColor="@color/color_on_surface"
                                 android:layout_marginEnd="8dp" />
 
                             <TextView
@@ -247,7 +230,7 @@
                                 android:paddingTop="2dp"
                                 android:paddingBottom="2dp"
                                 android:background="@drawable/badge_background"
-                                android:backgroundTint="@color/primary_indigo" />
+                                android:backgroundTint="@color/color_primary" />
                         </LinearLayout>
 
                         <TextView
@@ -255,7 +238,7 @@
                             android:layout_height="wrap_content"
                             android:text="Import past transactions from bank statements in bulk"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light"
+                            android:textColor="@color/color_on_surface_muted"
                             android:layout_marginTop="2dp" />
                     </LinearLayout>
 
@@ -263,24 +246,21 @@
                         android:layout_width="20dp"
                         android:layout_height="20dp"
                         android:src="@drawable/ic_arrow_back"
-                        android:tint="@color/text_secondary_light"
+                        android:tint="@color/color_on_surface_muted"
                         android:scaleType="centerInside"
                         android:rotation="180"
                         android:contentDescription="Open" />
                 </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- Appearance Section -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -294,72 +274,8 @@
                     android:text="Appearance"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary_light"
+                    android:textColor="@color/color_on_surface"
                     android:layout_marginBottom="14dp" />
-
-                <!-- Dark Mode Toggle Row -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:padding="12dp"
-                    android:background="@drawable/rounded_surface_variant"
-                    android:clipToOutline="true">
-
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="@color/color_icon_bg"
-                        app:cardElevation="0dp"
-                        android:layout_marginEnd="12dp">
-
-                        <ImageView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:src="@android:drawable/ic_menu_recent_history"
-                            android:scaleType="centerInside"
-                            android:tint="#71717A"
-                            android:padding="9dp"
-                            android:contentDescription="Dark mode" />
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Dark Mode"
-                            android:textSize="14sp"
-                            android:textColor="@color/text_primary_light" />
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Toggle appearance"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
-                    </LinearLayout>
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/darkModeSwitch"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:thumbTint="@color/white"
-                        app:trackTint="@color/primary_indigo" />
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/border_light"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="12dp" />
 
                 <!-- Default Currency Row -->
                 <LinearLayout
@@ -369,7 +285,7 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:padding="12dp"
-                    android:background="@drawable/rounded_surface_variant"
+                    android:background="@drawable/glass_row_background"
                     android:clickable="true"
                     android:focusable="true">
 
@@ -377,7 +293,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardBackgroundColor="@color/color_glass_fill_l3"
                         app:cardElevation="0dp"
                         android:layout_marginEnd="12dp">
 
@@ -386,7 +302,7 @@
                             android:layout_height="match_parent"
                             android:src="@android:drawable/ic_menu_manage"
                             android:scaleType="centerInside"
-                            android:tint="#71717A"
+                            android:tint="@color/color_on_surface_muted"
                             android:padding="9dp"
                             android:contentDescription="Currency" />
                     </com.google.android.material.card.MaterialCardView>
@@ -402,14 +318,14 @@
                             android:layout_height="wrap_content"
                             android:text="Default Currency"
                             android:textSize="14sp"
-                            android:textColor="@color/text_primary_light" />
+                            android:textColor="@color/color_on_surface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Used for all calculations &amp; display"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
 
                     <TextView
@@ -418,22 +334,19 @@
                         android:layout_height="wrap_content"
                         android:text="₹ INR"
                         android:textSize="14sp"
-                        android:textColor="@color/primary_indigo"
+                        android:textColor="@color/color_primary"
                         android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- About Section -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -447,7 +360,7 @@
                     android:text="About Finora"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary_light"
+                    android:textColor="@color/color_on_surface"
                     android:layout_marginBottom="6dp" />
 
                 <TextView
@@ -455,7 +368,7 @@
                     android:layout_height="wrap_content"
                     android:text="Version 1.0.0"
                     android:textSize="13sp"
-                    android:textColor="@color/text_secondary_light"
+                    android:textColor="@color/color_on_surface_muted"
                     android:layout_marginBottom="4dp" />
 
                 <TextView
@@ -463,20 +376,17 @@
                     android:layout_height="wrap_content"
                     android:text="Automatically extract and manage your UPI payment transactions with ease."
                     android:textSize="13sp"
-                    android:textColor="@color/text_secondary_light" />
+                    android:textColor="@color/color_on_surface_muted" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- Beta Section -->
-        <com.google.android.material.card.MaterialCardView
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            app:cardCornerRadius="24dp"
-            app:cardElevation="2dp"
-            app:cardBackgroundColor="@color/card_background_light"
-            app:strokeWidth="1dp"
-            app:strokeColor="@color/border_light">
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -498,7 +408,7 @@
                         android:text="Beta"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        android:textColor="@color/text_primary_light" />
+                        android:textColor="@color/color_on_surface" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -515,21 +425,21 @@
                         android:backgroundTint="#F59E0B" />
                 </LinearLayout>
 
-                <!-- Save Screenshots Toggle Row -->
+                <!-- OCR Data Capture Toggle Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:padding="12dp"
-                    android:background="@drawable/rounded_surface_variant"
-                    android:clipToOutline="true">
+                    android:background="@drawable/glass_row_background"
+                    android:layout_marginBottom="10dp">
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardBackgroundColor="@color/color_glass_fill_l3"
                         app:cardElevation="0dp"
                         android:layout_marginEnd="12dp">
 
@@ -538,7 +448,7 @@
                             android:layout_height="match_parent"
                             android:src="@android:drawable/ic_menu_camera"
                             android:scaleType="centerInside"
-                            android:tint="#71717A"
+                            android:tint="@color/color_on_surface_muted"
                             android:padding="9dp"
                             android:contentDescription="Save screenshots" />
                     </com.google.android.material.card.MaterialCardView>
@@ -554,14 +464,14 @@
                             android:layout_height="wrap_content"
                             android:text="OCR Data Capture"
                             android:textSize="14sp"
-                            android:textColor="@color/text_primary_light" />
+                            android:textColor="@color/color_on_surface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Saves screenshot + OCR predictions on each recorded transaction"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -569,7 +479,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"
-                        app:trackTint="@color/primary_indigo" />
+                        app:trackTint="@color/color_primary" />
                 </LinearLayout>
 
                 <!-- Get Feedback Toggle Row -->
@@ -579,14 +489,13 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:padding="12dp"
-                    android:background="@drawable/rounded_surface_variant"
-                    android:clipToOutline="true">
+                    android:background="@drawable/glass_row_background">
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         app:cardCornerRadius="12dp"
-                        app:cardBackgroundColor="@color/color_icon_bg"
+                        app:cardBackgroundColor="@color/color_glass_fill_l3"
                         app:cardElevation="0dp"
                         android:layout_marginEnd="12dp">
 
@@ -595,7 +504,7 @@
                             android:layout_height="match_parent"
                             android:src="@android:drawable/ic_menu_edit"
                             android:scaleType="centerInside"
-                            android:tint="#71717A"
+                            android:tint="@color/color_on_surface_muted"
                             android:padding="9dp"
                             android:contentDescription="Get feedback" />
                     </com.google.android.material.card.MaterialCardView>
@@ -611,14 +520,14 @@
                             android:layout_height="wrap_content"
                             android:text="Get Feedback"
                             android:textSize="14sp"
-                            android:textColor="@color/text_primary_light" />
+                            android:textColor="@color/color_on_surface" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Ask for OCR accuracy rating after each save (requires OCR Data Capture)"
                             android:textSize="12sp"
-                            android:textColor="@color/text_secondary_light" />
+                            android:textColor="@color/color_on_surface_muted" />
                     </LinearLayout>
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
@@ -626,24 +535,49 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         app:thumbTint="@color/white"
-                        app:trackTint="@color/primary_indigo" />
+                        app:trackTint="@color/color_primary" />
                 </LinearLayout>
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
-        <!-- Clear Data (at bottom) -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/clear_all_data_button"
+        <!-- Account Security Section -->
+        <com.example.expensetracker.ui.common.GlassCardView
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:layout_marginBottom="16dp"
-            android:text="Clear All Data"
-            android:textSize="14sp"
-            android:textColor="#EF4444"
-            app:backgroundTint="#FEE2E2"
-            app:cornerRadius="16dp"
-            app:strokeWidth="0dp"
-            style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            app:glassLevel="level2"
+            app:glassCornerRadius="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Account Security"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_on_surface"
+                    android:layout_marginBottom="14dp" />
+
+                <!-- Clear Data -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clear_all_data_button"
+                    style="@style/Widget.Finora.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="Clear All Data"
+                    android:textSize="14sp"
+                    android:textColor="@color/color_expense"
+                    app:icon="@android:drawable/ic_menu_delete"
+                    app:iconTint="@color/color_expense"
+                    app:backgroundTint="@color/color_expense_container"
+                    app:strokeColor="@color/color_expense" />
+            </LinearLayout>
+        </com.example.expensetracker.ui.common.GlassCardView>
 
         <!-- Tip Info Box -->
         <LinearLayout
@@ -658,7 +592,8 @@
                 android:layout_height="wrap_content"
                 android:text="💡 Tip"
                 android:textSize="13sp"
-                android:textColor="#3730A3"
+                android:textStyle="bold"
+                android:textColor="@color/color_secondary"
                 android:layout_marginBottom="4dp" />
 
             <TextView
@@ -666,7 +601,7 @@
                 android:layout_height="wrap_content"
                 android:text="Use the camera button on the home screen to quickly process payment screenshots from Google Pay, PhonePe, or ICICI Bank."
                 android:textSize="12sp"
-                android:textColor="#4338CA" />
+                android:textColor="@color/color_on_surface_muted" />
         </LinearLayout>
 
     </LinearLayout>

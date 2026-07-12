@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Small pill used as the drag-handle affordance atop glass bottom sheets. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_glass_border_bright" />
+    <corners android:radius="2dp" />
+</shape>

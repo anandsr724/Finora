@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Matches the Stitch "Final Finora" reference exactly: a full-width bar flush to the bottom
+     edge (bg-surface-container/20 backdrop-blur-xl border-t border-white/12) — NOT a floating
+     rounded pill. Real backdrop-blur isn't portable to a flat XML drawable, so this uses an
+     opaque-enough flat fill (same approximation used for every other glass surface in the app)
+     plus a 1dp top border line to match the CSS border-t. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/color_nav_pill" />
+        </shape>
+    </item>
+    <item android:height="1dp" android:gravity="top">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/color_glass_border_bright" />
+        </shape>
+    </item>
+</layer-list>

@@ -2,7 +2,7 @@ package com.example.expensetracker
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -10,11 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.ViewFlipper
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -357,12 +359,13 @@ class StatementImportActivity : AppCompatActivity() {
         private val selectedPositions: MutableSet<Int> = (0 until items.size).toMutableSet()
 
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val checkbox:     CheckBox   = view.findViewById(R.id.importCheckbox)
-            val categoryIcon: ImageView  = view.findViewById(R.id.importCategoryIcon)
-            val merchant:     TextView   = view.findViewById(R.id.importMerchant)
-            val note:         TextView   = view.findViewById(R.id.importNote)
-            val date:         TextView   = view.findViewById(R.id.importDate)
-            val amount:       TextView   = view.findViewById(R.id.importAmount)
+            val checkbox:              CheckBox   = view.findViewById(R.id.importCheckbox)
+            val categoryIconContainer: FrameLayout = view.findViewById(R.id.importCategoryIconContainer)
+            val categoryIcon:          ImageView  = view.findViewById(R.id.importCategoryIcon)
+            val merchant:              TextView   = view.findViewById(R.id.importMerchant)
+            val note:                  TextView   = view.findViewById(R.id.importNote)
+            val date:                  TextView   = view.findViewById(R.id.importDate)
+            val amount:                TextView   = view.findViewById(R.id.importAmount)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(
@@ -379,6 +382,12 @@ class StatementImportActivity : AppCompatActivity() {
             holder.date.text          = item.date
             holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(item.category))
 
+            // Category icon — colored circular badge tinted to the category's semantic color
+            // (same pattern as TransactionHistoryAdapter)
+            val categoryColor = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(item.category))
+            holder.categoryIcon.setColorFilter(categoryColor)
+            (holder.categoryIconContainer.background as? GradientDrawable)?.setColor(withAlpha(categoryColor, 0x26))
+
             if (item.note.isNotBlank() && item.note != item.recipient) {
                 holder.note.text       = item.note
                 holder.note.visibility = View.VISIBLE
@@ -388,8 +397,13 @@ class StatementImportActivity : AppCompatActivity() {
 
             val sign = if (item.type == "income") "+" else "-"
             holder.amount.text     = "$sign₹${item.amount}"
+            // Matches TransactionHistoryAdapter's convention: only income is colored (emerald),
+            // expense rows stay plain on-surface text.
             holder.amount.setTextColor(
-                if (item.type == "income") Color.parseColor("#10B981") else Color.parseColor("#EF4444")
+                ContextCompat.getColor(
+                    holder.itemView.context,
+                    if (item.type == "income") R.color.color_income else R.color.color_on_surface
+                )
             )
 
             holder.itemView.setOnClickListener {
@@ -412,5 +426,8 @@ class StatementImportActivity : AppCompatActivity() {
             notifyDataSetChanged()
             onSelectionChanged(selectedPositions.size)
         }
+
+        private fun withAlpha(color: Int, alpha: Int): Int =
+            (color and 0x00FFFFFF) or (alpha shl 24)
     }
 }

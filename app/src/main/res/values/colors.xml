@@ -1,62 +1,89 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary Colors -->
-    <color name="primary_indigo">#6B5DD3</color>
-    <color name="primary_indigo_light">#8B7DE8</color>
-    <color name="primary_indigo_dark">#5448B0</color>
+    <!-- Luminous Finance — base surfaces -->
+    <color name="color_bg">#0B1326</color>
+    <color name="color_bg_orb_indigo">#6366F1</color>
+    <color name="color_bg_orb_violet">#8B5CF6</color>
+    <color name="color_surface">#171F33</color>
+    <color name="color_surface_low">#131B2E</color>
+    <color name="color_surface_high">#222A3E</color>
+    <color name="color_nav_pill">#EC1A2440</color>
+    <color name="color_nav_active_indicator">#4D8B5CF6</color>
 
-    <!-- Gradient Colors -->
-    <color name="gradient_start">#6B5DD3</color>
-    <color name="gradient_end">#8B7DE8</color>
+    <!-- Glass fills / borders (semi-transparent white over the dark background) -->
+    <color name="color_glass_fill_l2">#14FFFFFF</color>
+    <color name="color_glass_fill_l3">#26FFFFFF</color>
+    <color name="color_glass_border">#1FFFFFFF</color>
+    <color name="color_glass_border_bright">#33FFFFFF</color>
 
-    <!-- Accent Colors -->
-    <color name="emerald_500">#10B981</color>
-    <color name="emerald_600">#059669</color>
-    <color name="teal_500">#14B8A6</color>
-    <color name="amber_500">#F59E0B</color>
-    <color name="orange_500">#F97316</color>
-    <color name="purple_500">#A855F7</color>
-    <color name="pink_500">#EC4899</color>
+    <!-- Brand -->
+    <color name="color_primary">#6366F1</color>
+    <color name="color_secondary">#8B5CF6</color>
+    <color name="color_on_primary">#FFFFFF</color>
 
-    <!-- Background Colors -->
-    <color name="background_light">#F5F5F7</color>
-    <color name="background_dark">#18181B</color>
-    <color name="card_background_light">#FFFFFF</color>
-    <color name="card_background_dark">#27272A</color>
-    <color name="card_background_dark_secondary">#3F3F46</color>
+    <!-- Semantic (income / expense) -->
+    <color name="color_income">#4EDEA3</color>
+    <color name="color_income_container">#1A4EDEA3</color>
+    <color name="color_expense">#FB7185</color>
+    <color name="color_expense_container">#1AFB7185</color>
 
-    <!-- Text Colors -->
-    <color name="text_primary_light">#2D3142</color>
-    <color name="text_primary_dark">#FAFAFA</color>
-    <color name="text_secondary_light">#71717A</color>
-    <color name="text_secondary_dark">#A1A1AA</color>
-    <color name="text_tertiary_light">#A1A1AA</color>
-    <color name="text_tertiary_dark">#71717A</color>
+    <!-- Text -->
+    <color name="color_on_surface">#DAE2FD</color>
+    <color name="color_on_surface_muted">#B3DAE2FD</color>
+    <color name="color_on_surface_faint">#66DAE2FD</color>
 
-    <!-- Border Colors -->
-    <color name="border_light">#E4E4E7</color>
-    <color name="border_dark">#3F3F46</color>
+    <!-- Gradient endpoints (hero cards, primary pill buttons) -->
+    <color name="gradient_start">#6366F1</color>
+    <color name="gradient_end">#8B5CF6</color>
 
-    <!-- Legacy Colors (for compatibility) -->
-    <color name="primary_color">#6B5DD3</color>
-    <color name="save_color">#10B981</color>
+    <!-- Chart palette -->
+    <color name="chart_color_1">#6366F1</color>
+    <color name="chart_color_2">#8B5CF6</color>
+    <color name="chart_color_3">#4EDEA3</color>
+    <color name="chart_color_4">#FB7185</color>
+    <color name="chart_color_5">#F59E0B</color>
+    <color name="chart_color_6">#EC4899</color>
+    <color name="chart_color_7">#06B6D4</color>
+    <color name="chart_color_8">#84CC16</color>
+
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Semantic surface colors (overridden in values-night/colors.xml for dark mode) -->
-    <color name="color_icon_bg">#F4F4F5</color>
-    <color name="color_divider">#F4F4F5</color>
-    <color name="color_separator">#E0E0E0</color>
-    <color name="color_text_medium">#52525B</color>
-    <color name="color_dot_separator">#D4D4D8</color>
+    <!--
+      Legacy token aliases — kept during the Luminous Finance rollout so screens not yet
+      re-skinned still compile and render (dark) rather than crash. Remove once every
+      layout/Kotlin call site has migrated to the color_* tokens above.
+    -->
+    <color name="primary_indigo">#6366F1</color>
+    <color name="primary_indigo_light">#8B5CF6</color>
+    <color name="primary_indigo_dark">#4F46E5</color>
+    <color name="primary_color">#6366F1</color>
+    <color name="save_color">#4EDEA3</color>
 
-    <!-- Chart Colors -->
-    <color name="chart_color_1">#6B5DD3</color>
-    <color name="chart_color_2">#8B7DE8</color>
-    <color name="chart_color_3">#10B981</color>
-    <color name="chart_color_4">#F59E0B</color>
-    <color name="chart_color_5">#EF4444</color>
-    <color name="chart_color_6">#8B5CF6</color>
-    <color name="chart_color_7">#EC4899</color>
-    <color name="chart_color_8">#06B6D4</color>
+    <color name="background_light">#0B1326</color>
+    <color name="card_background_light">#171F33</color>
+    <color name="card_background_dark">#171F33</color>
+    <color name="card_background_dark_secondary">#222A3E</color>
+    <color name="text_primary_light">#DAE2FD</color>
+    <color name="text_primary_dark">#DAE2FD</color>
+    <color name="text_secondary_light">#B3DAE2FD</color>
+    <color name="text_secondary_dark">#B3DAE2FD</color>
+    <color name="text_tertiary_light">#66DAE2FD</color>
+    <color name="text_tertiary_dark">#66DAE2FD</color>
+    <color name="border_light">#1FFFFFFF</color>
+    <color name="border_dark">#1FFFFFFF</color>
+
+    <color name="color_icon_bg">#222A3E</color>
+    <color name="color_divider">#1FFFFFFF</color>
+    <color name="color_separator">#1FFFFFFF</color>
+    <color name="color_text_medium">#B3DAE2FD</color>
+    <color name="color_dot_separator">#66DAE2FD</color>
+
+    <color name="emerald_500">#4EDEA3</color>
+    <color name="emerald_600">#10B981</color>
+    <color name="teal_500">#14B8A6</color>
+    <color name="amber_500">#F59E0B</color>
+    <color name="orange_500">#F97316</color>
+    <color name="purple_500">#8B5CF6</color>
+    <color name="pink_500">#EC4899</color>
 </resources>

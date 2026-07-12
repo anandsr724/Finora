@@ -21,18 +21,13 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply saved dark mode preference before inflating any views
-        val prefs = getSharedPreferences("finora_prefs", MODE_PRIVATE)
-        AppCompatDelegate.setDefaultNightMode(
-            if (prefs.getBoolean("dark_mode", false)) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO
-        )
+        // Finora is dark-only (Luminous Finance glassmorphism theme) — no light variant exists
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        // In dark mode the system must use light (white) icons — no scrim applied
-        val isDark = prefs.getBoolean("dark_mode", false)
-        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = !isDark
+        // Always light (white) system icons since the background is always dark
+        WindowInsetsControllerCompat(window, window.decorView).isAppearanceLightStatusBars = false
         setContentView(R.layout.activity_main)
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
@@ -48,7 +43,7 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        // Apply system bar bottom inset to BottomNavigationView so it sits above the nav bar
+        // Apply system bar bottom inset to BottomNavigationView so it sits above the gesture nav bar
         ViewCompat.setOnApplyWindowInsetsListener(bottomNavigationView) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             view.updatePadding(bottom = systemBars.bottom)
@@ -57,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
         // Define top-level destinations to prevent the Up button from showing on these screens.
         val appBarConfiguration = AppBarConfiguration(
-            setOf(R.id.nav_home, R.id.nav_history, R.id.nav_analytics, R.id.nav_settings),
+            setOf(R.id.nav_home, R.id.nav_history, R.id.nav_add, R.id.nav_analytics, R.id.nav_settings),
             fallbackOnNavigateUpListener = { navController.navigateUp() }
         )
 
@@ -81,6 +76,13 @@ class MainActivity : AppCompatActivity() {
                     navController.popBackStack(R.id.nav_history, inclusive = false)
                     if (navController.currentDestination?.id != R.id.nav_history) {
                         navController.navigate(R.id.nav_history)
+                    }
+                    true
+                }
+                R.id.nav_add -> {
+                    navController.popBackStack(R.id.nav_add, inclusive = false)
+                    if (navController.currentDestination?.id != R.id.nav_add) {
+                        navController.navigate(R.id.nav_add)
                     }
                     true
                 }

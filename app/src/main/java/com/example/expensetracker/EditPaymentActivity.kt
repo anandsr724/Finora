@@ -31,6 +31,8 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -124,8 +126,8 @@ class EditPaymentActivity : AppCompatActivity() {
         typeIncomeButton.setOnClickListener { selectedType = "income"; updateTypeButtons() }
 
         val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
-        val spinnerAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, paymentMethods)
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val spinnerAdapter = ArrayAdapter(this, R.layout.item_spinner_selected, paymentMethods)
+        spinnerAdapter.setDropDownViewResource(R.layout.item_spinner_dropdown)
         bankEditText.adapter = spinnerAdapter
 
         backButton.setOnClickListener {
@@ -151,11 +153,11 @@ class EditPaymentActivity : AppCompatActivity() {
         if (selected != null) {
             categorySelectorEmoji.setImageResource(CategoryIconHelper.getIconResId(selected.id))
             categorySelectorName.text = selected.name
-            categorySelectorName.setTextColor(getColor(android.R.color.black))
+            categorySelectorName.setTextColor(getColor(R.color.color_on_surface))
         } else {
             categorySelectorEmoji.setImageResource(CategoryIconHelper.getIconResId("cat_other"))
             categorySelectorName.text = "Select category"
-            categorySelectorName.setTextColor(resources.getColor(R.color.text_secondary_light, null))
+            categorySelectorName.setTextColor(resources.getColor(R.color.color_on_surface_faint, null))
         }
     }
 
@@ -165,12 +167,21 @@ class EditPaymentActivity : AppCompatActivity() {
         sheet.setContentView(sheetView)
 
         val recycler = sheetView.findViewById<RecyclerView>(R.id.categoryPickerRecyclerView)
-        recycler.layoutManager = GridLayoutManager(this, 2)
-        recycler.adapter = CategoryPickerAdapter(categories, selectedCategoryId) { category ->
+        recycler.layoutManager = GridLayoutManager(this, 3)
+        val adapter = CategoryPickerAdapter(categories, selectedCategoryId) { category ->
             selectedCategoryId = category.id
             updateCategorySelectorDisplay()
             sheet.dismiss()
         }
+        recycler.adapter = adapter
+
+        sheetView.findViewById<EditText>(R.id.categoryPickerSearchInput).addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                adapter.filter(s?.toString().orEmpty())
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
 
         sheetView.findViewById<ImageButton>(R.id.closePickerButton).setOnClickListener {
             sheet.dismiss()
@@ -181,6 +192,7 @@ class EditPaymentActivity : AppCompatActivity() {
             showAddNewCategoryDialog()
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -203,28 +215,32 @@ class EditPaymentActivity : AppCompatActivity() {
         val iconPadding = (12 * density).toInt()
         val iconViews = mutableListOf<Pair<FrameLayout, ImageView>>()
 
-        fun makeBackground(filled: Boolean) = GradientDrawable().apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = 12 * density
-            setColor(if (filled) Color.parseColor("#6B5DD3") else Color.parseColor("#EDE9FE"))
+        // Each swatch is filled with its own category tint color (CategoryIconHelper); a ring
+        // border indicates the current selection instead of swapping fill color.
+        fun makeBackground(key: String, selected: Boolean) = GradientDrawable().apply {
+            shape = GradientDrawable.OVAL
+            setColor(ContextCompat.getColor(this@EditPaymentActivity, CategoryIconHelper.getIconTintColorRes(key)))
+            if (selected) {
+                setStroke((2.5f * density).toInt(), ContextCompat.getColor(this@EditPaymentActivity, R.color.color_on_surface))
+            }
         }
         fun updateSelection(selectedIdx: Int) {
             iconViews.forEachIndexed { idx, (frame, img) ->
-                val sel = idx == selectedIdx
-                frame.background = makeBackground(sel)
-                img.setColorFilter(if (sel) Color.WHITE else Color.parseColor("#6B5DD3"))
+                val key = iconOptions[idx].first
+                frame.background = makeBackground(key, idx == selectedIdx)
+                img.setColorFilter(Color.WHITE)
             }
         }
         iconOptions.forEachIndexed { idx, (key, resId) ->
             val frame = FrameLayout(this).apply {
-                layoutParams = GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED, 1f)).apply { width = 0; height = cellSize; setMargins(cellMargin, cellMargin, cellMargin, cellMargin) }
-                background = makeBackground(false)
+                layoutParams = GridLayout.LayoutParams(GridLayout.spec(GridLayout.UNDEFINED), GridLayout.spec(GridLayout.UNDEFINED)).apply { width = cellSize; height = cellSize; setMargins(cellMargin, cellMargin, cellMargin, cellMargin) }
+                background = makeBackground(key, false)
             }
             val img = ImageView(this).apply {
                 layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
                 setImageResource(resId); scaleType = ImageView.ScaleType.CENTER_INSIDE
                 setPadding(iconPadding, iconPadding, iconPadding, iconPadding)
-                setColorFilter(Color.parseColor("#6B5DD3"))
+                setColorFilter(Color.WHITE)
             }
             frame.addView(img)
             frame.setOnClickListener { selectedIconKey = key; updateSelection(idx) }
@@ -254,6 +270,7 @@ class EditPaymentActivity : AppCompatActivity() {
             }
         }
 
+        sheet.applyGlassBlur()
         sheet.show()
     }
 
@@ -352,17 +369,18 @@ class EditPaymentActivity : AppCompatActivity() {
     }
 
     private fun updateTypeButtons() {
-        val activeColor = resources.getColor(R.color.primary_indigo, null)
+        val expenseActiveColor = resources.getColor(R.color.color_expense, null)
+        val incomeActiveColor = resources.getColor(R.color.color_income, null)
         val inactiveColor = android.graphics.Color.TRANSPARENT
         val activeText = resources.getColor(android.R.color.white, null)
-        val inactiveText = resources.getColor(R.color.text_secondary_light, null)
+        val inactiveText = resources.getColor(R.color.color_on_surface_muted, null)
         if (selectedType == "expense") {
-            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(activeColor)
+            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(expenseActiveColor)
             typeExpenseButton.setTextColor(activeText)
             typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
             typeIncomeButton.setTextColor(inactiveText)
         } else {
-            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(activeColor)
+            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(incomeActiveColor)
             typeIncomeButton.setTextColor(activeText)
             typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
             typeExpenseButton.setTextColor(inactiveText)
@@ -425,18 +443,26 @@ class EditPaymentActivity : AppCompatActivity() {
         } catch (e: Exception) { /* keep defaults */ }
     }
 
-    // Adapter for the category picker 2-column grid
+    // Adapter for the category picker grid (single-select, with local name search/filter)
     private class CategoryPickerAdapter(
-        private val categories: List<Category>,
+        private val allCategories: List<Category>,
         private val selectedId: String,
         private val onSelect: (Category) -> Unit
     ) : RecyclerView.Adapter<CategoryPickerAdapter.ViewHolder>() {
+
+        private var categories: List<Category> = allCategories
 
         class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val card: MaterialCardView = itemView.findViewById(R.id.categoryPickerCard)
             val iconCard: MaterialCardView = itemView.findViewById(R.id.categoryIconCard)
             val icon: ImageView = itemView.findViewById(R.id.categoryPickerIcon)
             val name: TextView = itemView.findViewById(R.id.categoryPickerName)
+        }
+
+        fun filter(query: String) {
+            categories = if (query.isBlank()) allCategories
+                else allCategories.filter { it.name.contains(query, ignoreCase = true) }
+            notifyDataSetChanged()
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -449,25 +475,35 @@ class EditPaymentActivity : AppCompatActivity() {
             val category = categories[position]
             val isSelected = category.id == selectedId
             val ctx = holder.itemView.context
+            val tint = ContextCompat.getColor(ctx, CategoryIconHelper.getIconTintColorRes(category.id))
 
             holder.icon.setImageResource(CategoryIconHelper.getIconResId(category.id))
             holder.name.text = category.name
 
             if (isSelected) {
-                holder.card.strokeColor = ctx.getColor(R.color.primary_indigo)
-                holder.card.setCardBackgroundColor(0x1A6B5DD3.toInt())
-                holder.iconCard.setCardBackgroundColor(ctx.getColor(R.color.primary_indigo))
-                holder.name.setTextColor(ctx.getColor(R.color.primary_indigo))
+                holder.card.strokeColor = tint
+                holder.card.strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
+                holder.card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.color_glass_fill_l3))
+                holder.iconCard.setCardBackgroundColor(tint)
+                holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(
+                    ContextCompat.getColor(ctx, R.color.color_on_primary)
+                )
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.color_on_surface))
             } else {
-                holder.card.strokeColor = 0x33000000
-                holder.card.setCardBackgroundColor(ctx.getColor(android.R.color.white))
-                holder.iconCard.setCardBackgroundColor(0xFFEEF2FF.toInt())
-                holder.name.setTextColor(ctx.getColor(android.R.color.black))
+                holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.color_glass_border)
+                holder.card.strokeWidth = (1 * ctx.resources.displayMetrics.density).toInt()
+                holder.card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.color_glass_fill_l2))
+                holder.iconCard.setCardBackgroundColor(withAlpha(tint, 0x26))
+                holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(tint)
+                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.color_on_surface))
             }
 
             holder.card.setOnClickListener { onSelect(category) }
         }
 
         override fun getItemCount() = categories.size
+
+        private fun withAlpha(color: Int, alpha: Int): Int =
+            (color and 0x00FFFFFF) or (alpha shl 24)
     }
 }

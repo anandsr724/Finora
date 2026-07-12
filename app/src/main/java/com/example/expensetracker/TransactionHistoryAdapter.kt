@@ -1,11 +1,13 @@
 package com.example.expensetracker
 
-import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -25,6 +27,7 @@ class TransactionHistoryAdapter(
         val bankTextView: TextView = itemView.findViewById(R.id.transaction_bank)
         val categoryBadge: TextView = itemView.findViewById(R.id.category_badge)
         val categoryIcon: ImageView = itemView.findViewById(R.id.category_icon)
+        val categoryIconContainer: FrameLayout = itemView.findViewById(R.id.category_icon_container)
         val noteTextView: TextView = itemView.findViewById(R.id.transaction_note)
     }
 
@@ -43,8 +46,10 @@ class TransactionHistoryAdapter(
         val currencySymbol = CurrencyManager.getSymbol(tx.currency)
         val isIncome = tx.type == "income"
         holder.amountTextView.text = "${if (isIncome) "+" else "-"}$currencySymbol${numberFormat.format(numericAmount)}"
+        // Both Home and History reference screens only color income (emerald, "+"); expense
+        // rows stay plain on-surface text with a "-" sign, not coral.
         holder.amountTextView.setTextColor(
-            if (isIncome) Color.parseColor("#10B981") else Color.parseColor("#EF4444")
+            ContextCompat.getColor(holder.itemView.context, if (isIncome) R.color.color_income else R.color.color_on_surface)
         )
 
         // Recipient
@@ -65,9 +70,13 @@ class TransactionHistoryAdapter(
 
         // Category badge
         holder.categoryBadge.text = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
+        val categoryColor = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(tx.category))
+        holder.categoryBadge.setTextColor(categoryColor)
 
-        // Category icon
+        // Category icon — colored circular badge tinted to the category's semantic color
         holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(tx.category))
+        holder.categoryIcon.setColorFilter(categoryColor)
+        (holder.categoryIconContainer.background as? GradientDrawable)?.setColor(withAlpha(categoryColor, 0x26))
 
         // Note
         if (tx.note.isNotEmpty()) {
@@ -82,4 +91,7 @@ class TransactionHistoryAdapter(
     }
 
     override fun getItemCount() = transactions.size
+
+    private fun withAlpha(color: Int, alpha: Int): Int =
+        (color and 0x00FFFFFF) or (alpha shl 24)
 }
