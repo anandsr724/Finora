@@ -17,6 +17,10 @@ import com.example.expensetracker.CurrencyManager
 class TransactionHistoryAdapter(
     private val transactions: List<PaymentTransaction>,
     private val categoryManager: CategoryManager? = null,
+    // Home's reference row has no separate category badge — category is folded into the
+    // subtitle instead ("{Category} • {Time}"). History's reference keeps the badge plus a
+    // "{Date, Time} · {Bank}" subtitle. Same shared row/adapter, so this switches between them.
+    private val showCategoryBadge: Boolean = true,
     private val onClick: ((PaymentTransaction) -> Unit)? = null
 ) : RecyclerView.Adapter<TransactionHistoryAdapter.TransactionViewHolder>() {
 
@@ -56,22 +60,27 @@ class TransactionHistoryAdapter(
         holder.recipientTextView.text = tx.recipient
 
         // Date
-        try {
+        val formattedDate = try {
             val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(tx.dateTime)
-            holder.dateTextView.text = if (date != null)
-                SimpleDateFormat("dd MMM, hh:mm a", Locale.ENGLISH).format(date)
-            else tx.dateTime
+            if (date != null) SimpleDateFormat("dd MMM, hh:mm a", Locale.ENGLISH).format(date) else tx.dateTime
         } catch (e: Exception) {
-            holder.dateTextView.text = tx.dateTime
+            tx.dateTime
         }
 
-        // Bank info
-        holder.bankTextView.text = tx.bankInfo.ifEmpty { "N/A" }
-
-        // Category badge
-        holder.categoryBadge.text = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
+        val categoryDisplayName = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
         val categoryColor = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(tx.category))
-        holder.categoryBadge.setTextColor(categoryColor)
+
+        if (showCategoryBadge) {
+            holder.categoryBadge.visibility = View.VISIBLE
+            holder.categoryBadge.text = categoryDisplayName
+            holder.categoryBadge.setTextColor(categoryColor)
+            holder.dateTextView.text = formattedDate
+            holder.bankTextView.text = tx.bankInfo.ifEmpty { "N/A" }
+        } else {
+            holder.categoryBadge.visibility = View.GONE
+            holder.dateTextView.text = categoryDisplayName
+            holder.bankTextView.text = formattedDate
+        }
 
         // Category icon — colored circular badge tinted to the category's semantic color
         holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(tx.category))

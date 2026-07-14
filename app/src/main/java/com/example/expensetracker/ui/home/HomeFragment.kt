@@ -27,6 +27,7 @@ import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
 import com.example.expensetracker.ui.common.GlassCardView
+import com.example.expensetracker.ui.common.applyCategoryDotGlow
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -211,7 +212,7 @@ class HomeFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recent_transactions_list)
         
         if (recentTransactions.isNotEmpty()) {
-            transactionAdapter = TransactionHistoryAdapter(recentTransactions, categoryManager) { transaction ->
+            transactionAdapter = TransactionHistoryAdapter(recentTransactions, categoryManager, showCategoryBadge = false) { transaction ->
                 showTransactionDetailSheet(transaction)
             }
             recyclerView.adapter = transactionAdapter
@@ -334,8 +335,9 @@ class HomeFragment : Fragment() {
             CategoryIconHelper.getIconTintColorRes(transaction.category)
         )
         sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
-            setImageResource(R.drawable.shape_circle)
+            setImageResource(R.drawable.shape_dot_solid)
             setColorFilter(categoryColor)
+            applyCategoryDotGlow(categoryColor)
         }
 
         val isIncome = transaction.type == "income"
@@ -396,8 +398,8 @@ class HomeFragment : Fragment() {
             confirmDeleteTransaction(transaction)
         }
 
-        sheet.applyGlassBlur()
         sheet.show()
+        sheet.applyGlassBlur()
     }
 
     private fun editTransaction(transaction: PaymentTransaction) {

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default Currency row value pill, per "Select Currency - Expanded State":
+     bg-primary/10, rounded-full, no border. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_primary_10" />
+    <corners android:radius="999dp" />
+</shape>

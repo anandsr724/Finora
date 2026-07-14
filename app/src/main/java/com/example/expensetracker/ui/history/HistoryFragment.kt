@@ -32,6 +32,7 @@ import com.example.expensetracker.EditPaymentActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
+import com.example.expensetracker.ui.common.applyCategoryDotGlow
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
@@ -431,13 +432,28 @@ class HistoryFragment : Fragment() {
 
         val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
 
-        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
-            .setImageResource(CategoryIconHelper.getIconResId(transaction.category))
+        val categoryColor = ContextCompat.getColor(
+            requireContext(),
+            CategoryIconHelper.getIconTintColorRes(transaction.category)
+        )
+        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
+            setImageResource(R.drawable.shape_dot_solid)
+            setColorFilter(categoryColor)
+            applyCategoryDotGlow(categoryColor)
+        }
 
+        val isIncome = transaction.type == "income"
         val numericAmount = CurrencyManager.parseAmount(transaction.amount)
         val currencySymbol = CurrencyManager.getSymbol(transaction.currency)
-        sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            "$currencySymbol${fmt.format(numericAmount)}"
+        sheetView.findViewById<TextView>(R.id.detailAmount).apply {
+            text = "${if (isIncome) "+" else "-"}$currencySymbol${fmt.format(numericAmount)}"
+            setTextColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    if (isIncome) R.color.color_income else R.color.color_expense
+                )
+            )
+        }
 
         sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
             categoryManager.getCategoryDisplayName(transaction.category)
@@ -485,6 +501,7 @@ class HistoryFragment : Fragment() {
         }
 
         sheet.show()
+        sheet.applyGlassBlur()
     }
 
     private fun editTransaction(transaction: PaymentTransaction) {

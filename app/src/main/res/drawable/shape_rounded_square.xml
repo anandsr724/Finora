@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rounded-square icon badge base, tinted at runtime — replaces shape_circle for the
+     Settings category-preview grid, whose Stitch reference uses square (rounded-xl) icon
+     badges rather than circles. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@android:color/white" />
+    <corners android:radius="12dp" />
+</shape>

@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:glassLevel="level3"
-    app:glassCornerRadius="24dp">
+    app:glassCornerRadius="24dp"
+    app:glassTopCornersOnly="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -281,26 +282,36 @@
                 android:id="@+id/detailEditButton"
                 style="@style/Widget.Finora.Button.Secondary"
                 android:layout_width="0dp"
-                android:layout_height="52dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="8dp"
                 android:text="Edit"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                app:icon="@drawable/ic_edit"
+                app:iconGravity="textStart"
+                app:iconSize="18dp"
+                app:iconPadding="8dp"
+                app:iconTint="@color/color_on_surface" />
 
-            <!-- Delete button (coral-tinted destructive pill) -->
+            <!-- Delete button (dark maroon destructive pill, matching Stitch's error palette) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/detailDeleteButton"
                 style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="0dp"
-                android:layout_height="52dp"
+                android:layout_height="56dp"
                 android:layout_weight="1"
                 android:layout_marginStart="8dp"
                 android:text="Delete"
-                android:textColor="@color/color_expense"
+                android:textColor="@color/color_delete_text"
                 android:textSize="14sp"
                 android:textAllCaps="false"
-                app:backgroundTint="@color/color_expense_container"
-                app:strokeColor="@color/color_expense"
+                app:icon="@drawable/ic_delete"
+                app:iconGravity="textStart"
+                app:iconSize="18dp"
+                app:iconPadding="8dp"
+                app:iconTint="@color/color_delete_text"
+                app:backgroundTint="@color/color_delete_container"
+                app:strokeColor="@color/color_delete_border"
                 app:strokeWidth="1dp"
                 app:cornerRadius="999dp" />
         </LinearLayout>

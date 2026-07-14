@@ -30,6 +30,7 @@ import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.R
 import com.example.expensetracker.ui.common.applyGlassBlur
+import com.example.expensetracker.ui.common.applyVividGlow
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -39,7 +40,6 @@ class SettingsFragment : Fragment() {
     private lateinit var csvManager: CSVManager
     private lateinit var categoryManager: CategoryManager
     private lateinit var manageCategoriesButton: MaterialButton
-    private lateinit var categoriesCountText: TextView
     private lateinit var categoryPreviewContainer: LinearLayout
     private lateinit var saveScreenshotsSwitch: SwitchMaterial
     private lateinit var feedbackSwitch: SwitchMaterial
@@ -67,7 +67,6 @@ class SettingsFragment : Fragment() {
 
     private fun setupViews(view: View) {
         manageCategoriesButton = view.findViewById(R.id.manageCategoriesButton)
-        categoriesCountText = view.findViewById(R.id.categoriesCountText)
         categoryPreviewContainer = view.findViewById(R.id.categoryPreviewContainer)
         saveScreenshotsSwitch = view.findViewById(R.id.saveScreenshotsSwitch)
         feedbackSwitch = view.findViewById(R.id.feedbackSwitch)
@@ -76,11 +75,15 @@ class SettingsFragment : Fragment() {
             showManageCategoriesSheet()
         }
 
-        view.findViewById<MaterialButton>(R.id.export_csv_button).setOnClickListener {
+        // A colored elevation-shadow glow reads fine on the small category icon badges, but on
+        // this larger rectangular tile Android's hard-edged shadow rendering looked like a
+        // jarring solid box rather than a soft halo — so this button relies on its tinted
+        // background/border alone, matching Import's weight instead.
+        view.findViewById<View>(R.id.export_csv_button).setOnClickListener {
             exportCsvToDownloads()
         }
 
-        view.findViewById<MaterialButton>(R.id.import_csv_button).setOnClickListener {
+        view.findViewById<View>(R.id.import_csv_button).setOnClickListener {
             val intent = android.content.Intent(android.content.Intent.ACTION_GET_CONTENT).apply {
                 type = "text/csv"
                 addCategory(android.content.Intent.CATEGORY_OPENABLE)
@@ -89,7 +92,7 @@ class SettingsFragment : Fragment() {
             startActivityForResult(android.content.Intent.createChooser(intent, "Select CSV file"), IMPORT_CSV_REQUEST)
         }
 
-        view.findViewById<MaterialButton>(R.id.clear_all_data_button).setOnClickListener {
+        view.findViewById<View>(R.id.clear_all_data_button).setOnClickListener {
             confirmClearAllData()
         }
 
@@ -109,47 +112,92 @@ class SettingsFragment : Fragment() {
         fun refreshDisplay() {
             val code = com.example.expensetracker.CurrencyManager.getDefault(requireContext())
             val info = com.example.expensetracker.CurrencyManager.getInfo(code)
-            currencyValue.text = "${info?.symbol ?: code}  $code"
+            currencyValue.text = "$code ${info?.symbol ?: ""}"
         }
         refreshDisplay()
 
         currencyRow.setOnClickListener {
-            val currencies = com.example.expensetracker.CurrencyManager.CURRENCIES
-            val items = currencies.map { "${it.symbol}  ${it.code} — ${it.name}" }.toTypedArray()
-            val currentCode = com.example.expensetracker.CurrencyManager.getDefault(requireContext())
-            val currentIdx = currencies.indexOfFirst { it.code == currentCode }.coerceAtLeast(0)
-            androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                .setTitle("Default Currency")
-                .setSingleChoiceItems(items, currentIdx) { dialog, idx ->
-                    com.example.expensetracker.CurrencyManager.setDefault(
-                        requireContext(), currencies[idx].code
-                    )
-                    refreshDisplay()
-                    dialog.dismiss()
-                }
-                .setNegativeButton("Cancel", null)
-                .show()
+            showCurrencyPickerSheet { refreshDisplay() }
         }
+    }
+
+    private fun showCurrencyPickerSheet(onApplied: () -> Unit) {
+        val sheet = BottomSheetDialog(requireContext())
+        val sheetView = layoutInflater.inflate(R.layout.layout_currency_picker_sheet, null)
+        sheet.setContentView(sheetView)
+        // The currency list is tall enough that Material's default half-expanded collapse
+        // hides the Apply button below the fold, and swipes just scroll the inner RecyclerView
+        // instead of expanding the sheet — force full expansion so Apply is always reachable.
+        sheet.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        sheet.behavior.skipCollapsed = true
+
+        val allCurrencies = com.example.expensetracker.CurrencyManager.CURRENCIES
+        var selectedCode = com.example.expensetracker.CurrencyManager.getDefault(requireContext())
+
+        val recycler = sheetView.findViewById<RecyclerView>(R.id.currencyPickerRecyclerView)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
+        val adapter = CurrencyPickerAdapter(allCurrencies, selectedCode) { code ->
+            selectedCode = code
+        }
+        recycler.adapter = adapter
+
+        sheetView.findViewById<EditText>(R.id.currencySearchEditText).addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                val query = s?.toString().orEmpty()
+                adapter.filter(query)
+            }
+        })
+
+        sheetView.findViewById<ImageButton>(R.id.closeCurrencySheetButton).setOnClickListener {
+            sheet.dismiss()
+        }
+
+        sheetView.findViewById<MaterialButton>(R.id.applyCurrencyButton).setOnClickListener {
+            com.example.expensetracker.CurrencyManager.setDefault(requireContext(), selectedCode)
+            onApplied()
+            sheet.dismiss()
+        }
+
+        sheet.show()
+        sheet.applyGlassBlur()
     }
 
     private fun loadCategoryPreview() {
         val categories = categoryManager.getAllCategories()
-        categoriesCountText.text = "${categories.size} categories"
         categoryPreviewContainer.removeAllViews()
-        categories.forEach { category ->
-            val chip = layoutInflater.inflate(R.layout.item_category_chip, categoryPreviewContainer, false)
+        // Preview grid shows the first 3 (matching the Stitch reference's 3-column preview);
+        // "Manage" opens the full, scrollable list.
+        val preview = categories.take(3)
+        preview.forEachIndexed { index, category ->
+            val cell = layoutInflater.inflate(R.layout.item_settings_category_preview, categoryPreviewContainer, false)
             val tint = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(category.id))
-            chip.findViewById<ImageView>(R.id.chipIcon).apply {
+            // Icon must contrast against its own badge fill, not match it — using the same
+            // `tint` for both (as before) made the icon glyph disappear into its background.
+            val previewIcon = cell.findViewById<ImageView>(R.id.previewIcon).apply {
                 setImageResource(CategoryIconHelper.getIconResId(category))
-                setColorFilter(tint)
+                setColorFilter(Color.WHITE)
             }
-            chip.findViewById<android.widget.TextView>(R.id.chipName).apply {
-                text = category.name
-                setTextColor(tint)
+            cell.findViewById<View>(R.id.previewIconBg).apply {
+                (background as? GradientDrawable)?.setColor(withAlpha(tint, 0xFF))
+                applyVividGlow(tint, cornerRadiusDp = 12f)
+                // Elevation affects draw order between siblings regardless of XML declaration
+                // order — giving this background View elevation (for the glow shadow) made it
+                // draw on top of the icon ImageView, hiding the glyph entirely. Bump the icon's
+                // own elevation just above it so it stays on top.
+                previewIcon.elevation = elevation + 1f
             }
-            categoryPreviewContainer.addView(chip)
+            cell.findViewById<android.widget.TextView>(R.id.previewName).text = category.name
+            if (index < preview.size - 1) {
+                (cell.layoutParams as? LinearLayout.LayoutParams)?.marginEnd = (8 * resources.displayMetrics.density).toInt()
+            }
+            categoryPreviewContainer.addView(cell)
         }
     }
+
+    private fun withAlpha(color: Int, alpha: Int): Int =
+        (color and 0x00FFFFFF) or (alpha shl 24)
 
     private fun showManageCategoriesSheet() {
         val sheet = BottomSheetDialog(requireContext())
@@ -161,7 +209,6 @@ class SettingsFragment : Fragment() {
 
         fun refreshSheet() {
             val cats = categoryManager.getAllCategories()
-            categoriesCountText.text = "${cats.size} categories"
             recycler.adapter = ManageCategoryAdapter(
                 cats,
                 onDelete = { category ->
@@ -528,5 +575,71 @@ class SettingsFragment : Fragment() {
         }
 
         override fun getItemCount() = categories.size
+    }
+
+    private inner class CurrencyPickerAdapter(
+        private val allItems: List<com.example.expensetracker.CurrencyManager.CurrencyInfo>,
+        initialSelectedCode: String,
+        private val onSelect: (String) -> Unit
+    ) : RecyclerView.Adapter<CurrencyPickerAdapter.ViewHolder>() {
+
+        private var selectedCode = initialSelectedCode
+        private var items = allItems
+
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            val avatarBg: View = itemView.findViewById(R.id.currencyAvatarBg)
+            val symbol: TextView = itemView.findViewById(R.id.currencySymbol)
+            val name: TextView = itemView.findViewById(R.id.currencyName)
+            val code: TextView = itemView.findViewById(R.id.currencyCode)
+            val checkIcon: ImageView = itemView.findViewById(R.id.currencyCheckIcon)
+            val emptyRing: View = itemView.findViewById(R.id.currencyEmptyRing)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_currency_picker, parent, false)
+            return ViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val currency = items[position]
+            val isSelected = currency.code == selectedCode
+
+            holder.itemView.background = ContextCompat.getDrawable(
+                holder.itemView.context,
+                if (isSelected) R.drawable.currency_item_selected_background else R.drawable.currency_item_unselected_background
+            )
+            holder.avatarBg.background = ContextCompat.getDrawable(
+                holder.itemView.context,
+                if (isSelected) R.drawable.currency_avatar_selected_background else R.drawable.currency_avatar_unselected_background
+            )
+            holder.symbol.text = currency.symbol
+            holder.symbol.setTextColor(
+                ContextCompat.getColor(holder.itemView.context, if (isSelected) R.color.color_primary else R.color.color_on_surface)
+            )
+            holder.name.text = currency.name
+            holder.code.text = currency.code
+            holder.checkIcon.visibility = if (isSelected) View.VISIBLE else View.GONE
+            holder.emptyRing.visibility = if (isSelected) View.GONE else View.VISIBLE
+
+            holder.itemView.setOnClickListener {
+                selectedCode = currency.code
+                onSelect(currency.code)
+                notifyDataSetChanged()
+            }
+        }
+
+        override fun getItemCount() = items.size
+
+        fun filter(query: String) {
+            items = if (query.isBlank()) {
+                allItems
+            } else {
+                allItems.filter {
+                    it.name.contains(query, ignoreCase = true) || it.code.contains(query, ignoreCase = true)
+                }
+            }
+            notifyDataSetChanged()
+        }
     }
 }

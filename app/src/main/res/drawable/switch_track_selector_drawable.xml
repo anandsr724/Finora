@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Custom track for Beta toggles — SwitchMaterial's default platform track shape/proportions
+     didn't match the reference's clean flat pill even after tinting, so this replaces it
+     outright via app:track rather than app:trackTint. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:drawable="@drawable/switch_track_on" />
+    <item android:drawable="@drawable/switch_track_off" />
+</selector>

@@ -32,6 +32,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import android.content.Context
 import android.content.DialogInterface
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.applyCategoryDotGlow
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -1188,15 +1189,24 @@ class AddFragment : Fragment() {
 
         val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
 
-        // Category icon (default until user sets category via edit)
-        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon)
-            .setImageResource(CategoryIconHelper.getIconResId("cat_other"))
+        // Category dot (default until user sets category via edit)
+        val defaultCategoryColor = ContextCompat.getColor(
+            requireContext(),
+            CategoryIconHelper.getIconTintColorRes("cat_other")
+        )
+        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
+            setImageResource(R.drawable.shape_dot_solid)
+            setColorFilter(defaultCategoryColor)
+            applyCategoryDotGlow(defaultCategoryColor)
+        }
 
-        // Amount
+        // Amount — this preview is the OCR scan-review sheet, always a scanned receipt/expense
         val numericAmount = CurrencyManager.parseAmount(amount)
         val currencySymbol = CurrencyManager.getSymbol(currency)
-        sheetView.findViewById<TextView>(R.id.detailAmount).text =
-            if (numericAmount > 0) "$currencySymbol${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
+        sheetView.findViewById<TextView>(R.id.detailAmount).apply {
+            text = if (numericAmount > 0) "-$currencySymbol${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
+            setTextColor(ContextCompat.getColor(requireContext(), R.color.color_expense))
+        }
 
         // Category badge
         sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =

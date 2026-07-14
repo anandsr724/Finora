@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Row icon square, neutral, per "Vivid Glass Variant"'s Biometric/PIN-style rows:
+     bg-white/10, no border. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_white_10" />
+    <corners android:radius="12dp" />
+</shape>

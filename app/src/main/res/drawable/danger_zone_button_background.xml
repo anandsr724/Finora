@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Inner "Clear All Data" button per "Vivid Glass Variant": bg-error/10 border-error/20,
+     rounded-2xl (16dp) — sits inside the fainter danger_zone_background outer panel. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_expense_container" />
+    <corners android:radius="16dp" />
+    <stroke android:width="1dp" android:color="@color/color_expense_border_20" />
+</shape>

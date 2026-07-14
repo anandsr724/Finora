@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Distinct red-tinted panel for the Settings danger zone, matching the "Vivid Glass Variant"
+     reference's `border-error/30 bg-error/5 rounded-3xl` treatment — a plain glass card here
+     would blend in with every other neutral section instead of visually flagging a
+     destructive action. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/color_expense_container_faint" />
+    <corners android:radius="24dp" />
+    <stroke android:width="1dp" android:color="@color/color_expense_border" />
+</shape>

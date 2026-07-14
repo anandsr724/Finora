@@ -13,6 +13,13 @@
     <!-- Glass fills / borders (semi-transparent white over the dark background) -->
     <color name="color_glass_fill_l2">#14FFFFFF</color>
     <color name="color_glass_fill_l3">#26FFFFFF</color>
+    <!-- Level-3 sheet gradient tint, reverse-solved against the Stitch reference's measured
+         card color (~rgb(50,42,80) over the #0B1326 backdrop): tint = #624683 (a muted plum)
+         at ~45-55% alpha lands on that target directly, rather than approximating via an
+         existing brand token whose channels (e.g. primary-container's maxed-out blue) can't
+         reach the reference's darker, lower-green balance no matter the alpha chosen. -->
+    <color name="color_glass_fill_l3_bright">#8C624683</color>
+    <color name="color_glass_fill_l3_violet">#73624683</color>
     <color name="color_glass_border">#1FFFFFFF</color>
     <color name="color_glass_border_bright">#33FFFFFF</color>
 
@@ -26,6 +33,29 @@
     <color name="color_income_container">#1A4EDEA3</color>
     <color name="color_expense">#FB7185</color>
     <color name="color_expense_container">#1AFB7185</color>
+    <color name="color_expense_container_bold">#66FB7185</color>
+    <color name="color_expense_border">#4DFB7185</color>
+    <color name="color_expense_border_20">#33FB7185</color>
+
+    <!-- Destructive (Delete button) — matches Stitch's literal MD3 error palette
+         (error #ffb4ab, error-container #93000a) rather than the app-wide coral `color_expense`
+         token, since Stitch's reference uses a darker brick-red/maroon fill for this specific
+         button that the brighter coral doesn't reproduce at any alpha. -->
+    <color name="color_delete_text">#FFB4AB</color>
+    <color name="color_delete_container">#6693000A</color>
+    <color name="color_delete_border">#33FFB4AB</color>
+    <color name="color_expense_container_faint">#0DFB7185</color>
+
+    <!-- Settings "Vivid Glass Variant" tokens — this reference is close to the standard
+         GlassCardView look (24dp radius already matches the app-wide convention) but with a
+         brighter border and colored accent tints per row/button. -->
+    <color name="color_glass_border_faint">#0DFFFFFF</color>
+    <color name="color_white_10">#1AFFFFFF</color>
+    <color name="color_primary_10">#1A6366F1</color>
+    <color name="color_primary_20">#336366F1</color>
+    <color name="color_primary_30">#4D6366F1</color>
+    <color name="color_income_20">#334EDEA3</color>
+    <color name="color_surface_high_50">#80222A3E</color>
 
     <!-- Text -->
     <color name="color_on_surface">#DAE2FD</color>
