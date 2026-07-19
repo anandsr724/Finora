@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Active Expense toggle pill fill — reuses the same MD3 error/error-container pair
+     (#ffb4ab -> #93000a) Stitch's own pill-toggle-active gradient uses, already
+     precedented in this app for color_delete_text/color_delete_container. The glow
+     behind this pill is painted separately by GlowPillDrawable (see EditPaymentActivity's
+     updateTypeButtons), not baked in here.
+
+     Colors are swapped relative to Stitch's literal `135deg` CSS value: Android's
+     `android:angle` for <gradient> rotates counter-clockwise from "left is startColor,
+     right is endColor" at angle=0, the opposite sense from CSS's `linear-gradient(angle,
+     ...)` (clockwise from top). Using angle=135 with the same start/end order as the CSS
+     produced a mirrored result — dark on the left, light on the right — so start/end are
+     swapped here instead of chasing the matching Android angle value. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#93000A"
+        android:endColor="#FFB4AB"
+        android:angle="135"
+        android:type="linear" />
+    <corners android:radius="999dp" />
+</shape>

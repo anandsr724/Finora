@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Active Income toggle pill fill — mirrors the Expense gradient treatment using the
+     design system's tertiary/tertiary-container emerald pair, since Stitch's static
+     reference only shows Expense selected. The glow behind this pill is painted
+     separately by GlowPillDrawable (see EditPaymentActivity's updateTypeButtons).
+
+     Start/end are swapped for the same reason as pill_toggle_active_expense.xml — Android's
+     angle convention mirrors CSS's, so matching Stitch's literal `135deg` order put the
+     dark color on the left instead of the right. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#00885E"
+        android:endColor="#4EDEA3"
+        android:angle="135"
+        android:type="linear" />
+    <corners android:radius="999dp" />
+</shape>

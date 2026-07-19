@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Luminous Finance "glass well" — recessed input surface, darker than the
-     GlassCardView it sits inside, with a faint translucent border. -->
+     GlassCardView it sits inside. Matches Stitch's .glass-input-well (background:
+     rgba(0,0,0,0.2)) — the previous opaque color_bg fill read much heavier/darker than
+     the reference's translucent well, which lets some of the card's own tint show through
+     instead of reading as a solid black box. No stroke, matching the reference's borderless
+     look — a 1px border here read as visual clutter the reference doesn't have. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/color_bg" />
-    <stroke android:width="1dp" android:color="@color/color_glass_border" />
+    <solid android:color="#33000000" />
     <corners android:radius="16dp" />
 </shape>

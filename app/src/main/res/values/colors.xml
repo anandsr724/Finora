@@ -28,6 +28,12 @@
     <color name="color_secondary">#8B5CF6</color>
     <color name="color_on_primary">#FFFFFF</color>
 
+    <!-- Stitch's own generated M3 "primary" token (#c0c1ff, a pale lavender) — distinct from
+         this app's brand indigo color_primary (#6366F1). The Edit Transaction reference tints
+         its row icons with this token at 70% opacity (text-primary/70), which reads much
+         lighter/softer than the saturated brand indigo would at the same opacity. -->
+    <color name="color_icon_lavender">#C0C1FF</color>
+
     <!-- Semantic (income / expense) -->
     <color name="color_income">#4EDEA3</color>
     <color name="color_income_container">#1A4EDEA3</color>

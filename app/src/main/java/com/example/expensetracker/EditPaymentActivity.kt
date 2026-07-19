@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
 import com.example.expensetracker.ui.common.applyGlassBlur
+import com.example.expensetracker.ui.common.applyVividGlow
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -42,17 +43,18 @@ import java.util.*
 class EditPaymentActivity : AppCompatActivity() {
 
     private lateinit var amountEditText: EditText
+    private lateinit var amountCurrencySymbol: TextView
     private lateinit var recipientEditText: EditText
     private lateinit var dateTimeEditText: EditText
     private lateinit var transactionIdEditText: EditText
     private lateinit var noteEditText: EditText
     private lateinit var bankEditText: Spinner
     private lateinit var categorySelector: LinearLayout
+    private lateinit var categorySelectorIconBg: View
     private lateinit var categorySelectorEmoji: ImageView
     private lateinit var categorySelectorName: TextView
     private lateinit var currencyButton: TextView
     private lateinit var saveButton: Button
-    private lateinit var cancelButton: Button
     private lateinit var backButton: ImageButton
 
     private lateinit var categoryManager: CategoryManager
@@ -101,24 +103,25 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun initializeViews() {
         amountEditText = findViewById(R.id.amountEditText)
+        amountCurrencySymbol = findViewById(R.id.amountCurrencySymbol)
         recipientEditText = findViewById(R.id.recipientEditText)
         dateTimeEditText = findViewById(R.id.dateTimeEditText)
         transactionIdEditText = findViewById(R.id.transactionIdEditText)
         noteEditText = findViewById(R.id.noteEditText)
         bankEditText = findViewById(R.id.bankEditText)
         categorySelector = findViewById(R.id.categorySelector)
+        categorySelectorIconBg = findViewById(R.id.categorySelectorIconBg)
         categorySelectorEmoji = findViewById(R.id.categorySelectorEmoji)
         categorySelectorName = findViewById(R.id.categorySelectorName)
         currencyButton = findViewById(R.id.currencyButton)
         saveButton = findViewById(R.id.saveButton)
-        cancelButton = findViewById(R.id.cancelButton)
         backButton = findViewById(R.id.backButton)
         typeExpenseButton = findViewById(R.id.typeExpenseButton)
         typeIncomeButton = findViewById(R.id.typeIncomeButton)
 
         selectedCurrency = intent.getStringExtra("currency") ?: CurrencyManager.getDefault(this)
-        currencyButton.text = CurrencyManager.getSymbol(selectedCurrency)
-        currencyButton.setOnClickListener { showCurrencyPicker() }
+        updateCurrencyDisplay()
+        findViewById<LinearLayout>(R.id.currencyRow).setOnClickListener { showCurrencyPicker() }
 
         selectedType = intent.getStringExtra("type") ?: "expense"
         updateTypeButtons()
@@ -150,12 +153,19 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun updateCategorySelectorDisplay() {
         val selected = categories.find { it.id == selectedCategoryId }
+        val categoryId = selected?.id ?: "cat_other"
+        val tint = ContextCompat.getColor(this, CategoryIconHelper.getIconTintColorRes(categoryId))
+
+        categorySelectorEmoji.setImageResource(CategoryIconHelper.getIconResId(categoryId))
+        categorySelectorEmoji.setColorFilter(Color.WHITE)
+        (categorySelectorIconBg.background as? GradientDrawable)?.setColor(tint)
+        categorySelectorIconBg.applyVividGlow(tint, cornerRadiusDp = 12f)
+        categorySelectorEmoji.elevation = categorySelectorIconBg.elevation + 1f
+
         if (selected != null) {
-            categorySelectorEmoji.setImageResource(CategoryIconHelper.getIconResId(selected.id))
             categorySelectorName.text = selected.name
             categorySelectorName.setTextColor(getColor(R.color.color_on_surface))
         } else {
-            categorySelectorEmoji.setImageResource(CategoryIconHelper.getIconResId("cat_other"))
             categorySelectorName.text = "Select category"
             categorySelectorName.setTextColor(resources.getColor(R.color.color_on_surface_faint, null))
         }
@@ -305,11 +315,6 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun setupButtonListeners() {
         saveButton.setOnClickListener { saveAndReturn() }
-        cancelButton.setOnClickListener {
-            setResult(RESULT_CANCELED)
-            finish()
-            overridePendingTransition(0, 0)
-        }
     }
 
     private fun saveAndReturn() {
@@ -369,21 +374,34 @@ class EditPaymentActivity : AppCompatActivity() {
     }
 
     private fun updateTypeButtons() {
-        val expenseActiveColor = resources.getColor(R.color.color_expense, null)
-        val incomeActiveColor = resources.getColor(R.color.color_income, null)
-        val inactiveColor = android.graphics.Color.TRANSPARENT
         val activeText = resources.getColor(android.R.color.white, null)
         val inactiveText = resources.getColor(R.color.color_on_surface_muted, null)
+        val expenseGlow = resources.getColor(R.color.color_expense, null)
+        val incomeGlow = resources.getColor(R.color.color_income, null)
+        val density = resources.displayMetrics.density
+        val bleedPx = 14f * density
+        val yOffsetPx = 4f * density // matches Stitch's box-shadow "0 4px 15px" y-offset
+
+        // The glow is painted by GlowPillDrawable using non-overlapping annulus rings, not
+        // View.applyVividGlow's elevation/outline-shadow tinting (didn't render at all in
+        // testing) or a stacked-flat-layer XML drawable (visibly banded) — see its kdoc.
+        fun activate(button: MaterialButton, fillRes: Int, glowColor: Int) {
+            val fill = ContextCompat.getDrawable(this, fillRes)!!
+            button.backgroundTintList = null
+            button.background = com.example.expensetracker.ui.common.GlowPillDrawable(glowColor, bleedPx, yOffsetPx, fill)
+            button.setTextColor(activeText)
+        }
+        fun deactivate(button: MaterialButton) {
+            button.background = null
+            button.setTextColor(inactiveText)
+        }
+
         if (selectedType == "expense") {
-            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(expenseActiveColor)
-            typeExpenseButton.setTextColor(activeText)
-            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
-            typeIncomeButton.setTextColor(inactiveText)
+            activate(typeExpenseButton, R.drawable.pill_toggle_active_expense, expenseGlow)
+            deactivate(typeIncomeButton)
         } else {
-            typeIncomeButton.backgroundTintList = android.content.res.ColorStateList.valueOf(incomeActiveColor)
-            typeIncomeButton.setTextColor(activeText)
-            typeExpenseButton.backgroundTintList = android.content.res.ColorStateList.valueOf(inactiveColor)
-            typeExpenseButton.setTextColor(inactiveText)
+            activate(typeIncomeButton, R.drawable.pill_toggle_active_income, incomeGlow)
+            deactivate(typeExpenseButton)
         }
     }
 
@@ -395,11 +413,21 @@ class EditPaymentActivity : AppCompatActivity() {
             .setTitle("Select Currency")
             .setSingleChoiceItems(items, currentIdx) { dialog, idx ->
                 selectedCurrency = currencies[idx].code
-                currencyButton.text = CurrencyManager.getSymbol(selectedCurrency)
+                updateCurrencyDisplay()
                 dialog.dismiss()
             }
             .setNegativeButton("Cancel", null)
             .show()
+    }
+
+    private fun formatCurrencyLabel(code: String): String {
+        val info = CurrencyManager.getInfo(code) ?: return code
+        return "${info.code} (${info.symbol})"
+    }
+
+    private fun updateCurrencyDisplay() {
+        currencyButton.text = formatCurrencyLabel(selectedCurrency)
+        amountCurrencySymbol.text = CurrencyManager.getSymbol(selectedCurrency)
     }
 
     private fun showDateTimePicker() { showDatePicker() }
