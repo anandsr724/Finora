@@ -68,6 +68,90 @@
             android:orientation="vertical"
             android:padding="16dp">
 
+            <!-- Receipt Preview (OCR review only) — shown when arriving from Upload Receipt
+                 with a scanned image; hidden for manual entry or editing an existing
+                 transaction, matching Stitch's "Upload Receipt - Review Details" screen. -->
+            <LinearLayout
+                android:id="@+id/receiptPreviewHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center_horizontal"
+                android:layout_marginBottom="20dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="140dp"
+                    android:layout_height="180dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="20dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <!-- Tilted glass window, matching Stitch's "Upload Receipt - Review
+                         Details" screen -->
+                    <com.example.expensetracker.ui.common.GlassCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:rotation="-6"
+                        app:glassLevel="level2"
+                        app:glassCornerRadius="16dp">
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="6dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                app:cardCornerRadius="16dp"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:id="@+id/receiptPreviewImage"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="centerCrop"
+                                    android:contentDescription="Scanned receipt" />
+                            </com.google.android.material.card.MaterialCardView>
+                        </FrameLayout>
+                    </com.example.expensetracker.ui.common.GlassCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_gravity="bottom|end"
+                        android:layout_margin="2dp"
+                        android:rotation="-6"
+                        app:cardCornerRadius="14dp"
+                        app:cardBackgroundColor="@color/color_income"
+                        app:cardElevation="4dp"
+                        app:strokeWidth="0dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="6dp"
+                            android:src="@drawable/ic_check"
+                            app:tint="@color/color_bg"
+                            android:contentDescription="@null" />
+                    </com.google.android.material.card.MaterialCardView>
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="RECEIPT SCANNED SUCCESSFULLY"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08"
+                    android:textColor="@color/color_income" />
+            </LinearLayout>
+
             <!-- Form Card -->
             <com.example.expensetracker.ui.common.GlassCardView
                 android:layout_width="match_parent"

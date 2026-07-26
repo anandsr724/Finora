@@ -4,8 +4,12 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.ImageDecoder
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -100,11 +104,39 @@ class EditPaymentActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.editScreenSubtitle).text =
             if (isEditingExisting) "Update transaction details" else "Enter transaction details"
 
+        showReceiptPreviewIfPresent()
+
         initializeViews()
         loadCategories()
         populateFields()
         setupButtonListeners()
         setupBackPressHandler()
+    }
+
+    // Shows the scanned-receipt thumbnail above the form when arriving from the Upload
+    // Receipt flow (AddFragment passes the picked image's Uri) — hidden for manual entry
+    // and for editing an existing saved transaction, matching Stitch's "Upload Receipt -
+    // Review Details" screen.
+    private fun showReceiptPreviewIfPresent() {
+        val imageUriString = intent.getStringExtra("imageUri")
+        if (imageUriString.isNullOrEmpty()) return
+
+        try {
+            val uri = Uri.parse(imageUriString)
+            val bitmap = if (Build.VERSION.SDK_INT < 28) {
+                MediaStore.Images.Media.getBitmap(contentResolver, uri)
+            } else {
+                val source = ImageDecoder.createSource(contentResolver, uri)
+                ImageDecoder.decodeBitmap(source) { decoder, _, _ ->
+                    decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                }
+            }
+            findViewById<ImageView>(R.id.receiptPreviewImage).setImageBitmap(bitmap)
+            findViewById<View>(R.id.receiptPreviewHeader).visibility = View.VISIBLE
+        } catch (e: Exception) {
+            // Image failed to load — the form still works fine without the preview, so just
+            // leave receiptPreviewHeader hidden rather than blocking the review flow.
+        }
     }
 
     private fun initializeViews() {

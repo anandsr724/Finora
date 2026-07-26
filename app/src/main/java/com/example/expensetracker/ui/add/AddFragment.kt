@@ -12,27 +12,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.expensetracker.*
 import com.example.expensetracker.CurrencyManager
 import com.example.expensetracker.data.OcrTrackingManager
-import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
-import java.text.NumberFormat
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import android.content.Context
 import android.content.DialogInterface
 import androidx.core.content.ContextCompat
-import com.example.expensetracker.ui.common.applyCategoryDotGlow
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -42,23 +33,16 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AddFragment : Fragment() {
-    private lateinit var imageView: ImageView
-    private lateinit var imageInfoText: TextView
+    private lateinit var addFlipper: android.widget.ViewFlipper
+    private lateinit var previewImage: ImageView
+    private lateinit var extractingImage: ImageView
     private lateinit var statusText: TextView
-    private lateinit var processButton: Button
-    private lateinit var imagePreviewCard: MaterialCardView
-    private lateinit var processButtonCard: MaterialCardView
-    private lateinit var statusCard: MaterialCardView
     private var currentBitmap: Bitmap? = null
+    private var currentImageUri: Uri? = null
+    // Guards the OCR result callbacks after the user taps Cancel on the Extracting screen —
+    // ML Kit's Task doesn't support true cancellation, so an in-flight result is just ignored.
+    private var ocrCancelled = false
     private val textRecognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-    // Pending OCR result — preserved so sheet can be re-shown if Edit is cancelled
-    private var pendingAmount = ""
-    private var pendingRecipient = ""
-    private var pendingNote = ""
-    private var pendingDateTime = ""
-    private var pendingTransactionId = ""
-    private var pendingBankInfo = ""
-    private var pendingCurrency = ""
 
     // OCR tracking session — captures predicted vs actual data for dev/training use
     private var isOcrSession = false
@@ -74,8 +58,6 @@ class AddFragment : Fragment() {
     private var ocrPredictedCurrency = ""
     private lateinit var csvManager: CSVManager
     private lateinit var categoryManager: CategoryManager
-    private lateinit var ocrProgressBar: android.widget.ProgressBar
-    private lateinit var retryManualButton: MaterialButton
 
     private val galleryLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         if (result.resultCode == android.app.Activity.RESULT_OK) {
@@ -87,14 +69,9 @@ class AddFragment : Fragment() {
     private val editLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val data = result.data
         if (result.resultCode == android.app.Activity.RESULT_CANCELED) {
-            if (pendingAmount.isNotEmpty() || pendingRecipient.isNotEmpty()) {
-                val restoredCurrency = pendingCurrency.ifEmpty { CurrencyManager.getDefault(requireContext()) }
-                displayParsedResults(
-                    pendingAmount, pendingRecipient, pendingNote,
-                    pendingDateTime, pendingTransactionId, pendingBankInfo,
-                    emptyList(), emptyList(), currency = restoredCurrency, instant = true
-                )
-            }
+            // Bring the user back to the preview so they can retry Extract Details or
+            // retake the photo, instead of dropping them back at the method hub.
+            if (currentBitmap != null) showPreview()
         } else if (result.resultCode == android.app.Activity.RESULT_OK && data != null) {
             val updatedAmount = data.getStringExtra("amount") ?: ""
             val updatedRecipient = data.getStringExtra("recipient") ?: ""
@@ -120,24 +97,14 @@ class AddFragment : Fragment() {
         categoryManager = CategoryManager(requireContext())
         categoryManager.initializeDefaultCategories()
 
-        imageView = view.findViewById(R.id.imageView)
-        imageInfoText = view.findViewById(R.id.imageInfoText)
-        statusText = view.findViewById(R.id.statusText)
-        processButton = view.findViewById(R.id.processButton)
-        imagePreviewCard = view.findViewById(R.id.imagePreviewCard)
-        processButtonCard = view.findViewById(R.id.processButtonCard)
-        statusCard = view.findViewById(R.id.statusCard)
-        ocrProgressBar = view.findViewById(R.id.ocrProgressBar)
-        retryManualButton = view.findViewById(R.id.retryManualButton)
-        retryManualButton.setOnClickListener { openManualEntryForm() }
+        addFlipper = view.findViewById(R.id.addFlipper)
+        previewImage = view.findViewById(R.id.previewImage)
+        extractingImage = view.findViewById(R.id.extractingImage)
+        statusText = view.findViewById(R.id.extractingStatusText)
 
         val uploadReceiptRow = view.findViewById<View>(R.id.uploadReceiptRow)
         uploadReceiptRow.setOnClickListener {
             openGallery()
-        }
-
-        processButton.setOnClickListener {
-            performMLKitOCR()
         }
 
         val manualEntryRow = view.findViewById<View>(R.id.manualEntryRow)
@@ -150,6 +117,27 @@ class AddFragment : Fragment() {
             startActivity(Intent(requireContext(), StatementImportActivity::class.java))
         }
 
+        view.findViewById<View>(R.id.previewBackButton).setOnClickListener {
+            currentBitmap = null
+            currentImageUri = null
+            showHub()
+        }
+        view.findViewById<View>(R.id.extractDetailsButton).setOnClickListener {
+            showExtracting()
+            performMLKitOCR()
+        }
+        view.findViewById<View>(R.id.retakePhotoButton).setOnClickListener {
+            openGallery()
+        }
+        view.findViewById<View>(R.id.extractingCloseButton).setOnClickListener {
+            ocrCancelled = true
+            showPreview()
+        }
+        view.findViewById<View>(R.id.cancelExtractionButton).setOnClickListener {
+            ocrCancelled = true
+            showPreview()
+        }
+
         // Check if image URI was passed from HomeFragment — load preview, wait for user to process
         val imageUriString = arguments?.getString("imageUri")
         if (!imageUriString.isNullOrEmpty()) {
@@ -158,6 +146,22 @@ class AddFragment : Fragment() {
         }
 
         return view
+    }
+
+    private fun showHub() {
+        addFlipper.displayedChild = 0
+    }
+
+    private fun showPreview() {
+        previewImage.setImageBitmap(currentBitmap)
+        addFlipper.displayedChild = 1
+    }
+
+    private fun showExtracting() {
+        ocrCancelled = false
+        extractingImage.setImageBitmap(currentBitmap)
+        statusText.text = "Reading your receipt…"
+        addFlipper.displayedChild = 2
     }
 
     private fun openGallery() {
@@ -175,30 +179,15 @@ class AddFragment : Fragment() {
                     decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
                 }
             }
-            imageView.setImageBitmap(currentBitmap)
-            imagePreviewCard.visibility = View.VISIBLE
-            imageInfoText.text = "${currentBitmap?.width} × ${currentBitmap?.height} px"
-            processButtonCard.visibility = View.VISIBLE
-            processButton.isEnabled = true
+            currentImageUri = uri
+            showPreview()
         } catch (e: Exception) {
-            statusCard.visibility = View.VISIBLE
-            statusText.text = "Error loading image: ${e.message}"
+            Toast.makeText(requireContext(), "Error loading image: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun performMLKitOCR() {
-        val bitmap = currentBitmap
-
-        if (bitmap == null) {
-            statusText.text = "No image to process"
-            return
-        }
-
-        statusCard.visibility = View.VISIBLE
-        statusText.text = "Processing image…"
-        ocrProgressBar.visibility = View.VISIBLE
-        retryManualButton.visibility = View.GONE
-        processButton.isEnabled = false
+        val bitmap = currentBitmap ?: return
 
         try {
             val processedBitmap = preprocessForOCR(bitmap)
@@ -206,10 +195,8 @@ class AddFragment : Fragment() {
 
             textRecognizer.process(image)
                 .addOnSuccessListener { visionText ->
-                    processButton.isEnabled = true
-                    ocrProgressBar.visibility = View.GONE
-
                     processedBitmap.recycle()
+                    if (ocrCancelled) return@addOnSuccessListener
                     if (visionText.text.isNotBlank()) {
                         statusText.text = "Extracting details…"
                         val detailedText = buildDetailedText(visionText)
@@ -218,23 +205,20 @@ class AddFragment : Fragment() {
                         val spatialAmount = extractAmountSpatially(visionText)
                         parsePaymentInfo(correctedText, detailedText, spatialAmount)
                     } else {
-                        statusText.text = "No text found in this image. Try a clearer screenshot or enter details manually."
-                        retryManualButton.visibility = View.VISIBLE
+                        Toast.makeText(requireContext(), "No text found in this image. Try a clearer screenshot or enter details manually.", Toast.LENGTH_LONG).show()
+                        showPreview()
                     }
                 }
                 .addOnFailureListener { e ->
                     processedBitmap.recycle()
-                    processButton.isEnabled = true
-                    ocrProgressBar.visibility = View.GONE
-                    statusText.text = "Could not read image: ${e.message}"
-                    retryManualButton.visibility = View.VISIBLE
+                    if (ocrCancelled) return@addOnFailureListener
+                    Toast.makeText(requireContext(), "Could not read image: ${e.message}", Toast.LENGTH_LONG).show()
+                    showPreview()
                 }
 
         } catch (e: IOException) {
-            processButton.isEnabled = true
-            ocrProgressBar.visibility = View.GONE
-            statusText.text = "Error processing image: ${e.message}"
-            retryManualButton.visibility = View.VISIBLE
+            Toast.makeText(requireContext(), "Error processing image: ${e.message}", Toast.LENGTH_LONG).show()
+            showPreview()
         }
     }
 
@@ -516,7 +500,7 @@ class AddFragment : Fragment() {
 
         bankInfo = findBankInfo(lines)
 
-        displayParsedResults(amount, recipient, note, dateTime, transactionId, bankInfo, lines, transactionIdCandidates, currency = detectedCurrency)
+        proceedToReview(amount, recipient, note, dateTime, transactionId, bankInfo, currency = detectedCurrency)
     }
 
     /**
@@ -1141,6 +1125,7 @@ class AddFragment : Fragment() {
             putExtra("bankInfo", bankInfo)
             putExtra("category", category)
             putExtra("currency", currency)
+            currentImageUri?.let { putExtra("imageUri", it.toString()) }
         }
         editLauncher.launch(intent)
     }
@@ -1160,123 +1145,27 @@ class AddFragment : Fragment() {
         editLauncher.launch(intent)
     }
 
-    private fun displayParsedResults(
+    // Replaces the old OCR summary bottom sheet — the new flow (Preview -> Extracting) always
+    // routes straight into the full review/edit screen, matching the Stitch "Upload Receipt -
+    // Review Details" design instead of offering a separate quick-save shortcut.
+    private fun proceedToReview(
         amount: String, recipient: String, note: String,
         dateTime: String, transactionId: String, bankInfo: String,
-        lines: List<String>, transactionIdCandidates: List<Pair<String, Int>>,
-        currency: String = CurrencyManager.getDefault(requireContext()),
-        instant: Boolean = false
+        currency: String = CurrencyManager.getDefault(requireContext())
     ) {
-        // Capture OCR predictions at the moment results are shown to the user
-        if (!instant) {
-            isOcrSession = true
-            ocrWasEdited = false
-            ocrSessionId = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            ocrCapturedAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
-            ocrPredictedAmount = amount
-            ocrPredictedRecipient = recipient
-            ocrPredictedNote = note
-            ocrPredictedDateTime = dateTime
-            ocrPredictedTransactionId = transactionId
-            ocrPredictedBankInfo = bankInfo
-            ocrPredictedCurrency = currency
-        }
+        isOcrSession = true
+        ocrWasEdited = true
+        ocrSessionId = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        ocrCapturedAt = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date())
+        ocrPredictedAmount = amount
+        ocrPredictedRecipient = recipient
+        ocrPredictedNote = note
+        ocrPredictedDateTime = dateTime
+        ocrPredictedTransactionId = transactionId
+        ocrPredictedBankInfo = bankInfo
+        ocrPredictedCurrency = currency
 
-        statusCard.visibility = View.GONE
-
-        val sheet = if (instant)
-            BottomSheetDialog(requireContext(), R.style.BottomSheetDialog_NoAnim)
-        else
-            BottomSheetDialog(requireContext())
-        val sheetView = layoutInflater.inflate(R.layout.layout_transaction_detail_sheet, null)
-        sheet.setContentView(sheetView)
-
-        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
-
-        // Category dot (default until user sets category via edit)
-        val defaultCategoryColor = ContextCompat.getColor(
-            requireContext(),
-            CategoryIconHelper.getIconTintColorRes("cat_other")
-        )
-        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
-            setImageResource(R.drawable.shape_dot_solid)
-            setColorFilter(defaultCategoryColor)
-            applyCategoryDotGlow(defaultCategoryColor)
-        }
-
-        // Amount — this preview is the OCR scan-review sheet, always a scanned receipt/expense
-        val numericAmount = CurrencyManager.parseAmount(amount)
-        val currencySymbol = CurrencyManager.getSymbol(currency)
-        sheetView.findViewById<TextView>(R.id.detailAmount).apply {
-            text = if (numericAmount > 0) "-$currencySymbol${fmt.format(numericAmount)}" else amount.ifEmpty { "—" }
-            setTextColor(ContextCompat.getColor(requireContext(), R.color.color_expense))
-        }
-
-        // Category badge
-        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
-            categoryManager.getCategoryDisplayName("cat_other")
-
-        // Recipient
-        sheetView.findViewById<TextView>(R.id.detailRecipient).text = recipient.ifEmpty { "—" }
-
-        // Note
-        val noteRow = sheetView.findViewById<LinearLayout>(R.id.detailNoteRow)
-        val noteDivider = sheetView.findViewById<View>(R.id.detailNoteDivider)
-        if (note.isNotEmpty()) {
-            sheetView.findViewById<TextView>(R.id.detailNote).text = note
-            noteRow.visibility = View.VISIBLE
-            noteDivider.visibility = View.VISIBLE
-        } else {
-            noteRow.visibility = View.GONE
-            noteDivider.visibility = View.GONE
-        }
-
-        // Date/Time
-        sheetView.findViewById<TextView>(R.id.detailDateTime).text = dateTime.ifEmpty { "—" }
-
-        // Payment method
-        sheetView.findViewById<TextView>(R.id.detailPaymentMethod).text = bankInfo.ifEmpty { "—" }
-
-        // Transaction ID
-        sheetView.findViewById<TextView>(R.id.detailTransactionId).text = transactionId.ifEmpty { "—" }
-
-        // Close button
-        sheetView.findViewById<ImageButton>(R.id.closeDetailSheetButton).setOnClickListener {
-            sheet.dismiss()
-        }
-
-        // Primary action: Save immediately
-        sheetView.findViewById<MaterialButton>(R.id.detailEditButton).apply {
-            text = "Save"
-            setOnClickListener {
-                sheet.dismiss()
-                savePaymentDetails(amount, recipient, note, dateTime, transactionId, bankInfo,
-                    "cat_other", currency)
-            }
-        }
-
-        // Secondary action: Review & Edit before saving
-        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).apply {
-            text = "Review & Edit"
-            setTextColor(requireContext().getColor(R.color.primary_indigo))
-            backgroundTintList = android.content.res.ColorStateList.valueOf(
-                android.graphics.Color.parseColor("#EDE9FE")
-            )
-            setOnClickListener {
-                pendingAmount = amount
-                pendingRecipient = recipient
-                pendingNote = note
-                pendingDateTime = dateTime
-                pendingTransactionId = transactionId
-                pendingBankInfo = bankInfo
-                pendingCurrency = currency
-                ocrWasEdited = true
-                sheet.dismiss()
-                launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other", currency)
-            }
-        }
-
-        sheet.show()
+        launchEditActivity(amount, recipient, note, dateTime, transactionId, bankInfo, "cat_other", currency)
     }
 
     private fun savePaymentDetails(
@@ -1333,13 +1222,9 @@ class AddFragment : Fragment() {
             // Reset all state
             isOcrSession = false
             ocrSessionId = ""
-            pendingAmount = ""; pendingRecipient = ""; pendingNote = ""
-            pendingDateTime = ""; pendingTransactionId = ""; pendingBankInfo = ""; pendingCurrency = ""
-            imagePreviewCard.visibility = View.GONE
-            processButtonCard.visibility = View.GONE
-            statusCard.visibility = View.GONE
             currentBitmap = null
-            processButton.isEnabled = false
+            currentImageUri = null
+            showHub()
 
             if (shouldTrack) {
                 if (OcrTrackingManager.isFeedbackEnabled(requireContext())) {

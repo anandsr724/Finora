@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Top-left viewfinder corner bracket. Reused for all 4 corners via android:rotation
+     (0/90/180/270) on the ImageView. The arc radius (22 of 32 units) matches the outer glass
+     card's own corner radius so the bracket's curve visually continues the card's rounded
+     corner instead of reading as a separate, tighter-radius shape. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="32dp" android:height="32dp"
+    android:viewportWidth="32" android:viewportHeight="32">
+    <path android:fillColor="@android:color/transparent" android:strokeColor="@android:color/black" android:strokeWidth="2.5" android:strokeLineCap="round" android:pathData="M32,2 L24,2 A22,22 0 0,0 2,24 L2,32"/>
+</vector>
