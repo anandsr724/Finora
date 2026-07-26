@@ -6,6 +6,7 @@ import android.graphics.Outline
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.drawable.GradientDrawable
+import android.graphics.drawable.LayerDrawable
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
@@ -93,36 +94,43 @@ class GlassCardView @JvmOverloads constructor(
 
     private fun applyGlassBackground(level: Int) {
         val borderColorRes = if (level == 3) R.color.color_glass_border_bright else R.color.color_glass_border
-        background = GradientDrawable().apply {
+        val corners: FloatArray? = if (topCornersOnly) {
+            floatArrayOf(
+                cornerRadiusPx, cornerRadiusPx,
+                cornerRadiusPx, cornerRadiusPx,
+                0f, 0f,
+                0f, 0f
+            )
+        } else null
+
+        fun roundedRect() = GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            if (topCornersOnly) {
-                cornerRadii = floatArrayOf(
-                    cornerRadiusPx, cornerRadiusPx,
-                    cornerRadiusPx, cornerRadiusPx,
-                    0f, 0f,
-                    0f, 0f
-                )
-            } else {
-                cornerRadius = cornerRadiusPx
+            if (corners != null) cornerRadii = corners else cornerRadius = cornerRadiusPx
+        }
+
+        if (level == 3) {
+            // Blur alone read as too see-through — the busy content behind the sheet stayed
+            // legible enough to be distracting. A solid dark base underneath the blur gives the
+            // sheet real body/contrast, while the white highlight gradient on top (bright
+            // top-left fading to dim bottom-right) keeps the "glass catching light" look instead
+            // of turning it into a flat opaque panel.
+            val base = roundedRect().apply {
+                setColor(ContextCompat.getColor(context, R.color.color_glass_fill_l3_base))
             }
-            if (level == 3) {
-                // A flat fill left the card reading as a plain opaque panel once real blur
-                // started working behind it — the BottomSheetDialog scrim sits between the
-                // blur and this fill, and a uniform low-alpha white can't visually register
-                // against a busier, blurred backdrop the way it does against a flat one. The
-                // design-md calls the top/left border a "highlight... to simulate physical
-                // glass catching light" — extending that idea to the fill itself (brighter
-                // top-left, fading toward bottom-right) gives the panel a distinct glassy
-                // presence instead of blending into the scrim.
+            val highlight = roundedRect().apply {
                 orientation = GradientDrawable.Orientation.TL_BR
                 colors = intArrayOf(
                     ContextCompat.getColor(context, R.color.color_glass_fill_l3_bright),
-                    ContextCompat.getColor(context, R.color.color_glass_fill_l3_violet)
+                    ContextCompat.getColor(context, R.color.color_glass_fill_l3_dim)
                 )
-            } else {
-                setColor(ContextCompat.getColor(context, R.color.color_glass_fill_l2))
+                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), ContextCompat.getColor(context, borderColorRes))
             }
-            setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), ContextCompat.getColor(context, borderColorRes))
+            background = LayerDrawable(arrayOf(base, highlight))
+        } else {
+            background = roundedRect().apply {
+                setColor(ContextCompat.getColor(context, R.color.color_glass_fill_l2))
+                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), ContextCompat.getColor(context, borderColorRes))
+            }
         }
     }
 }

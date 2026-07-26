@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Luminous Finance "Level 1" base background: deep indigo canvas with soft, blurred
-     violet/indigo/emerald gradient orbs, per the design-md's elevation spec. Radial gradients
-     naturally fade to transparent at their edges, approximating a blurred glow without needing
+<!-- Luminous Finance "Level 1" base background: deep indigo canvas with three large, soft
+     glow orbs, matching the Stitch "Home" reference's exact composition (.glow-orb elements:
+     top-left primary-container/20 #8083ff, right-middle secondary-container/10 #571bc1 —
+     the largest orb, bottom-left tertiary-container/10 #00885e). Radial gradients fade to
+     transparent at their edges, approximating the reference's blur(80px) without needing
      actual RenderEffect blur (which can't composite behind opaque scrolling content anyway). -->
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
@@ -10,63 +12,47 @@
         </shape>
     </item>
     <item
-        android:width="520dp"
-        android:height="520dp"
+        android:width="380dp"
+        android:height="380dp"
         android:gravity="left|top"
-        android:left="-180dp"
-        android:top="-160dp">
+        android:left="-110dp"
+        android:top="-110dp">
         <shape android:shape="oval">
             <gradient
                 android:type="radial"
-                android:gradientRadius="260dp"
-                android:startColor="#736366F1"
-                android:centerColor="#296366F1"
-                android:endColor="#006366F1" />
-        </shape>
-    </item>
-    <item
-        android:width="480dp"
-        android:height="480dp"
-        android:gravity="right|top"
-        android:right="-150dp"
-        android:top="60dp">
-        <shape android:shape="oval">
-            <gradient
-                android:type="radial"
-                android:gradientRadius="240dp"
-                android:startColor="#668B5CF6"
-                android:centerColor="#248B5CF6"
-                android:endColor="#008B5CF6" />
+                android:gradientRadius="190dp"
+                android:startColor="#4D8083FF"
+                android:centerColor="#148083FF"
+                android:endColor="#008083FF" />
         </shape>
     </item>
     <item
         android:width="440dp"
         android:height="440dp"
-        android:gravity="left|bottom"
-        android:left="-140dp"
-        android:bottom="-120dp">
+        android:gravity="right|center_vertical"
+        android:right="-140dp">
         <shape android:shape="oval">
             <gradient
                 android:type="radial"
                 android:gradientRadius="220dp"
-                android:startColor="#4D4EDEA3"
-                android:centerColor="#1A4EDEA3"
-                android:endColor="#004EDEA3" />
+                android:startColor="#40571BC1"
+                android:centerColor="#12571BC1"
+                android:endColor="#00571BC1" />
         </shape>
     </item>
     <item
-        android:width="400dp"
-        android:height="400dp"
-        android:gravity="right|bottom"
-        android:right="-160dp"
-        android:bottom="80dp">
+        android:width="380dp"
+        android:height="380dp"
+        android:gravity="left|bottom"
+        android:left="10dp"
+        android:bottom="-140dp">
         <shape android:shape="oval">
             <gradient
                 android:type="radial"
-                android:gradientRadius="200dp"
-                android:startColor="#4D6366F1"
-                android:centerColor="#1A6366F1"
-                android:endColor="#006366F1" />
+                android:gradientRadius="190dp"
+                android:startColor="#4000885E"
+                android:centerColor="#1200885E"
+                android:endColor="#0000885E" />
         </shape>
     </item>
 </layer-list>

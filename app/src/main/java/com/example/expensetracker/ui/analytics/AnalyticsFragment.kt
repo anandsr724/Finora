@@ -375,7 +375,9 @@ class AnalyticsFragment : Fragment() {
         }
 
         val othersColor = ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)
-        val colors = chartColors.take(mainCategories.size).toMutableList()
+        val colors = mainCategories.map { (catId, _) ->
+            ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(catId))
+        }.toMutableList()
         if (smallCategories.isNotEmpty()) colors.add(othersColor)  // neutral gray for Others
 
         val dataSet = PieDataSet(pieEntries, "")
@@ -420,8 +422,9 @@ class AnalyticsFragment : Fragment() {
         val sym = CurrencyManager.getSymbol(CurrencyManager.getDefault(requireContext()))
         val density = resources.displayMetrics.density
 
-        val allRows = mainCategories.mapIndexed { idx, (catId, amount) ->
-            Triple(categoryManager.getCategoryById(catId)?.name ?: catId, amount, chartColors[idx % chartColors.size])
+        val allRows = mainCategories.map { (catId, amount) ->
+            val color = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(catId))
+            Triple(categoryManager.getCategoryById(catId)?.name ?: catId, amount, color)
         }.toMutableList()
 
         if (smallCategories.isNotEmpty()) {
@@ -517,7 +520,7 @@ class AnalyticsFragment : Fragment() {
 
         if (showByCategory) {
             val categoryIds = allTransactions.map { it.category }.distinct()
-            val dataSets = categoryIds.mapIndexed { idx, catId ->
+            val dataSets = categoryIds.map { catId ->
                 val entries = monthRanges.mapIndexed { mIdx, (_, month, year) ->
                     val total = allTransactions.filter { t ->
                         t.category == catId && try {
@@ -529,7 +532,7 @@ class AnalyticsFragment : Fragment() {
                     Entry(mIdx.toFloat(), total.toFloat())
                 }
                 LineDataSet(entries, categoryManager.getCategoryById(catId)?.name ?: catId).apply {
-                    val c = chartColors[idx % chartColors.size]
+                    val c = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(catId))
                     color = c; lineWidth = 2f; setCircleColor(c); circleRadius = 3f
                     setDrawCircleHole(false); setDrawValues(false); mode = LineDataSet.Mode.CUBIC_BEZIER
                 }

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Stitch's "tertiary" token (#4edea3) matches this app's existing color_income exactly,
+     so this reuses the existing income container/20% tokens rather than adding new ones. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="@color/color_income_container" />
+    <stroke android:width="1dp" android:color="@color/color_income_20" />
+    <corners android:radius="16dp" />
+</shape>

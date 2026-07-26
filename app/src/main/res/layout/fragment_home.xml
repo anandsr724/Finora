@@ -143,23 +143,23 @@
                             android:layout_width="40dp"
                             android:layout_height="40dp"
                             android:background="@drawable/shape_circle"
-                            android:backgroundTint="#336366F1"
+                            android:backgroundTint="@color/color_icon_lavender_20"
                             android:layout_marginBottom="8dp">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:padding="10dp"
+                                android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:src="@drawable/ic_upload"
-                                android:tint="@color/color_primary"
-                                android:contentDescription="Upload statement" />
+                                android:src="@drawable/ic_upload_file"
+                                android:tint="@color/color_icon_lavender"
+                                android:contentDescription="Upload receipt" />
                         </FrameLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Upload Statement"
+                            android:text="Upload Receipt"
                             android:textSize="13sp"
                             android:textStyle="bold"
                             android:gravity="center" />
@@ -196,9 +196,9 @@
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:padding="10dp"
+                                android:padding="8dp"
                                 android:scaleType="centerInside"
-                                android:src="@drawable/ic_edit"
+                                android:src="@drawable/ic_edit_note"
                                 android:tint="@color/color_income"
                                 android:contentDescription="Add manual transaction" />
                         </FrameLayout>

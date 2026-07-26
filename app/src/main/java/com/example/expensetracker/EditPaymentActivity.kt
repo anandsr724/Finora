@@ -94,6 +94,12 @@ class EditPaymentActivity : AppCompatActivity() {
         categoryManager = CategoryManager(this)
         categoryManager.initializeDefaultCategories()
 
+        val isEditingExisting = intent.hasExtra("editingId")
+        findViewById<TextView>(R.id.editScreenTitle).text =
+            if (isEditingExisting) "Edit Transaction" else "Add Transaction"
+        findViewById<TextView>(R.id.editScreenSubtitle).text =
+            if (isEditingExisting) "Update transaction details" else "Enter transaction details"
+
         initializeViews()
         loadCategories()
         populateFields()

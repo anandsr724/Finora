@@ -131,8 +131,8 @@ class AddFragment : Fragment() {
         retryManualButton = view.findViewById(R.id.retryManualButton)
         retryManualButton.setOnClickListener { openManualEntryForm() }
 
-        val selectImageButton = view.findViewById<Button>(R.id.selectImageButton)
-        selectImageButton.setOnClickListener {
+        val uploadReceiptRow = view.findViewById<View>(R.id.uploadReceiptRow)
+        uploadReceiptRow.setOnClickListener {
             openGallery()
         }
 
@@ -140,10 +140,14 @@ class AddFragment : Fragment() {
             performMLKitOCR()
         }
 
-        // Add manual entry button
-        val manualEntryButton = view.findViewById<Button>(R.id.manualEntryButton)
-        manualEntryButton?.setOnClickListener {
+        val manualEntryRow = view.findViewById<View>(R.id.manualEntryRow)
+        manualEntryRow.setOnClickListener {
             openManualEntryForm()
+        }
+
+        val importStatementRow = view.findViewById<View>(R.id.importStatementRow)
+        importStatementRow.setOnClickListener {
+            startActivity(Intent(requireContext(), StatementImportActivity::class.java))
         }
 
         // Check if image URI was passed from HomeFragment — load preview, wait for user to process

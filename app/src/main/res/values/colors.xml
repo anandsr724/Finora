@@ -13,13 +13,16 @@
     <!-- Glass fills / borders (semi-transparent white over the dark background) -->
     <color name="color_glass_fill_l2">#14FFFFFF</color>
     <color name="color_glass_fill_l3">#26FFFFFF</color>
-    <!-- Level-3 sheet gradient tint, reverse-solved against the Stitch reference's measured
-         card color (~rgb(50,42,80) over the #0B1326 backdrop): tint = #624683 (a muted plum)
-         at ~45-55% alpha lands on that target directly, rather than approximating via an
-         existing brand token whose channels (e.g. primary-container's maxed-out blue) can't
-         reach the reference's darker, lower-green balance no matter the alpha chosen. -->
-    <color name="color_glass_fill_l3_bright">#8C624683</color>
-    <color name="color_glass_fill_l3_violet">#73624683</color>
+    <!-- Level-3 sheet solid base — sits under the blur + highlight gradient below so the sheet
+         has real body/contrast instead of reading as too see-through against busy content. -->
+    <color name="color_glass_fill_l3_base">#E0171F33</color>
+    <!-- Level-3 sheet gradient tint — a neutral white "catching light" wash (bright top-left
+         fading to dim bottom-right), not a hue-tinted one. A colored tint here fights the real
+         backdrop blur (applyGlassBlur) instead of reading as an extension of it — whatever's
+         actually behind the sheet should show through in its own color, blurred, not painted
+         over with an unrelated fixed hue. -->
+    <color name="color_glass_fill_l3_bright">#33FFFFFF</color>
+    <color name="color_glass_fill_l3_dim">#14FFFFFF</color>
     <color name="color_glass_border">#1FFFFFFF</color>
     <color name="color_glass_border_bright">#33FFFFFF</color>
 
@@ -33,6 +36,15 @@
          its row icons with this token at 70% opacity (text-primary/70), which reads much
          lighter/softer than the saturated brand indigo would at the same opacity. -->
     <color name="color_icon_lavender">#C0C1FF</color>
+    <color name="color_icon_lavender_10">#1AC0C1FF</color>
+    <color name="color_icon_lavender_20">#33C0C1FF</color>
+
+    <!-- Stitch's M3 "secondary" token (#d0bcff, a pale violet) — used the same way as
+         color_icon_lavender above but for rows tagged with the design's secondary accent
+         (e.g. the Add Transaction hub's "Manual Entry" row). -->
+    <color name="color_icon_violet">#D0BCFF</color>
+    <color name="color_icon_violet_10">#1AD0BCFF</color>
+    <color name="color_icon_violet_20">#33D0BCFF</color>
 
     <!-- Semantic (income / expense) -->
     <color name="color_income">#4EDEA3</color>
@@ -81,6 +93,31 @@
     <color name="chart_color_6">#EC4899</color>
     <color name="chart_color_7">#06B6D4</color>
     <color name="chart_color_8">#84CC16</color>
+
+    <!-- Category icon palette — Tailwind "-400" shades, matching the exact tokens the Stitch
+         "Home" reference uses for its category badges (bg-{color}-400/10 fill + text-{color}-400
+         icon: orange-400 for Food & Dining, blue-400 for Housing/Rent, purple-400 for Shopping,
+         emerald-400 for Work/Professional). The remaining categories extend that same "-400"
+         family so every badge reads as part of one consistent language rather than the old
+         hash-of-8-chart-colors assignment, which picked arbitrary, non-semantic hues. -->
+    <color name="color_cat_orange">#FB923C</color>
+    <color name="color_cat_lime">#A3E635</color>
+    <color name="color_cat_sky">#38BDF8</color>
+    <color name="color_cat_blue">#60A5FA</color>
+    <color name="color_cat_yellow">#FACC15</color>
+    <color name="color_cat_cyan">#22D3EE</color>
+    <color name="color_cat_fuchsia">#E879F9</color>
+    <color name="color_cat_purple">#C084FC</color>
+    <color name="color_cat_indigo">#818CF8</color>
+    <color name="color_cat_teal">#2DD4BF</color>
+    <color name="color_cat_pink">#F472B6</color>
+    <color name="color_cat_amber">#FBBF24</color>
+    <color name="color_cat_green">#4ADE80</color>
+    <color name="color_cat_violet">#A78BFA</color>
+    <color name="color_cat_emerald">#34D399</color>
+    <color name="color_cat_red">#F87171</color>
+    <color name="color_cat_rose">#FB7185</color>
+    <color name="color_cat_slate">#94A3B8</color>
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>

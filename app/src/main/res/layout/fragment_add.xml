@@ -34,47 +34,213 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Scan a screenshot or enter details manually"
+                android:text="Select a method to log your expense or income with financial clarity."
                 android:textSize="13sp"
                 android:textColor="@color/color_on_surface_muted"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
 
-        <!-- Action Buttons -->
+        <!-- Method Hub — three glass rows, matching Stitch's "Add Transaction -
+             Statement Import Variant" screen -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:orientation="vertical"
             android:layout_marginBottom="20dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/selectImageButton"
-                style="@style/Widget.Finora.Button.Primary"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="10dp"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:text="Upload"
-                android:textSize="14sp"
-                app:icon="@drawable/ic_upload"
-                app:iconTint="@color/color_on_primary" />
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:id="@+id/uploadReceiptRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:glassLevel="level2"
+                app:glassCornerRadius="16dp">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/manualEntryButton"
-                style="@style/Widget.Finora.Button.Secondary"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                android:insetLeft="0dp"
-                android:insetRight="0dp"
-                android:text="Add Manual"
-                android:textSize="14sp" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/icon_chip_bg_lavender"
+                        android:layout_marginEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_upload_file"
+                            android:tint="@color/color_icon_lavender"
+                            android:contentDescription="Upload Receipt" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Upload Receipt"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Import from files or gallery"
+                            android:textSize="13sp"
+                            android:textColor="@color/color_on_surface_muted"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:tint="@color/color_on_surface_faint"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
+
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:id="@+id/manualEntryRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:glassLevel="level2"
+                app:glassCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/icon_chip_bg_violet"
+                        android:layout_marginEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_edit_note"
+                            android:tint="@color/color_icon_violet"
+                            android:contentDescription="Manual Entry" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Manual Entry"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Enter details manually"
+                            android:textSize="13sp"
+                            android:textColor="@color/color_on_surface_muted"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:tint="@color/color_on_surface_faint"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
+
+            <com.example.expensetracker.ui.common.GlassCardView
+                android:id="@+id/importStatementRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:glassLevel="level2"
+                app:glassCornerRadius="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:padding="20dp">
+
+                    <FrameLayout
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="@drawable/icon_chip_bg_emerald"
+                        android:layout_marginEnd="16dp">
+
+                        <ImageView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:padding="14dp"
+                            android:src="@drawable/ic_cloud_upload"
+                            android:tint="@color/color_income"
+                            android:contentDescription="Import from Statement" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Import from Statement"
+                            android:textSize="17sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/color_on_surface" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Bulk import transactions from bank statements"
+                            android:textSize="13sp"
+                            android:textColor="@color/color_on_surface_muted"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_chevron_right"
+                        android:tint="@color/color_on_surface_faint"
+                        android:contentDescription="@null" />
+                </LinearLayout>
+            </com.example.expensetracker.ui.common.GlassCardView>
         </LinearLayout>
 
         <!-- Image Preview Card -->

@@ -88,18 +88,54 @@ object CategoryIconHelper {
         "cat_other"
     )
 
-    // Luminous Finance chart palette, used everywhere a category needs a semantic tint
-    // (transaction row icon badges, category badges, analytics legend/pie, statement review rows).
-    private val tintPalette = intArrayOf(
-        R.color.chart_color_1, R.color.chart_color_2, R.color.chart_color_3, R.color.chart_color_4,
-        R.color.chart_color_5, R.color.chart_color_6, R.color.chart_color_7, R.color.chart_color_8
+    // Per-category semantic colors, matching the Stitch "Home" reference's exact language:
+    // each category gets one hue used both as the icon's solid tint and (at low alpha, applied
+    // by each call site) the badge background wash. Sub-icons of the same concept (e.g. the
+    // hospital/pill/stethoscope health icons, or book/school under education) intentionally
+    // share their parent category's color rather than getting their own — they're variations on
+    // one category, not distinct categories.
+    private val categoryColors = mapOf(
+        "cat_food" to R.color.color_cat_orange,
+        "cat_pizza" to R.color.color_cat_orange,
+        "cat_groceries" to R.color.color_cat_lime,
+        "cat_transport" to R.color.color_cat_sky,
+        "cat_bus" to R.color.color_cat_sky,
+        "cat_wifi" to R.color.color_cat_sky,
+        "cat_rent" to R.color.color_cat_blue,
+        "cat_utilities" to R.color.color_cat_yellow,
+        "cat_lightbulb" to R.color.color_cat_yellow,
+        "cat_fuel" to R.color.color_cat_yellow,
+        "cat_health" to R.color.color_cat_cyan,
+        "cat_hospital" to R.color.color_cat_cyan,
+        "cat_pill" to R.color.color_cat_cyan,
+        "cat_stethoscope" to R.color.color_cat_cyan,
+        "cat_entertainment" to R.color.color_cat_fuchsia,
+        "cat_tv" to R.color.color_cat_fuchsia,
+        "cat_shopping" to R.color.color_cat_purple,
+        "cat_music" to R.color.color_cat_purple,
+        "cat_education" to R.color.color_cat_indigo,
+        "cat_phone" to R.color.color_cat_indigo,
+        "cat_book" to R.color.color_cat_indigo,
+        "cat_school" to R.color.color_cat_indigo,
+        "cat_travel" to R.color.color_cat_teal,
+        "cat_personal" to R.color.color_cat_pink,
+        "cat_coffee" to R.color.color_cat_amber,
+        "cat_dumbbell" to R.color.color_cat_green,
+        "cat_pets" to R.color.color_cat_violet,
+        "cat_work" to R.color.color_cat_emerald,
+        "cat_gifts" to R.color.color_cat_red,
+        "cat_gaming" to R.color.color_cat_rose,
+        "cat_other" to R.color.color_cat_slate
     )
 
-    // Deterministic hash-based assignment so every category id (predefined or custom) gets a
-    // stable color without needing a hand-maintained per-id map.
+    // Fallback palette for custom category ids not covered above — deterministic hash-based
+    // assignment so every custom category still gets a stable color from the same family.
+    private val fallbackPalette = categoryColors.values.distinct()
+
     fun getIconTintColorRes(categoryId: String): Int {
-        val index = Math.floorMod(categoryId.hashCode(), tintPalette.size)
-        return tintPalette[index]
+        categoryColors[categoryId]?.let { return it }
+        val index = Math.floorMod(categoryId.hashCode(), fallbackPalette.size)
+        return fallbackPalette[index]
     }
 }
 
