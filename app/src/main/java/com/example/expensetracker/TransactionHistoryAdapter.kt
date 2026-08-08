@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expensetracker.ui.common.themeColor
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -53,7 +54,8 @@ class TransactionHistoryAdapter(
         // Both Home and History reference screens only color income (emerald, "+"); expense
         // rows stay plain on-surface text with a "-" sign, not coral.
         holder.amountTextView.setTextColor(
-            ContextCompat.getColor(holder.itemView.context, if (isIncome) R.color.color_income else R.color.color_on_surface)
+            if (isIncome) ContextCompat.getColor(holder.itemView.context, R.color.color_income)
+            else holder.itemView.context.themeColor(R.attr.colorOnSurface)
         )
 
         // Recipient

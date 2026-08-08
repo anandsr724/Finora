@@ -17,12 +17,16 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import eightbitlab.com.blurview.BlurTarget
+import eightbitlab.com.blurview.BlurView
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Finora is dark-only (Luminous Finance glassmorphism theme) — no light variant exists
+        // Finora is dark-only (Luminous / Onyx are both dark glassmorphism themes) — no light
+        // variant exists. ThemeManager picks between the two based on the saved preference.
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+        ThemeManager.applyTheme(this)
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -34,6 +38,16 @@ class MainActivity : AppCompatActivity() {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         val navController = navHostFragment.navController
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_nav_view)
+
+        // Real live backdrop blur behind the nav bar — a persistent overlay docked in this
+        // Activity's own window can't use Window.setBackgroundBlurRadius() (that only blurs
+        // behind an entire popup/dialog window), so BlurView snapshots and blurs the actual
+        // scrolling content behind it instead.
+        val blurTarget = findViewById<BlurTarget>(R.id.mainContentBlurTarget)
+        val blurView = findViewById<BlurView>(R.id.bottomNavBlurView)
+        blurView.setupWith(blurTarget)
+            .setFrameClearDrawable(window.decorView.background)
+            .setBlurRadius(20f)
 
         // Push fragment content below the status bar using actual inset height
         val fragmentContainer = findViewById<android.view.View>(R.id.nav_host_fragment)

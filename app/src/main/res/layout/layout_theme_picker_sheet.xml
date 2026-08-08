@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp"
+    app:glassTopCornersOnly="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <!-- Handle bar -->
+        <View
+            android:layout_width="40dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="8dp"
+            android:background="?attr/colorGlassBorderBright" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="16dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Appearance"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/hanken_grotesk"
+                android:textColor="?attr/colorOnSurface" />
+
+            <ImageButton
+                android:id="@+id/closeThemeSheetButton"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close"
+                android:background="@drawable/shape_circle"
+                android:padding="10dp"
+                android:tint="?attr/colorOnSurfaceMuted"
+                android:contentDescription="Close" />
+        </LinearLayout>
+
+        <!-- Luminous option -->
+        <LinearLayout
+            android:id="@+id/themeOptionLuminous"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:padding="14dp"
+            android:background="@drawable/settings_vivid_row_background"
+            android:clickable="true"
+            android:focusable="true">
+
+            <View
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/theme_swatch_luminous" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Luminous"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Indigo glass, violet glow"
+                    android:textSize="11sp"
+                    android:textColor="?attr/colorOnSurfaceMuted"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/themeLuminousCheckIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_check"
+                android:tint="@color/color_primary"
+                android:contentDescription="@null" />
+
+            <View
+                android:id="@+id/themeLuminousEmptyRing"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/shape_circle_outline" />
+        </LinearLayout>
+
+        <!-- Onyx option -->
+        <LinearLayout
+            android:id="@+id/themeOptionOnyx"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="16dp"
+            android:padding="14dp"
+            android:background="@drawable/settings_vivid_row_background"
+            android:clickable="true"
+            android:focusable="true">
+
+            <View
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:layout_marginEnd="14dp"
+                android:background="@drawable/theme_swatch_onyx" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Onyx"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorOnSurface" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Near-black, minimal glow"
+                    android:textSize="11sp"
+                    android:textColor="?attr/colorOnSurfaceMuted"
+                    android:layout_marginTop="2dp" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/themeOnyxCheckIcon"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_check"
+                android:tint="@color/color_primary"
+                android:contentDescription="@null" />
+
+            <View
+                android:id="@+id/themeOnyxEmptyRing"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/shape_circle_outline" />
+        </LinearLayout>
+
+        <!-- Apply Selection -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/applyThemeButton"
+            style="@style/Widget.Finora.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="4dp"
+            android:text="Apply" />
+
+    </LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

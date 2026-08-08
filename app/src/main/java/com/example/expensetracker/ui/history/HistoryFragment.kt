@@ -19,6 +19,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.themeColor
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -273,13 +274,13 @@ class HistoryFragment : Fragment() {
             pill.setTextColor(resources.getColor(R.color.color_on_primary, null))
             pill.strokeWidth = 0
         } else {
-            pill.backgroundTintList = ColorStateList.valueOf(resources.getColor(R.color.color_glass_fill_l2, null))
+            pill.backgroundTintList = ColorStateList.valueOf(requireContext().themeColor(R.attr.colorGlassFillL2))
             pill.iconTint = ColorStateList.valueOf(
                 resources.getColor(R.color.color_primary, null)
             )
-            pill.setTextColor(resources.getColor(R.color.color_on_surface, null))
+            pill.setTextColor(requireContext().themeColor(R.attr.colorOnSurface))
             pill.strokeWidth = (1 * resources.displayMetrics.density).toInt()
-            pill.strokeColor = resources.getColorStateList(R.color.color_glass_border, null)
+            pill.strokeColor = ColorStateList.valueOf(requireContext().themeColor(R.attr.colorGlassBorder))
         }
     }
 
@@ -292,11 +293,11 @@ class HistoryFragment : Fragment() {
             filterAllButton.strokeWidth = 0
         } else {
             filterAllButton.backgroundTintList = ColorStateList.valueOf(
-                resources.getColor(R.color.color_glass_fill_l2, null)
+                requireContext().themeColor(R.attr.colorGlassFillL2)
             )
-            filterAllButton.setTextColor(resources.getColor(R.color.color_on_surface_muted, null))
+            filterAllButton.setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
             filterAllButton.strokeWidth = (1 * resources.displayMetrics.density).toInt()
-            filterAllButton.strokeColor = resources.getColorStateList(R.color.color_glass_border, null)
+            filterAllButton.strokeColor = ColorStateList.valueOf(requireContext().themeColor(R.attr.colorGlassBorder))
         }
         updateDotsButtonBadge()
     }
@@ -575,14 +576,14 @@ class HistoryFragment : Fragment() {
                 holder.icon.imageTintList = ColorStateList.valueOf(
                     resources.getColor(R.color.color_on_primary, null)
                 )
-                holder.name.setTextColor(resources.getColor(R.color.color_on_surface, null))
+                holder.name.setTextColor(requireContext().themeColor(R.attr.colorOnSurface))
             } else {
-                holder.card.setCardBackgroundColor(resources.getColor(R.color.color_glass_fill_l2, null))
-                holder.card.strokeColor = resources.getColor(R.color.color_glass_border, null)
+                holder.card.setCardBackgroundColor(requireContext().themeColor(R.attr.colorGlassFillL2))
+                holder.card.strokeColor = requireContext().themeColor(R.attr.colorGlassBorder)
                 holder.card.strokeWidth = (1 * resources.displayMetrics.density).toInt()
                 holder.iconCard.setCardBackgroundColor(withAlpha(tint, 0x26))
                 holder.icon.imageTintList = ColorStateList.valueOf(tint)
-                holder.name.setTextColor(resources.getColor(R.color.color_on_surface_muted, null))
+                holder.name.setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
             }
 
             holder.card.setOnClickListener {

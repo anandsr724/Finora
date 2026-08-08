@@ -20,7 +20,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
-            android:background="@color/color_glass_border_bright" />
+            android:background="?attr/colorGlassBorderBright" />
 
         <!-- Header -->
         <LinearLayout
@@ -41,7 +41,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/hanken_grotesk"
-                android:textColor="@color/color_on_surface" />
+                android:textColor="?attr/colorOnSurface" />
 
             <ImageButton
                 android:id="@+id/closeCurrencySheetButton"
@@ -50,7 +50,7 @@
                 android:src="@drawable/ic_close"
                 android:background="@drawable/shape_circle"
                 android:padding="10dp"
-                android:tint="@color/color_on_surface_muted"
+                android:tint="?attr/colorOnSurfaceMuted"
                 android:contentDescription="Close" />
         </LinearLayout>
 
@@ -76,7 +76,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_search"
-                    android:tint="@color/color_on_surface_muted"
+                    android:tint="?attr/colorOnSurfaceMuted"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="Search" />
 
@@ -87,8 +87,8 @@
                     android:layout_weight="1"
                     android:hint="Search currency..."
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
-                    android:textColorHint="@color/color_on_surface_faint"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceFaint"
                     android:background="@null"
                     android:inputType="text"
                     android:imeOptions="actionSearch"

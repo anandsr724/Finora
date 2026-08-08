@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_luminous_glow">
+    android:background="?attr/bgGlowDrawable">
 
     <!-- Header -->
     <LinearLayout
@@ -27,7 +27,7 @@
             android:foreground="?attr/selectableItemBackgroundBorderless"
             android:scaleType="centerInside"
             android:padding="10dp"
-            app:tint="@color/color_on_surface"
+            app:tint="?attr/colorOnSurface"
             android:contentDescription="Back"
             android:layout_marginEnd="14dp" />
 
@@ -50,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:text="Update transaction details"
                 android:textSize="12sp"
-                android:textColor="@color/color_on_surface_muted"
+                android:textColor="?attr/colorOnSurfaceMuted"
                 android:layout_marginTop="2dp" />
         </LinearLayout>
     </LinearLayout>
@@ -137,7 +137,7 @@
                             android:layout_height="match_parent"
                             android:padding="6dp"
                             android:src="@drawable/ic_check"
-                            app:tint="@color/color_bg"
+                            app:tint="?attr/colorAppBg"
                             android:contentDescription="@null" />
                     </com.google.android.material.card.MaterialCardView>
                 </FrameLayout>
@@ -204,7 +204,7 @@
                             android:textSize="14sp"
                             app:cornerRadius="999dp"
                             app:backgroundTint="@android:color/transparent"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             app:strokeWidth="0dp"
                             android:insetTop="0dp"
                             android:insetBottom="0dp" />
@@ -226,7 +226,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.12"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginBottom="10dp" />
 
                         <LinearLayout
@@ -257,15 +257,15 @@
                                 android:inputType="numberDecimal"
                                 android:maxLines="1"
                                 android:textAppearance="@style/TextAppearance.Finora.NumericXl"
-                                android:textColor="@color/color_on_surface"
-                                android:textColorHint="@color/color_on_surface_faint" />
+                                android:textColor="?attr/colorOnSurface"
+                                android:textColorHint="?attr/colorOnSurfaceFaint" />
                         </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginTop="8dp"
-                            android:background="@color/color_glass_border_bright" />
+                            android:background="?attr/colorGlassBorderBright" />
                     </LinearLayout>
 
                     <!-- Recipient -->
@@ -283,7 +283,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -316,8 +316,8 @@
                                 android:inputType="textPersonName|textCapWords"
                                 android:maxLines="1"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface"
-                                android:textColorHint="@color/color_on_surface_faint"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textColorHint="?attr/colorOnSurfaceFaint"
                                 android:gravity="center_vertical" />
                         </LinearLayout>
                     </LinearLayout>
@@ -337,7 +337,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -370,8 +370,8 @@
                                 android:inputType="textCapSentences"
                                 android:maxLines="1"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface"
-                                android:textColorHint="@color/color_on_surface_faint"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textColorHint="?attr/colorOnSurfaceFaint"
                                 android:gravity="center_vertical" />
                         </LinearLayout>
                     </LinearLayout>
@@ -391,7 +391,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -426,8 +426,8 @@
                                 android:inputType="none"
                                 android:maxLines="1"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface"
-                                android:textColorHint="@color/color_on_surface_faint"
+                                android:textColor="?attr/colorOnSurface"
+                                android:textColorHint="?attr/colorOnSurfaceFaint"
                                 android:gravity="center_vertical" />
                         </LinearLayout>
                     </LinearLayout>
@@ -447,7 +447,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -490,14 +490,14 @@
                                 android:layout_weight="1"
                                 android:text="Select category"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface_faint" />
+                                android:textColor="?attr/colorOnSurfaceFaint" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_chevron_down"
                                 android:contentDescription="Select"
-                                android:tint="@color/color_on_surface_faint" />
+                                android:tint="?attr/colorOnSurfaceFaint" />
                         </LinearLayout>
                     </LinearLayout>
 
@@ -516,7 +516,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -549,7 +549,7 @@
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_chevron_down"
-                                android:tint="@color/color_on_surface_faint"
+                                android:tint="?attr/colorOnSurfaceFaint"
                                 android:layout_gravity="center_vertical|end"
                                 android:layout_marginEnd="16dp"
                                 android:contentDescription="Select payment method" />
@@ -571,7 +571,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -610,15 +610,15 @@
                                 android:longClickable="false"
                                 android:cursorVisible="false"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface_muted"
-                                android:textColorHint="@color/color_on_surface_faint"
+                                android:textColor="?attr/colorOnSurfaceMuted"
+                                android:textColorHint="?attr/colorOnSurfaceFaint"
                                 android:gravity="center_vertical" />
 
                             <ImageView
                                 android:layout_width="16dp"
                                 android:layout_height="16dp"
                                 android:src="@drawable/ic_lock"
-                                android:tint="@color/color_on_surface_muted"
+                                android:tint="?attr/colorOnSurfaceMuted"
                                 android:layout_marginStart="8dp"
                                 android:contentDescription="Read only" />
                         </LinearLayout>
@@ -638,7 +638,7 @@
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
                             android:textAllCaps="true"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             android:layout_marginStart="4dp"
                             android:layout_marginBottom="8dp" />
 
@@ -670,14 +670,14 @@
                                 android:layout_weight="1"
                                 android:text="INR (₹)"
                                 android:textSize="15sp"
-                                android:textColor="@color/color_on_surface" />
+                                android:textColor="?attr/colorOnSurface" />
 
                             <ImageView
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_chevron_down"
                                 android:contentDescription="Select currency"
-                                android:tint="@color/color_on_surface_faint" />
+                                android:tint="?attr/colorOnSurfaceFaint" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>

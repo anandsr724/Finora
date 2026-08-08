@@ -8,6 +8,10 @@
     <color name="color_surface_low">#131B2E</color>
     <color name="color_surface_high">#222A3E</color>
     <color name="color_nav_pill">#EC1A2440</color>
+    <!-- Lower-alpha nav pill tint for use as a BlurView overlay color — the opaque color_nav_pill
+         above would defeat real backdrop blur the same way color_glass_fill_l3_base did before
+         the Transaction Details fix (see color_glass_fill_l3_translucent_base). -->
+    <color name="color_nav_pill_translucent">#401A2440</color>
     <color name="color_nav_active_indicator">#4D8B5CF6</color>
 
     <!-- Glass fills / borders (semi-transparent white over the dark background) -->
@@ -16,6 +20,10 @@
     <!-- Level-3 sheet solid base — sits under the blur + highlight gradient below so the sheet
          has real body/contrast instead of reading as too see-through against busy content. -->
     <color name="color_glass_fill_l3_base">#E0171F33</color>
+    <!-- Lighter alternative to the base above, for sheets that specifically want Stitch's
+         "glass-modal" look (rgba(255,255,255,0.1) over real blur) instead of the standard,
+         more opaque/higher-contrast level-3 base — opt in via app:glassTranslucent="true". -->
+    <color name="color_glass_fill_l3_translucent_base">#40171F33</color>
     <!-- Level-3 sheet gradient tint — a neutral white "catching light" wash (bright top-left
          fading to dim bottom-right), not a hue-tinted one. A colored tint here fights the real
          backdrop blur (applyGlassBlur) instead of reading as an extension of it — whatever's
@@ -25,6 +33,30 @@
     <color name="color_glass_fill_l3_dim">#14FFFFFF</color>
     <color name="color_glass_border">#1FFFFFFF</color>
     <color name="color_glass_border_bright">#33FFFFFF</color>
+
+    <!-- Onyx theme — second app-wide theme, matching Stitch's "Finora_v2 Dark" project
+         ("Enhanced Glass Gradient Edition" Home/History/Settings mockups). Same structure as
+         the Luminous tokens above, just near-black/lower-alpha instead of indigo-tinted; wired
+         through the theme attrs in attrs.xml + themes.xml rather than referenced directly. -->
+    <color name="color_onyx_bg">#000000</color>
+    <color name="color_onyx_surface">#0A0A0A</color>
+    <color name="color_onyx_surface_low">#050505</color>
+    <color name="color_onyx_surface_high">#111111</color>
+    <color name="color_onyx_nav_pill">#EC0A0A0A</color>
+    <color name="color_onyx_nav_pill_translucent">#400A0A0A</color>
+    <color name="color_onyx_glass_fill_l2">#08FFFFFF</color>
+    <color name="color_onyx_glass_fill_l3">#10FFFFFF</color>
+    <color name="color_onyx_glass_fill_l3_base">#E01E1E1E</color>
+    <color name="color_onyx_glass_fill_l3_translucent_base">#401E1E1E</color>
+    <color name="color_onyx_glass_fill_l3_bright">#1FFFFFFF</color>
+    <color name="color_onyx_glass_fill_l3_dim">#0AFFFFFF</color>
+    <color name="color_onyx_glass_border">#14FFFFFF</color>
+    <color name="color_onyx_glass_border_bright">#21FFFFFF</color>
+    <color name="color_onyx_glass_border_faint">#08FFFFFF</color>
+    <color name="color_onyx_on_surface">#FFFFFFFF</color>
+    <color name="color_onyx_on_surface_muted">#FFA1A1A1</color>
+    <color name="color_onyx_on_surface_faint">#66FFFFFF</color>
+    <color name="color_onyx_surface_high_50">#80111111</color>
 
     <!-- Brand -->
     <color name="color_primary">#6366F1</color>
@@ -121,6 +153,10 @@
 
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- App launcher icon background — matches the black_two.png icon asset's flat fill
+         exactly, used as the adaptive icon's background layer. -->
+    <color name="ic_launcher_background">#000000</color>
 
     <!--
       Legacy token aliases — kept during the Luminous Finance rollout so screens not yet

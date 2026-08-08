@@ -30,6 +30,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.formatter.ValueFormatter
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.GlassCardView
 import com.google.android.material.button.MaterialButton
 import java.text.NumberFormat
@@ -197,15 +198,15 @@ class AnalyticsFragment : Fragment() {
         val xAxis = lineChart.xAxis
         xAxis.position = XAxis.XAxisPosition.BOTTOM
         xAxis.setDrawGridLines(false)
-        xAxis.textColor = ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)
+        xAxis.textColor = requireContext().themeColor(R.attr.colorOnSurfaceMuted)
         xAxis.textSize = 11f
         xAxis.setDrawAxisLine(false)
         xAxis.granularity = 1f
 
         lineChart.axisLeft.apply {
             setDrawGridLines(true)
-            gridColor = ContextCompat.getColor(requireContext(), R.color.color_on_surface_faint)
-            textColor = ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)
+            gridColor = requireContext().themeColor(R.attr.colorOnSurfaceFaint)
+            textColor = requireContext().themeColor(R.attr.colorOnSurfaceMuted)
             textSize = 11f
             setDrawAxisLine(false)
             valueFormatter = object : ValueFormatter() {
@@ -324,7 +325,7 @@ class AnalyticsFragment : Fragment() {
             momCard.visibility = View.VISIBLE
         } else if (selectedMonthIdx == 0 && count > 0) {
             momChangeText.text = "—"
-            momChangeText.setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted))
+            momChangeText.setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
             momCard.visibility = View.VISIBLE
         } else {
             momCard.visibility = View.GONE
@@ -374,7 +375,7 @@ class AnalyticsFragment : Fragment() {
             pieEntries.add(PieEntry(othersTotal.toFloat(), "Others"))
         }
 
-        val othersColor = ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)
+        val othersColor = requireContext().themeColor(R.attr.colorOnSurfaceMuted)
         val colors = mainCategories.map { (catId, _) ->
             ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(catId))
         }.toMutableList()
@@ -395,11 +396,11 @@ class AnalyticsFragment : Fragment() {
             android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         centerLabel.setSpan(
-            android.text.style.ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)),
+            android.text.style.ForegroundColorSpan(requireContext().themeColor(R.attr.colorOnSurfaceMuted)),
             0, 5, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         centerLabel.setSpan(
-            android.text.style.ForegroundColorSpan(ContextCompat.getColor(requireContext(), R.color.color_on_surface)),
+            android.text.style.ForegroundColorSpan(requireContext().themeColor(R.attr.colorOnSurface)),
             6, centerLabel.length, android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         centerLabel.setSpan(
@@ -432,7 +433,7 @@ class AnalyticsFragment : Fragment() {
             val othersLabel = if (smallCategories.size == 1)
                 categoryManager.getCategoryById(smallCategories[0].first)?.name ?: smallCategories[0].first
             else "Others (${smallCategories.size})"
-            allRows.add(Triple(othersLabel, othersTotal, ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted)))
+            allRows.add(Triple(othersLabel, othersTotal, requireContext().themeColor(R.attr.colorOnSurfaceMuted)))
         }
 
         val grandTotal = allRows.sumOf { it.second }
@@ -458,7 +459,7 @@ class AnalyticsFragment : Fragment() {
             val nameView = android.widget.TextView(requireContext()).apply {
                 text = name
                 textSize = 13f
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+                setTextColor(requireContext().themeColor(R.attr.colorOnSurface))
                 layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
             }
 
@@ -471,14 +472,14 @@ class AnalyticsFragment : Fragment() {
                 text = "$sym${fmt.format(amount)}"
                 textSize = 13f
                 setTypeface(typeface, android.graphics.Typeface.BOLD)
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+                setTextColor(requireContext().themeColor(R.attr.colorOnSurface))
             }
 
             val percentView = android.widget.TextView(requireContext()).apply {
                 val pct = if (grandTotal > 0) (amount / grandTotal * 100).toInt() else 0
                 text = "$pct%"
                 textSize = 10f
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted))
+                setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
             }
 
             amountColumn.addView(amountView)
@@ -492,7 +493,7 @@ class AnalyticsFragment : Fragment() {
             if (idx < allRows.size - 1) {
                 val divider = android.view.View(requireContext()).apply {
                     layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1)
-                    setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface_faint))
+                    setBackgroundColor(requireContext().themeColor(R.attr.colorOnSurfaceFaint))
                 }
                 categoryLegend.addView(divider)
             }
@@ -559,7 +560,7 @@ class AnalyticsFragment : Fragment() {
             val ds = LineDataSet(entries, "Total").apply {
                 color = chartColors[0]; lineWidth = 3f; setCircleColor(chartColors[0])
                 circleRadius = 5f; circleHoleRadius = 2.5f; setDrawCircleHole(true)
-                circleHoleColor = ContextCompat.getColor(requireContext(), R.color.color_surface); setDrawValues(false); mode = LineDataSet.Mode.CUBIC_BEZIER
+                circleHoleColor = requireContext().themeColor(R.attr.colorSurface); setDrawValues(false); mode = LineDataSet.Mode.CUBIC_BEZIER
                 setDrawFilled(true); fillColor = chartColors[0]; fillAlpha = 40
             }
             monthlyTrendCard.visibility = View.VISIBLE

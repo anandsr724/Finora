@@ -8,8 +8,8 @@
     app:cardCornerRadius="16dp"
     app:cardElevation="0dp"
     app:strokeWidth="1dp"
-    app:strokeColor="@color/color_glass_border"
-    app:cardBackgroundColor="@color/color_glass_fill_l2"
+    app:strokeColor="?attr/colorGlassBorder"
+    app:cardBackgroundColor="?attr/colorGlassFillL2"
     android:clickable="true"
     android:focusable="true">
 
@@ -32,7 +32,7 @@
                 android:layout_height="match_parent"
                 app:cardCornerRadius="28dp"
                 app:cardElevation="0dp"
-                app:cardBackgroundColor="@color/color_glass_fill_l3">
+                app:cardBackgroundColor="?attr/colorGlassFillL3">
 
                 <ImageView
                     android:id="@+id/categoryPickerIcon"
@@ -65,7 +65,7 @@
             android:gravity="center"
             android:textSize="12sp"
             android:fontFamily="@font/inter"
-            android:textColor="@color/color_on_surface"
+            android:textColor="?attr/colorOnSurface"
             android:maxLines="2"
             android:ellipsize="end" />
 

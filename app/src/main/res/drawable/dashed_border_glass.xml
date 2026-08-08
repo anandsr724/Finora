@@ -3,10 +3,10 @@
      used by the Statement Import "upload" state drop zone. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/color_glass_fill_l2" />
+    <solid android:color="?attr/colorGlassFillL2" />
     <stroke
         android:width="1.5dp"
-        android:color="@color/color_glass_border_bright"
+        android:color="?attr/colorGlassBorderBright"
         android:dashWidth="8dp"
         android:dashGap="6dp" />
     <corners android:radius="24dp" />

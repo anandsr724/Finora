@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     app:glassLevel="level3"
     app:glassCornerRadius="24dp"
-    app:glassTopCornersOnly="true">
+    app:glassTopCornersOnly="true"
+    app:glassTranslucent="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +41,7 @@
                 android:text="Transaction Details"
                 android:textAppearance="@style/TextAppearance.Finora.BodyLg"
                 android:textStyle="bold"
-                android:textColor="@color/color_on_surface" />
+                android:textColor="?attr/colorOnSurface" />
 
             <ImageButton
                 android:id="@+id/closeDetailSheetButton"
@@ -50,7 +51,7 @@
                 android:src="@android:drawable/ic_menu_close_clear_cancel"
                 android:scaleType="fitCenter"
                 android:padding="8dp"
-                android:tint="@color/color_on_surface_muted"
+                android:tint="?attr/colorOnSurfaceMuted"
                 android:contentDescription="Close" />
         </LinearLayout>
 
@@ -67,7 +68,9 @@
                 android:id="@+id/detailAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.Finora.NumericXl" />
+                android:textAppearance="@style/TextAppearance.Finora.NumericXl"
+                android:textSize="44sp"
+                android:letterSpacing="-0.02" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -94,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.Finora.LabelSm"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurface" />
             </LinearLayout>
         </LinearLayout>
 
@@ -121,7 +124,7 @@
                     android:layout_weight="1"
                     android:text="Recipient"
                     android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurfaceMuted" />
 
                 <TextView
                     android:id="@+id/detailRecipient"
@@ -129,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:maxLines="1"
                     android:ellipsize="end"
                     android:gravity="end" />
@@ -138,7 +141,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/color_glass_border" />
+                android:background="?attr/colorGlassBorder" />
 
             <!-- Note (conditional) -->
             <LinearLayout
@@ -157,14 +160,14 @@
                     android:layout_weight="1"
                     android:text="Note"
                     android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurfaceMuted" />
 
                 <TextView
                     android:id="@+id/detailNote"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:maxLines="2"
                     android:ellipsize="end"
                     android:gravity="end" />
@@ -174,7 +177,7 @@
                 android:id="@+id/detailNoteDivider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/color_glass_border"
+                android:background="?attr/colorGlassBorder"
                 android:visibility="gone" />
 
             <!-- Date & Time -->
@@ -192,21 +195,21 @@
                     android:layout_weight="1"
                     android:text="Date &amp; Time"
                     android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurfaceMuted" />
 
                 <TextView
                     android:id="@+id/detailDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:gravity="end" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/color_glass_border" />
+                android:background="?attr/colorGlassBorder" />
 
             <!-- Payment Method -->
             <LinearLayout
@@ -223,21 +226,21 @@
                     android:layout_weight="1"
                     android:text="Payment Method"
                     android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurfaceMuted" />
 
                 <TextView
                     android:id="@+id/detailPaymentMethod"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:gravity="end" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/color_glass_border" />
+                android:background="?attr/colorGlassBorder" />
 
             <!-- Transaction ID -->
             <LinearLayout
@@ -254,14 +257,14 @@
                     android:layout_weight="1"
                     android:text="Transaction ID"
                     android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-                    android:textColor="@color/color_on_surface_muted" />
+                    android:textColor="?attr/colorOnSurfaceMuted" />
 
                 <TextView
                     android:id="@+id/detailTransactionId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="13sp"
-                    android:textColor="@color/color_on_surface_muted"
+                    android:textColor="?attr/colorOnSurfaceMuted"
                     android:maxLines="1"
                     android:ellipsize="middle"
                     android:gravity="end" />
@@ -291,7 +294,7 @@
                 app:iconGravity="textStart"
                 app:iconSize="18dp"
                 app:iconPadding="8dp"
-                app:iconTint="@color/color_on_surface" />
+                app:iconTint="?attr/colorOnSurface" />
 
             <!-- Delete button (dark maroon destructive pill, matching Stitch's error palette) -->
             <com.google.android.material.button.MaterialButton

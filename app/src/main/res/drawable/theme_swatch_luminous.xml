@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Small preview swatch for the Luminous option in the theme picker sheet — a miniature of
+     bg_luminous_glow's indigo-to-violet composition. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
     <gradient
         android:type="linear"
         android:angle="135"
         android:startColor="#6366F1"
-        android:endColor="#8B5CF6" />
+        android:centerColor="#3730A3"
+        android:endColor="#0B1326" />
 </shape>

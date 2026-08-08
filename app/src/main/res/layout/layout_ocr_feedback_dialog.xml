@@ -17,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="Rate the accuracy of the extracted details"
             android:textAppearance="@style/TextAppearance.Finora.BodyMd"
-            android:textColor="@color/color_on_surface_muted"
+            android:textColor="?attr/colorOnSurfaceMuted"
             android:layout_marginBottom="16dp" />
 
         <com.google.android.material.button.MaterialButtonToggleGroup
@@ -56,11 +56,11 @@
                 android:layout_weight="1"
                 android:text="Partial"
                 android:textSize="12sp"
-                android:textColor="@color/color_on_surface"
+                android:textColor="?attr/colorOnSurface"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                app:backgroundTint="@color/color_glass_fill_l2"
-                app:strokeColor="@color/color_glass_border_bright"
+                app:backgroundTint="?attr/colorGlassFillL2"
+                app:strokeColor="?attr/colorGlassBorderBright"
                 app:strokeWidth="1dp" />
 
             <com.google.android.material.button.MaterialButton
@@ -89,8 +89,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Comments (optional)"
-            android:textColorHint="@color/color_on_surface_faint"
-            app:hintTextColor="@color/color_on_surface_faint"
+            android:textColorHint="?attr/colorOnSurfaceFaint"
+            app:hintTextColor="?attr/colorOnSurfaceFaint"
             app:boxBackgroundMode="none">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -103,8 +103,8 @@
                 android:minLines="2"
                 android:maxLines="4"
                 android:gravity="top"
-                android:textColor="@color/color_on_surface"
-                android:textColorHint="@color/color_on_surface_faint" />
+                android:textColor="?attr/colorOnSurface"
+                android:textColorHint="?attr/colorOnSurfaceFaint" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

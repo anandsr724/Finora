@@ -36,6 +36,7 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.example.expensetracker.ui.common.applyVividGlow
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -73,6 +74,7 @@ class EditPaymentActivity : AppCompatActivity() {
     private var selectedTime: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ThemeManager.applyTheme(this)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
@@ -202,10 +204,10 @@ class EditPaymentActivity : AppCompatActivity() {
 
         if (selected != null) {
             categorySelectorName.text = selected.name
-            categorySelectorName.setTextColor(getColor(R.color.color_on_surface))
+            categorySelectorName.setTextColor(themeColor(R.attr.colorOnSurface))
         } else {
             categorySelectorName.text = "Select category"
-            categorySelectorName.setTextColor(resources.getColor(R.color.color_on_surface_faint, null))
+            categorySelectorName.setTextColor(themeColor(R.attr.colorOnSurfaceFaint))
         }
     }
 
@@ -269,7 +271,7 @@ class EditPaymentActivity : AppCompatActivity() {
             shape = GradientDrawable.OVAL
             setColor(ContextCompat.getColor(this@EditPaymentActivity, CategoryIconHelper.getIconTintColorRes(key)))
             if (selected) {
-                setStroke((2.5f * density).toInt(), ContextCompat.getColor(this@EditPaymentActivity, R.color.color_on_surface))
+                setStroke((2.5f * density).toInt(), this@EditPaymentActivity.themeColor(R.attr.colorOnSurface))
             }
         }
         fun updateSelection(selectedIdx: Int) {
@@ -413,7 +415,7 @@ class EditPaymentActivity : AppCompatActivity() {
 
     private fun updateTypeButtons() {
         val activeText = resources.getColor(android.R.color.white, null)
-        val inactiveText = resources.getColor(R.color.color_on_surface_muted, null)
+        val inactiveText = themeColor(R.attr.colorOnSurfaceMuted)
         val expenseGlow = resources.getColor(R.color.color_expense, null)
         val incomeGlow = resources.getColor(R.color.color_income, null)
         val density = resources.displayMetrics.density
@@ -549,19 +551,19 @@ class EditPaymentActivity : AppCompatActivity() {
             if (isSelected) {
                 holder.card.strokeColor = tint
                 holder.card.strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
-                holder.card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.color_glass_fill_l3))
+                holder.card.setCardBackgroundColor(ctx.themeColor(R.attr.colorGlassFillL3))
                 holder.iconCard.setCardBackgroundColor(tint)
                 holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(
                     ContextCompat.getColor(ctx, R.color.color_on_primary)
                 )
-                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.color_on_surface))
+                holder.name.setTextColor(ctx.themeColor(R.attr.colorOnSurface))
             } else {
-                holder.card.strokeColor = ContextCompat.getColor(ctx, R.color.color_glass_border)
+                holder.card.strokeColor = ctx.themeColor(R.attr.colorGlassBorder)
                 holder.card.strokeWidth = (1 * ctx.resources.displayMetrics.density).toInt()
-                holder.card.setCardBackgroundColor(ContextCompat.getColor(ctx, R.color.color_glass_fill_l2))
+                holder.card.setCardBackgroundColor(ctx.themeColor(R.attr.colorGlassFillL2))
                 holder.iconCard.setCardBackgroundColor(withAlpha(tint, 0x26))
                 holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(tint)
-                holder.name.setTextColor(ContextCompat.getColor(ctx, R.color.color_on_surface))
+                holder.name.setTextColor(ctx.themeColor(R.attr.colorOnSurface))
             }
 
             holder.card.setOnClickListener { onSelect(category) }

@@ -19,7 +19,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:layout_marginBottom="8dp"
-            android:background="@color/color_glass_border_bright" />
+            android:background="?attr/colorGlassBorderBright" />
 
         <!-- Header -->
         <LinearLayout
@@ -40,7 +40,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:fontFamily="@font/hanken_grotesk"
-                android:textColor="@color/color_on_surface" />
+                android:textColor="?attr/colorOnSurface" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/clearAllFiltersButton"
@@ -63,7 +63,7 @@
                 android:src="@drawable/ic_close"
                 android:background="@drawable/shape_circle"
                 android:padding="10dp"
-                android:tint="@color/color_on_surface_muted"
+                android:tint="?attr/colorOnSurfaceMuted"
                 android:contentDescription="Close" />
         </LinearLayout>
 

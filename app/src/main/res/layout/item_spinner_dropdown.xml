@@ -9,5 +9,5 @@
     android:paddingTop="14dp"
     android:paddingBottom="14dp"
     android:textSize="15sp"
-    android:textColor="@color/color_on_surface"
+    android:textColor="?attr/colorOnSurface"
     android:background="?attr/selectableItemBackground" />

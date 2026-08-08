@@ -4,34 +4,42 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- Wraps the scrolling app content so the nav bar's BlurView below has something to
+         snapshot and blur live — see MainActivity.onCreate()'s blurView.setupWith(target) call. -->
+    <eightbitlab.com.blurview.BlurTarget
+        android:id="@+id/mainContentBlurTarget"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
-        <com.google.android.material.appbar.AppBarLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
+            <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                app:title="ExpenseTracker" />
+                android:layout_height="wrap_content"
+                android:visibility="gone">
 
-        </com.google.android.material.appbar.AppBarLayout>
+                <com.google.android.material.appbar.MaterialToolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    app:title="ExpenseTracker" />
 
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/nav_host_fragment"
-            android:name="androidx.navigation.fragment.NavHostFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:defaultNavHost="true"
-            app:navGraph="@navigation/nav_graph" />
+            </com.google.android.material.appbar.AppBarLayout>
 
-    </LinearLayout>
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph" />
+
+        </LinearLayout>
+    </eightbitlab.com.blurview.BlurTarget>
 
     <!-- Status bar gradient scrim: fades content that scrolls into the transparent status bar.
          Height matches ~status bar zone; gradient from page background (opaque) to transparent. -->
@@ -44,22 +52,37 @@
         android:clickable="false"
         android:focusable="false" />
 
-    <!-- Bottom nav bar: full-width, flush to the bottom edge, translucent glass fill with a
-         top border only — matches the Stitch "Final Finora" reference exactly (not a floating
-         margined pill). Add is a normal 5th item in the row, not a raised FAB. -->
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_nav_view"
+    <!-- Bottom nav bar: full-width, flush to the bottom edge, real live backdrop blur (via
+         BlurView, snapshotting mainContentBlurTarget) tinted with a translucent overlay + a
+         crisp top border drawn as an unblurred child — matches the Stitch "Final Finora"
+         reference (not a floating margined pill). Add is a normal 5th item in the row, not a
+         raised FAB. -->
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/bottomNavBlurView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:background="@drawable/bg_nav_bar"
-        app:elevation="0dp"
-        app:itemIconTint="@color/nav_item_color"
-        app:itemTextColor="@color/nav_item_color"
-        app:itemRippleColor="@color/color_glass_fill_l2"
-        app:labelVisibilityMode="labeled"
-        app:menu="@menu/bottom_nav_menu" />
+        app:blurOverlayColor="?attr/colorNavPillTranslucent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_gravity="top"
+            android:background="?attr/colorGlassBorderBright" />
+
+        <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/bottom_nav_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@android:color/transparent"
+            app:elevation="0dp"
+            app:itemIconTint="@color/nav_item_color"
+            app:itemTextColor="@color/nav_item_color"
+            app:itemRippleColor="?attr/colorGlassFillL2"
+            app:labelVisibilityMode="labeled"
+            app:menu="@menu/bottom_nav_menu" />
+    </eightbitlab.com.blurview.BlurView>
 
 </FrameLayout>

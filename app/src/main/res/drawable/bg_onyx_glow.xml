@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Onyx theme base background: near-black diagonal gradient with the same three glow orbs as
+     bg_luminous_glow (top-left primary-container #8083ff, right-middle secondary-container
+     #571bc1, bottom-left tertiary-container #00885e — same hex tokens Stitch's Onyx design
+     system reuses) but at much lower peak alpha, matching the Stitch "Enhanced Glass Gradient
+     Edition" reference's `.glow-orb { opacity: 0.15 }` — barely-there color pooling against
+     an almost-solid-black canvas, rather than Luminous's brighter, more saturated orbs. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <gradient
+                android:type="linear"
+                android:angle="135"
+                android:startColor="#0F172A"
+                android:centerColor="#171717"
+                android:endColor="#000000" />
+        </shape>
+    </item>
+    <item
+        android:width="380dp"
+        android:height="380dp"
+        android:gravity="left|top"
+        android:left="-110dp"
+        android:top="-110dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="190dp"
+                android:startColor="#1F8083FF"
+                android:centerColor="#0A8083FF"
+                android:endColor="#008083FF" />
+        </shape>
+    </item>
+    <item
+        android:width="440dp"
+        android:height="440dp"
+        android:gravity="right|center_vertical"
+        android:right="-140dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="220dp"
+                android:startColor="#1A571BC1"
+                android:centerColor="#08571BC1"
+                android:endColor="#00571BC1" />
+        </shape>
+    </item>
+    <item
+        android:width="380dp"
+        android:height="380dp"
+        android:gravity="left|bottom"
+        android:left="10dp"
+        android:bottom="-140dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="190dp"
+                android:startColor="#1A00885E"
+                android:centerColor="#0800885E"
+                android:endColor="#0000885E" />
+        </shape>
+    </item>
+</layer-list>

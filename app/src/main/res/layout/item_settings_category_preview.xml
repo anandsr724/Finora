@@ -35,7 +35,7 @@
         android:textSize="11sp"
         android:textStyle="bold"
         android:textAllCaps="true"
-        android:textColor="@color/color_on_surface"
+        android:textColor="?attr/colorOnSurface"
         android:gravity="center"
         android:maxLines="1"
         android:ellipsize="end" />

@@ -9,6 +9,6 @@
     android:paddingTop="12dp"
     android:paddingBottom="12dp"
     android:textSize="15sp"
-    android:textColor="@color/color_on_surface"
+    android:textColor="?attr/colorOnSurface"
     android:singleLine="true"
     android:ellipsize="end" />

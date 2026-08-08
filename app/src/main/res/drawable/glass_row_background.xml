@@ -4,6 +4,6 @@
      screens that haven't been migrated to Luminous Finance yet, so it's left untouched. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/color_surface_high" />
+    <solid android:color="?attr/colorSurfaceHigh" />
     <corners android:radius="16dp" />
 </shape>

@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_luminous_glow">
+    android:background="?attr/bgGlowDrawable">
 
     <!-- Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
@@ -20,9 +20,9 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:navigationIcon="@drawable/ic_arrow_back"
-            app:navigationIconTint="@color/color_on_surface"
+            app:navigationIconTint="?attr/colorOnSurface"
             app:title="Import Statement"
-            app:titleTextColor="@color/color_on_surface"
+            app:titleTextColor="?attr/colorOnSurface"
             android:background="@android:color/transparent" />
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -55,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:text="Upload your bank statement to import past transactions in bulk."
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface_muted"
+                    android:textColor="?attr/colorOnSurfaceMuted"
                     android:layout_marginBottom="24dp" />
 
                 <!-- Upload drop zone -->
@@ -92,7 +92,7 @@
                         android:text="Tap to browse files"
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/color_on_surface"
+                        android:textColor="?attr/colorOnSurface"
                         android:layout_marginBottom="6dp" />
 
                     <TextView
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:text="PDF or Excel (XLSX) formats"
                         android:textSize="13sp"
-                        android:textColor="@color/color_on_surface_muted"
+                        android:textColor="?attr/colorOnSurfaceMuted"
                         android:layout_marginBottom="20dp" />
 
                     <com.google.android.material.button.MaterialButton
@@ -123,9 +123,9 @@
                     android:visibility="gone"
                     app:cardCornerRadius="16dp"
                     app:cardElevation="0dp"
-                    app:cardBackgroundColor="@color/color_surface"
+                    app:cardBackgroundColor="?attr/colorSurface"
                     app:strokeWidth="1dp"
-                    app:strokeColor="@color/color_glass_border">
+                    app:strokeColor="?attr/colorGlassBorder">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -138,7 +138,7 @@
                             android:layout_width="44dp"
                             android:layout_height="44dp"
                             app:cardCornerRadius="12dp"
-                            app:cardBackgroundColor="@color/color_glass_fill_l3"
+                            app:cardBackgroundColor="?attr/colorGlassFillL3"
                             app:cardElevation="0dp"
                             android:layout_marginEnd="12dp">
 
@@ -164,7 +164,7 @@
                                 android:layout_height="wrap_content"
                                 android:textSize="14sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/color_on_surface"
+                                android:textColor="?attr/colorOnSurface"
                                 android:maxLines="1"
                                 android:ellipsize="middle" />
 
@@ -173,7 +173,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
-                                android:textColor="@color/color_on_surface_muted"
+                                android:textColor="?attr/colorOnSurfaceMuted"
                                 android:layout_marginTop="2dp" />
                         </LinearLayout>
 
@@ -185,9 +185,9 @@
                             android:insetBottom="0dp"
                             android:text="✕"
                             android:textSize="13sp"
-                            android:textColor="@color/color_on_surface_muted"
+                            android:textColor="?attr/colorOnSurfaceMuted"
                             app:cornerRadius="18dp"
-                            app:backgroundTint="@color/color_glass_fill_l2"
+                            app:backgroundTint="?attr/colorGlassFillL2"
                             style="@style/Widget.MaterialComponents.Button.UnelevatedButton" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -205,7 +205,7 @@
                         android:layout_height="wrap_content"
                         android:text="Formats: "
                         android:textSize="13sp"
-                        android:textColor="@color/color_on_surface_muted" />
+                        android:textColor="?attr/colorOnSurfaceMuted" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -258,7 +258,7 @@
                             android:text="Supported Banks"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="@color/color_on_surface"
+                            android:textColor="?attr/colorOnSurface"
                             android:layout_marginBottom="14dp" />
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -269,7 +269,7 @@
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SBI" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="SBI" android:textSize="13sp" android:textColor="?attr/colorOnSurface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -277,7 +277,7 @@
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HDFC" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="HDFC" android:textSize="13sp" android:textColor="?attr/colorOnSurface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -285,7 +285,7 @@
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📱" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPay" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="GPay" android:textSize="13sp" android:textColor="?attr/colorOnSurface" android:textStyle="bold"/>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -297,7 +297,7 @@
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ICICI" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ICICI" android:textSize="13sp" android:textColor="?attr/colorOnSurface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
@@ -305,15 +305,15 @@
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background" android:layout_marginEnd="8dp">
                                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦" android:textSize="16sp" android:layout_marginEnd="6dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Axis" android:textSize="13sp" android:textColor="@color/color_on_surface" android:textStyle="bold"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Axis" android:textSize="13sp" android:textColor="?attr/colorOnSurface" android:textStyle="bold"/>
                             </LinearLayout>
 
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content"
                                 android:layout_weight="1" android:orientation="horizontal"
                                 android:gravity="center_vertical" android:padding="10dp"
                                 android:background="@drawable/glass_chip_background">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="18sp" android:textColor="@color/color_on_surface_muted" android:layout_marginEnd="4dp"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="More" android:textSize="13sp" android:textColor="@color/color_on_surface_muted"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="+" android:textSize="18sp" android:textColor="?attr/colorOnSurfaceMuted" android:layout_marginEnd="4dp"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="More" android:textSize="13sp" android:textColor="?attr/colorOnSurfaceMuted"/>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -339,7 +339,7 @@
                             android:text="How it works"
                             android:textSize="15sp"
                             android:textStyle="bold"
-                            android:textColor="@color/color_on_surface"
+                            android:textColor="?attr/colorOnSurface"
                             android:layout_marginBottom="16dp" />
 
                         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -348,8 +348,8 @@
                                 android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upload" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your bank statement file" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Upload" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Select your bank statement file" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceMuted"/>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -359,8 +359,8 @@
                                 android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto-detect" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Finora reads and extracts transactions" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Auto-detect" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Finora reads and extracts transactions" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceMuted"/>
                             </LinearLayout>
                         </LinearLayout>
 
@@ -370,8 +370,8 @@
                                 android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_primary"
                                 android:gravity="center" android:background="@drawable/category_badge_background" android:layout_marginEnd="14dp"/>
                             <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review &amp; Import" android:textSize="14sp" android:textStyle="bold" android:textColor="@color/color_on_surface"/>
-                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confirm before saving to Finora" android:textSize="12sp" android:textColor="@color/color_on_surface_muted"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Review &amp; Import" android:textSize="14sp" android:textStyle="bold" android:textColor="?attr/colorOnSurface"/>
+                                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Confirm before saving to Finora" android:textSize="12sp" android:textColor="?attr/colorOnSurfaceMuted"/>
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>
@@ -415,7 +415,7 @@
                         android:text="Reading statement..."
                         android:textSize="16sp"
                         android:textStyle="bold"
-                        android:textColor="@color/color_on_surface"
+                        android:textColor="?attr/colorOnSurface"
                         android:gravity="center"
                         android:layout_marginBottom="8dp" />
 
@@ -424,7 +424,7 @@
                         android:layout_height="wrap_content"
                         android:text="This may take a few seconds"
                         android:textSize="13sp"
-                        android:textColor="@color/color_on_surface_muted"
+                        android:textColor="?attr/colorOnSurfaceMuted"
                         android:gravity="center" />
                 </LinearLayout>
             </com.example.expensetracker.ui.common.GlassCardView>
@@ -442,7 +442,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@color/color_surface_low"
+                android:background="?attr/colorSurfaceLow"
                 android:elevation="2dp">
 
                 <LinearLayout
@@ -470,14 +470,14 @@
                         android:layout_weight="1"
                         android:textSize="14sp"
                         android:textStyle="bold"
-                        android:textColor="@color/color_on_surface"
+                        android:textColor="?attr/colorOnSurface"
                         android:text="0 transactions found" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/color_glass_border" />
+                    android:background="?attr/colorGlassBorder" />
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
@@ -522,7 +522,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="17sp"
                 android:textStyle="bold"
-                android:textColor="@color/color_on_surface"
+                android:textColor="?attr/colorOnSurface"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
@@ -530,7 +530,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
-                android:textColor="@color/color_on_surface_muted"
+                android:textColor="?attr/colorOnSurfaceMuted"
                 android:gravity="center"
                 android:layout_marginBottom="28dp"
                 android:text="Supported: SBI Bank PDF/XLSX · Google Pay PDF" />
@@ -556,7 +556,7 @@
         android:paddingEnd="20dp"
         android:paddingTop="12dp"
         android:paddingBottom="24dp"
-        android:background="@color/color_bg"
+        android:background="?attr/colorAppBg"
         android:elevation="4dp">
 
         <!-- UPLOAD bottom content -->
@@ -592,7 +592,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/color_on_surface_muted"
+                android:textColor="?attr/colorOnSurfaceMuted"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="8dp"
                 android:text="0 of 0 selected" />

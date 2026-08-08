@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Base theme — Luminous Finance, dark-only glassmorphism -->
-    <style name="Theme.ExpenseTracker" parent="Theme.MaterialComponents.NoActionBar">
+    <!-- Shared base — everything identical across both themes (brand colors, fonts, system
+         bars). Theme.Finora.Luminous / Theme.Finora.Onyx extend this and only differ in which
+         values they bind the custom colorX attrs (attrs.xml) to. -->
+    <style name="Theme.Finora.Base" parent="Theme.MaterialComponents.NoActionBar">
         <item name="colorPrimary">@color/color_primary</item>
         <item name="colorPrimaryVariant">@color/color_secondary</item>
         <item name="colorOnPrimary">@color/color_on_primary</item>
@@ -9,17 +11,77 @@
         <item name="colorOnSecondary">@color/color_on_primary</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
-        <item name="android:colorBackground">@color/color_bg</item>
+        <item name="android:colorBackground">?attr/colorAppBg</item>
         <!-- Material color compatibility attributes used in layouts -->
-        <item name="colorSurface">@color/color_surface</item>
-        <item name="colorOnSurface">@color/color_on_surface</item>
-        <item name="colorSurfaceVariant">@color/color_surface_high</item>
-        <item name="colorOnSurfaceVariant">@color/color_on_surface_muted</item>
-        <item name="colorOnBackground">@color/color_on_surface</item>
-        <item name="colorOutline">@color/color_glass_border</item>
+        <item name="colorSurface">?attr/colorSurface</item>
+        <item name="colorOnSurface">?attr/colorOnSurface</item>
+        <item name="colorSurfaceVariant">?attr/colorSurfaceHigh</item>
+        <item name="colorOnSurfaceVariant">?attr/colorOnSurfaceMuted</item>
+        <item name="colorOnBackground">?attr/colorOnSurface</item>
+        <item name="colorOutline">?attr/colorGlassBorder</item>
         <item name="selectableItemBackgroundBorderless">?attr/selectableItemBackground</item>
         <item name="android:fontFamily">@font/inter</item>
+        <!-- Android 12+ system splash screen — matches the launcher icon's own black
+             background exactly, so its masked adaptive-icon disc blends seamlessly into the
+             splash and only the white "fin" glyph appears to float on black. Ignored on API
+             <31, where this attribute doesn't exist. -->
+        <item name="android:windowSplashScreenBackground">@color/ic_launcher_background</item>
     </style>
+
+    <!-- Luminous Finance — deep indigo background, violet/indigo glow orbs, lavender-tinted
+         glass and text. The app's original/default look. -->
+    <style name="Theme.Finora.Luminous" parent="Theme.Finora.Base">
+        <item name="colorAppBg">@color/color_bg</item>
+        <item name="colorSurface">@color/color_surface</item>
+        <item name="colorSurfaceLow">@color/color_surface_low</item>
+        <item name="colorSurfaceHigh">@color/color_surface_high</item>
+        <item name="colorSurfaceHigh50">@color/color_surface_high_50</item>
+        <item name="colorGlassFillL2">@color/color_glass_fill_l2</item>
+        <item name="colorGlassFillL3">@color/color_glass_fill_l3</item>
+        <item name="colorGlassFillL3Base">@color/color_glass_fill_l3_base</item>
+        <item name="colorGlassFillL3TranslucentBase">@color/color_glass_fill_l3_translucent_base</item>
+        <item name="colorGlassFillL3Bright">@color/color_glass_fill_l3_bright</item>
+        <item name="colorGlassFillL3Dim">@color/color_glass_fill_l3_dim</item>
+        <item name="colorGlassBorder">@color/color_glass_border</item>
+        <item name="colorGlassBorderBright">@color/color_glass_border_bright</item>
+        <item name="colorGlassBorderFaint">@color/color_glass_border_faint</item>
+        <item name="colorOnSurface">@color/color_on_surface</item>
+        <item name="colorOnSurfaceMuted">@color/color_on_surface_muted</item>
+        <item name="colorOnSurfaceFaint">@color/color_on_surface_faint</item>
+        <item name="colorNavPill">@color/color_nav_pill</item>
+        <item name="colorNavPillTranslucent">@color/color_nav_pill_translucent</item>
+        <item name="bgGlowDrawable">@drawable/bg_luminous_glow</item>
+    </style>
+
+    <!-- Onyx — near-black background, very faint glow orbs, pure white/gray glass and text.
+         Matches Stitch's "Finora_v2 Dark" / "Enhanced Glass Gradient Edition" mockups. -->
+    <style name="Theme.Finora.Onyx" parent="Theme.Finora.Base">
+        <item name="colorAppBg">@color/color_onyx_bg</item>
+        <item name="colorSurface">@color/color_onyx_surface</item>
+        <item name="colorSurfaceLow">@color/color_onyx_surface_low</item>
+        <item name="colorSurfaceHigh">@color/color_onyx_surface_high</item>
+        <item name="colorSurfaceHigh50">@color/color_onyx_surface_high_50</item>
+        <item name="colorGlassFillL2">@color/color_onyx_glass_fill_l2</item>
+        <item name="colorGlassFillL3">@color/color_onyx_glass_fill_l3</item>
+        <item name="colorGlassFillL3Base">@color/color_onyx_glass_fill_l3_base</item>
+        <item name="colorGlassFillL3TranslucentBase">@color/color_onyx_glass_fill_l3_translucent_base</item>
+        <item name="colorGlassFillL3Bright">@color/color_onyx_glass_fill_l3_bright</item>
+        <item name="colorGlassFillL3Dim">@color/color_onyx_glass_fill_l3_dim</item>
+        <item name="colorGlassBorder">@color/color_onyx_glass_border</item>
+        <item name="colorGlassBorderBright">@color/color_onyx_glass_border_bright</item>
+        <item name="colorGlassBorderFaint">@color/color_onyx_glass_border_faint</item>
+        <item name="colorOnSurface">@color/color_onyx_on_surface</item>
+        <item name="colorOnSurfaceMuted">@color/color_onyx_on_surface_muted</item>
+        <item name="colorOnSurfaceFaint">@color/color_onyx_on_surface_faint</item>
+        <item name="colorNavPill">@color/color_onyx_nav_pill</item>
+        <item name="colorNavPillTranslucent">@color/color_onyx_nav_pill_translucent</item>
+        <item name="bgGlowDrawable">@drawable/bg_onyx_glow</item>
+    </style>
+
+    <!-- Manifest alias — keeps AndroidManifest.xml's android:theme reference stable while
+         ThemeManager.applyTheme() overrides it per-Activity based on the saved preference
+         (defaults to Onyx, see ThemeManager.getSelected()). -->
+    <style name="Theme.ExpenseTracker" parent="Theme.Finora.Onyx" />
 
     <!-- Bottom sheet with no entrance/exit animation -->
     <style name="BottomSheetDialog.NoAnim" parent="Theme.MaterialComponents.BottomSheetDialog">
@@ -36,47 +98,47 @@
         <item name="fontFamily">@font/hanken_grotesk</item>
         <item name="android:textSize">40sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.HeadlineLg" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="fontFamily">@font/hanken_grotesk</item>
         <item name="android:textSize">32sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.HeadlineLgMobile" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="fontFamily">@font/hanken_grotesk</item>
         <item name="android:textSize">24sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.NumericXl" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="fontFamily">@font/hanken_grotesk</item>
         <item name="android:textSize">36sp</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.BodyLg" parent="TextAppearance.MaterialComponents.Body1">
         <item name="fontFamily">@font/inter</item>
         <item name="android:textSize">18sp</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.BodyMd" parent="TextAppearance.MaterialComponents.Body2">
         <item name="fontFamily">@font/inter</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/color_on_surface</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
     <style name="TextAppearance.Finora.LabelSm" parent="TextAppearance.MaterialComponents.Caption">
         <item name="fontFamily">@font/inter</item>
         <item name="android:textSize">12sp</item>
         <item name="android:textStyle">normal</item>
-        <item name="android:textColor">@color/color_on_surface_muted</item>
+        <item name="android:textColor">?attr/colorOnSurfaceMuted</item>
     </style>
 
     <!-- Luminous Finance shape tokens -->
@@ -103,10 +165,10 @@
 
     <!-- Secondary frosted-glass ghost pill button (Add Manual, Edit, Cancel, ...) -->
     <style name="Widget.Finora.Button.Secondary" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:textColor">@color/color_on_surface</item>
-        <item name="strokeColor">@color/color_glass_border_bright</item>
+        <item name="android:textColor">?attr/colorOnSurface</item>
+        <item name="strokeColor">?attr/colorGlassBorderBright</item>
         <item name="strokeWidth">1dp</item>
-        <item name="backgroundTint">@color/color_glass_fill_l2</item>
+        <item name="backgroundTint">?attr/colorGlassFillL2</item>
         <item name="cornerRadius">999dp</item>
         <item name="fontFamily">@font/inter</item>
         <item name="android:textAllCaps">false</item>

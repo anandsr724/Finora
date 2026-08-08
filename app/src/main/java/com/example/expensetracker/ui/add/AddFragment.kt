@@ -24,6 +24,7 @@ import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import android.content.DialogInterface
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -1300,7 +1301,7 @@ class AddFragment : Fragment() {
                 setPadding(hPad, vPad, hPad, vPad)
             }
             dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.apply {
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_surface_muted))
+                setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
             }
         }
 

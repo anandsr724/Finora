@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Theme-variant attributes — the small set of surface/glass/text tokens that differ between
+  Theme.Finora.Luminous and Theme.Finora.Onyx (see themes.xml). Brand, semantic (income/expense),
+  and category-palette colors are identical across both themes and stay as plain @color
+  resources; only tokens actually pulled from the Stitch "Enhanced Glass Gradient" (Onyx)
+  reference vs the original Luminous Finance reference are attrs here.
+-->
 <resources>
     <declare-styleable name="GlassCardView">
         <attr name="glassLevel" format="enum">
@@ -7,5 +14,31 @@
         </attr>
         <attr name="glassCornerRadius" format="dimension" />
         <attr name="glassTopCornersOnly" format="boolean" />
+        <!-- Level-3 only: swaps the sheet's solid base layer for a much lower-alpha version so
+             the real window blur (applyGlassBlur) actually shows through, matching Stitch's
+             lighter "glass-modal" look (rgba(255,255,255,0.1) over blur) instead of the
+             standard, more opaque level-3 sheet used by pickers/dialogs. -->
+        <attr name="glassTranslucent" format="boolean" />
     </declare-styleable>
+
+    <attr name="colorAppBg" format="color" />
+    <attr name="colorSurface" format="color" />
+    <attr name="colorSurfaceLow" format="color" />
+    <attr name="colorSurfaceHigh" format="color" />
+    <attr name="colorSurfaceHigh50" format="color" />
+    <attr name="colorGlassFillL2" format="color" />
+    <attr name="colorGlassFillL3" format="color" />
+    <attr name="colorGlassFillL3Base" format="color" />
+    <attr name="colorGlassFillL3TranslucentBase" format="color" />
+    <attr name="colorGlassFillL3Bright" format="color" />
+    <attr name="colorGlassFillL3Dim" format="color" />
+    <attr name="colorGlassBorder" format="color" />
+    <attr name="colorGlassBorderBright" format="color" />
+    <attr name="colorGlassBorderFaint" format="color" />
+    <attr name="colorOnSurface" format="color" />
+    <attr name="colorOnSurfaceMuted" format="color" />
+    <attr name="colorOnSurfaceFaint" format="color" />
+    <attr name="colorNavPill" format="color" />
+    <attr name="colorNavPillTranslucent" format="color" />
+    <attr name="bgGlowDrawable" format="reference" />
 </resources>

@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:textSize="15sp"
             android:textStyle="bold"
-            android:textColor="@color/color_on_surface" />
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:id="@+id/currencyCode"
@@ -54,7 +54,7 @@
             android:textSize="11sp"
             android:letterSpacing="0.1"
             android:textAllCaps="true"
-            android:textColor="@color/color_on_surface_muted"
+            android:textColor="?attr/colorOnSurfaceMuted"
             android:layout_marginTop="2dp" />
     </LinearLayout>
 

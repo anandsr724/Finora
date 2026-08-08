@@ -2,5 +2,5 @@
 <!-- Unselected currency symbol avatar: bg-white/5 circle. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
-    <solid android:color="@color/color_glass_fill_l2" />
+    <solid android:color="?attr/colorGlassFillL2" />
 </shape>

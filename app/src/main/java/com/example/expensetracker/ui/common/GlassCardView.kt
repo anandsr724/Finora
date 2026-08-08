@@ -11,7 +11,6 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
-import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
 import com.example.expensetracker.R
 
@@ -35,14 +34,16 @@ class GlassCardView @JvmOverloads constructor(
 
     init {
         var level = 2
+        var translucent = false
         val defaultRadius = resources.getDimension(R.dimen.glass_card_corner_radius)
         cornerRadiusPx = defaultRadius
         context.withStyledAttributes(attrs, R.styleable.GlassCardView) {
             level = getInt(R.styleable.GlassCardView_glassLevel, 2)
             cornerRadiusPx = getDimension(R.styleable.GlassCardView_glassCornerRadius, defaultRadius)
             topCornersOnly = getBoolean(R.styleable.GlassCardView_glassTopCornersOnly, false)
+            translucent = getBoolean(R.styleable.GlassCardView_glassTranslucent, false)
         }
-        applyGlassBackground(level)
+        applyGlassBackground(level, translucent)
 
         if (topCornersOnly) {
             // Outline.setConvexPath() cannot clip (Outline.canClip() is only true for RECT/
@@ -92,8 +93,8 @@ class GlassCardView @JvmOverloads constructor(
         }
     }
 
-    private fun applyGlassBackground(level: Int) {
-        val borderColorRes = if (level == 3) R.color.color_glass_border_bright else R.color.color_glass_border
+    private fun applyGlassBackground(level: Int, translucent: Boolean = false) {
+        val borderColorAttr = if (level == 3) R.attr.colorGlassBorderBright else R.attr.colorGlassBorder
         val corners: FloatArray? = if (topCornersOnly) {
             floatArrayOf(
                 cornerRadiusPx, cornerRadiusPx,
@@ -109,27 +110,28 @@ class GlassCardView @JvmOverloads constructor(
         }
 
         if (level == 3) {
-            // Blur alone read as too see-through — the busy content behind the sheet stayed
-            // legible enough to be distracting. A solid dark base underneath the blur gives the
-            // sheet real body/contrast, while the white highlight gradient on top (bright
-            // top-left fading to dim bottom-right) keeps the "glass catching light" look instead
-            // of turning it into a flat opaque panel.
+            // Blur alone read as too see-through for most level-3 sheets (busy content behind
+            // stayed legible enough to be distracting), so the default base is a solid, mostly
+            // opaque fill. glassTranslucent opts a specific sheet (Transaction Details) out of
+            // that into a much lower-alpha base instead, so the real window blur (applyGlassBlur)
+            // actually reads through it — matching Stitch's lighter "glass-modal" reference.
+            val baseAttr = if (translucent) R.attr.colorGlassFillL3TranslucentBase else R.attr.colorGlassFillL3Base
             val base = roundedRect().apply {
-                setColor(ContextCompat.getColor(context, R.color.color_glass_fill_l3_base))
+                setColor(context.themeColor(baseAttr))
             }
             val highlight = roundedRect().apply {
                 orientation = GradientDrawable.Orientation.TL_BR
                 colors = intArrayOf(
-                    ContextCompat.getColor(context, R.color.color_glass_fill_l3_bright),
-                    ContextCompat.getColor(context, R.color.color_glass_fill_l3_dim)
+                    context.themeColor(R.attr.colorGlassFillL3Bright),
+                    context.themeColor(R.attr.colorGlassFillL3Dim)
                 )
-                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), ContextCompat.getColor(context, borderColorRes))
+                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), context.themeColor(borderColorAttr))
             }
             background = LayerDrawable(arrayOf(base, highlight))
         } else {
             background = roundedRect().apply {
-                setColor(ContextCompat.getColor(context, R.color.color_glass_fill_l2))
-                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), ContextCompat.getColor(context, borderColorRes))
+                setColor(context.themeColor(R.attr.colorGlassFillL2))
+                setStroke(resources.getDimensionPixelSize(R.dimen.glass_card_border_width), context.themeColor(borderColorAttr))
             }
         }
     }

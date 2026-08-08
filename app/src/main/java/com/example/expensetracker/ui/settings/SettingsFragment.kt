@@ -31,6 +31,7 @@ import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.R
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.example.expensetracker.ui.common.applyVividGlow
+import com.example.expensetracker.ui.common.themeColor
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -101,8 +102,70 @@ class SettingsFragment : Fragment() {
         }
 
         setupCurrencySetting(view)
+        setupAppearanceSetting(view)
         setupDevTrackingSwitch()
         setupFeedbackSwitch()
+    }
+
+    private fun setupAppearanceSetting(view: View) {
+        val appearanceRow = view.findViewById<LinearLayout>(R.id.appearanceRow)
+        val appearanceValue = view.findViewById<TextView>(R.id.appearanceValue)
+
+        appearanceValue.text = com.example.expensetracker.ThemeManager.getSelected(requireContext()).label
+
+        appearanceRow.setOnClickListener {
+            showThemePickerSheet()
+        }
+    }
+
+    private fun showThemePickerSheet() {
+        val sheet = BottomSheetDialog(requireContext())
+        val sheetView = layoutInflater.inflate(R.layout.layout_theme_picker_sheet, null)
+        sheet.setContentView(sheetView)
+
+        var selectedTheme = com.example.expensetracker.ThemeManager.getSelected(requireContext())
+
+        val luminousRow = sheetView.findViewById<LinearLayout>(R.id.themeOptionLuminous)
+        val onyxRow = sheetView.findViewById<LinearLayout>(R.id.themeOptionOnyx)
+        val luminousCheck = sheetView.findViewById<ImageView>(R.id.themeLuminousCheckIcon)
+        val luminousRing = sheetView.findViewById<View>(R.id.themeLuminousEmptyRing)
+        val onyxCheck = sheetView.findViewById<ImageView>(R.id.themeOnyxCheckIcon)
+        val onyxRing = sheetView.findViewById<View>(R.id.themeOnyxEmptyRing)
+
+        fun refreshSelection() {
+            val isLuminous = selectedTheme == com.example.expensetracker.ThemeManager.AppTheme.LUMINOUS
+            luminousCheck.visibility = if (isLuminous) View.VISIBLE else View.GONE
+            luminousRing.visibility = if (isLuminous) View.GONE else View.VISIBLE
+            onyxCheck.visibility = if (!isLuminous) View.VISIBLE else View.GONE
+            onyxRing.visibility = if (!isLuminous) View.GONE else View.VISIBLE
+        }
+        refreshSelection()
+
+        luminousRow.setOnClickListener {
+            selectedTheme = com.example.expensetracker.ThemeManager.AppTheme.LUMINOUS
+            refreshSelection()
+        }
+        onyxRow.setOnClickListener {
+            selectedTheme = com.example.expensetracker.ThemeManager.AppTheme.ONYX
+            refreshSelection()
+        }
+
+        sheetView.findViewById<ImageButton>(R.id.closeThemeSheetButton).setOnClickListener {
+            sheet.dismiss()
+        }
+
+        sheetView.findViewById<MaterialButton>(R.id.applyThemeButton).setOnClickListener {
+            val changed = selectedTheme != com.example.expensetracker.ThemeManager.getSelected(requireContext())
+            com.example.expensetracker.ThemeManager.setSelected(requireContext(), selectedTheme)
+            sheet.dismiss()
+            // A theme swap changes attrs bound at Activity.setTheme() time — every already-
+            // inflated view (including this Fragment's own) needs to be re-created against the
+            // new theme, which only a full Activity recreate() achieves.
+            if (changed) requireActivity().recreate()
+        }
+
+        sheet.show()
+        sheet.applyGlassBlur()
     }
 
     private fun setupCurrencySetting(view: View) {
@@ -276,7 +339,7 @@ class SettingsFragment : Fragment() {
             shape = GradientDrawable.OVAL
             setColor(ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(key)))
             if (selected) {
-                setStroke((2.5f * density).toInt(), ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+                setStroke((2.5f * density).toInt(), requireContext().themeColor(R.attr.colorOnSurface))
             }
         }
         fun updateSelection(selectedIdx: Int) {
@@ -369,7 +432,7 @@ class SettingsFragment : Fragment() {
             shape = GradientDrawable.OVAL
             setColor(ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(key)))
             if (selected) {
-                setStroke((2.5f * density).toInt(), ContextCompat.getColor(requireContext(), R.color.color_on_surface))
+                setStroke((2.5f * density).toInt(), requireContext().themeColor(R.attr.colorOnSurface))
             }
         }
         fun updateSelection(selectedIdx: Int) {
@@ -615,7 +678,8 @@ class SettingsFragment : Fragment() {
             )
             holder.symbol.text = currency.symbol
             holder.symbol.setTextColor(
-                ContextCompat.getColor(holder.itemView.context, if (isSelected) R.color.color_primary else R.color.color_on_surface)
+                if (isSelected) ContextCompat.getColor(holder.itemView.context, R.color.color_primary)
+                else holder.itemView.context.themeColor(R.attr.colorOnSurface)
             )
             holder.name.text = currency.name
             holder.code.text = currency.code

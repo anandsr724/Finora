@@ -18,6 +18,7 @@ import android.widget.ViewFlipper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import com.example.expensetracker.ui.common.themeColor
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -78,6 +79,7 @@ class StatementImportActivity : AppCompatActivity() {
     private lateinit var reviewAdapter: ImportReviewAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        ThemeManager.applyTheme(this)
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         val isDark = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) ==
@@ -400,10 +402,8 @@ class StatementImportActivity : AppCompatActivity() {
             // Matches TransactionHistoryAdapter's convention: only income is colored (emerald),
             // expense rows stay plain on-surface text.
             holder.amount.setTextColor(
-                ContextCompat.getColor(
-                    holder.itemView.context,
-                    if (item.type == "income") R.color.color_income else R.color.color_on_surface
-                )
+                if (item.type == "income") ContextCompat.getColor(holder.itemView.context, R.color.color_income)
+                else holder.itemView.context.themeColor(R.attr.colorOnSurface)
             )
 
             holder.itemView.setOnClickListener {

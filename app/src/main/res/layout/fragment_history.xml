@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/bg_luminous_glow">
+    android:background="?attr/bgGlowDrawable">
 
     <!-- Header with Search -->
     <LinearLayout
@@ -22,29 +22,22 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="18dp">
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/shape_circle_gradient" />
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
                 android:text="Transactions"
                 android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_notifications"
-                android:tint="@color/color_primary"
-                android:contentDescription="Notifications" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="View and manage your transaction history"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
         <!-- Search Bar -->
@@ -67,7 +60,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@android:drawable/ic_menu_search"
-                    android:tint="@color/color_on_surface_muted"
+                    android:tint="?attr/colorOnSurfaceMuted"
                     android:layout_marginEnd="10dp"
                     android:contentDescription="Search" />
 
@@ -78,8 +71,8 @@
                     android:layout_weight="1"
                     android:hint="Search merchants or notes..."
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
-                    android:textColorHint="@color/color_on_surface_faint"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textColorHint="?attr/colorOnSurfaceFaint"
                     android:background="@null"
                     android:inputType="text"
                     android:imeOptions="actionSearch"
@@ -117,7 +110,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_calendar_month"
-                        android:tint="@color/color_on_surface_muted"
+                        android:tint="?attr/colorOnSurfaceMuted"
                         android:layout_marginEnd="8dp"
                         android:contentDescription="Calendar" />
 
@@ -127,7 +120,7 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:textSize="13sp"
-                        android:textColor="@color/color_on_surface_muted"
+                        android:textColor="?attr/colorOnSurfaceMuted"
                         android:background="@null"
                         android:spinnerMode="dropdown"
                         android:popupBackground="@drawable/dropdown_popup_bg" />
@@ -136,7 +129,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_chevron_down"
-                        android:tint="@color/color_on_surface_muted"
+                        android:tint="?attr/colorOnSurfaceMuted"
                         android:contentDescription="Expand" />
                 </LinearLayout>
             </com.example.expensetracker.ui.common.GlassCardView>
@@ -151,15 +144,15 @@
                 android:text="Newest First"
                 android:textAllCaps="false"
                 android:textSize="13sp"
-                android:textColor="@color/color_on_surface_muted"
+                android:textColor="?attr/colorOnSurfaceMuted"
                 app:icon="@drawable/ic_sort"
                 app:iconGravity="textEnd"
-                app:iconTint="@color/color_on_surface_muted"
+                app:iconTint="?attr/colorOnSurfaceMuted"
                 app:iconSize="18dp"
                 app:iconPadding="6dp"
-                app:backgroundTint="@color/color_glass_fill_l2"
+                app:backgroundTint="?attr/colorGlassFillL2"
                 app:cornerRadius="12dp"
-                app:strokeColor="@color/color_glass_border"
+                app:strokeColor="?attr/colorGlassBorder"
                 app:strokeWidth="1dp" />
         </LinearLayout>
 
@@ -224,13 +217,13 @@
                         android:insetRight="0dp"
                         android:paddingStart="10dp"
                         android:paddingEnd="10dp"
-                        app:backgroundTint="@color/color_glass_fill_l2"
+                        app:backgroundTint="?attr/colorGlassFillL2"
                         app:cornerRadius="999dp"
                         app:icon="@drawable/ic_more_horiz"
-                        app:iconTint="@color/color_on_surface_muted"
+                        app:iconTint="?attr/colorOnSurfaceMuted"
                         app:iconSize="20dp"
                         app:iconPadding="0dp"
-                        app:strokeColor="@color/color_glass_border"
+                        app:strokeColor="?attr/colorGlassBorder"
                         app:strokeWidth="1dp"
                         android:contentDescription="Filter by category"
                         style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
@@ -290,7 +283,10 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="32dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:paddingTop="32dp"
+        android:paddingBottom="142dp"
         android:visibility="gone">
 
         <com.example.expensetracker.ui.common.GlassCardView
@@ -317,7 +313,7 @@
                         android:layout_height="match_parent"
                         android:src="@android:drawable/ic_menu_view"
                         android:scaleType="centerInside"
-                        android:tint="@color/color_on_surface_faint"
+                        android:tint="?attr/colorOnSurfaceFaint"
                         android:padding="20dp"
                         android:contentDescription="No transactions" />
                 </FrameLayout>
@@ -328,7 +324,7 @@
                     android:text="No transactions found"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="8dp" />
 
                 <TextView
@@ -337,7 +333,7 @@
                     android:layout_height="wrap_content"
                     android:text="Upload a payment screenshot to add your first transaction"
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface_muted"
+                    android:textColor="?attr/colorOnSurfaceMuted"
                     android:gravity="center" />
             </LinearLayout>
         </com.example.expensetracker.ui.common.GlassCardView>

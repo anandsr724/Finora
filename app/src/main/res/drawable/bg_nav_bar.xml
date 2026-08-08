@@ -7,12 +7,12 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/color_nav_pill" />
+            <solid android:color="?attr/colorNavPill" />
         </shape>
     </item>
     <item android:height="1dp" android:gravity="top">
         <shape android:shape="rectangle">
-            <solid android:color="@color/color_glass_border_bright" />
+            <solid android:color="?attr/colorGlassBorderBright" />
         </shape>
     </item>
 </layer-list>

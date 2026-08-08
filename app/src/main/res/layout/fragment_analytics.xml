@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
-    android:background="@drawable/bg_luminous_glow"
+    android:background="?attr/bgGlowDrawable"
     android:clipToPadding="false">
 
     <LinearLayout
@@ -27,38 +27,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:layout_marginBottom="18dp">
-
-            <View
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="@drawable/shape_circle_gradient" />
+            android:orientation="vertical"
+            android:layout_marginBottom="20dp">
 
             <TextView
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="10dp"
                 android:text="Reports"
                 android:textAppearance="@style/TextAppearance.Finora.HeadlineLgMobile" />
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_notifications"
-                android:tint="@color/color_primary"
-                android:contentDescription="Notifications" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Analyze your spending patterns"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Analyze your spending patterns"
-            android:textSize="13sp"
-            android:textColor="@color/color_on_surface_muted"
-            android:layout_marginBottom="16dp" />
 
         <!-- Month Selector -->
         <com.example.expensetracker.ui.common.GlassCardView
@@ -90,7 +75,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:textSize="14sp"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:background="@null"
                     android:spinnerMode="dropdown"
                     android:popupBackground="@drawable/dropdown_popup_bg" />
@@ -99,7 +84,7 @@
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:src="@drawable/ic_chevron_down"
-                    android:tint="@color/color_on_surface_muted"
+                    android:tint="?attr/colorOnSurfaceMuted"
                     android:contentDescription="Expand" />
             </LinearLayout>
         </com.example.expensetracker.ui.common.GlassCardView>
@@ -116,8 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp"
-                android:background="@drawable/analytics_total_spent_gradient">
+                android:padding="24dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -130,7 +114,7 @@
                         android:layout_width="18dp"
                         android:layout_height="18dp"
                         android:src="@drawable/ic_wallet"
-                        android:tint="#E6FFFFFF"
+                        android:tint="?attr/colorOnSurfaceMuted"
                         android:layout_marginEnd="6dp"
                         android:contentDescription="Wallet" />
 
@@ -141,7 +125,7 @@
                         android:textSize="11sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.08"
-                        android:textColor="#E6FFFFFF" />
+                        android:textColor="?attr/colorOnSurfaceMuted" />
                 </LinearLayout>
 
                 <TextView
@@ -152,7 +136,11 @@
                     android:textSize="30sp"
                     android:textStyle="bold"
                     android:fontFamily="@font/hanken_grotesk"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/color_icon_lavender"
+                    android:shadowColor="@color/color_icon_lavender_20"
+                    android:shadowDx="0"
+                    android:shadowDy="0"
+                    android:shadowRadius="12" />
             </LinearLayout>
         </com.example.expensetracker.ui.common.GlassCardView>
 
@@ -190,7 +178,7 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_trending_up"
-                            android:tint="@color/color_on_surface_muted"
+                            android:tint="?attr/colorOnSurfaceMuted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Transactions" />
 
@@ -201,7 +189,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
-                            android:textColor="@color/color_on_surface_muted" />
+                            android:textColor="?attr/colorOnSurfaceMuted" />
                     </LinearLayout>
 
                     <TextView
@@ -212,7 +200,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/hanken_grotesk"
-                        android:textColor="@color/color_on_surface" />
+                        android:textColor="?attr/colorOnSurface" />
                 </LinearLayout>
             </com.example.expensetracker.ui.common.GlassCardView>
 
@@ -243,7 +231,7 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_analytics"
-                            android:tint="@color/color_on_surface_muted"
+                            android:tint="?attr/colorOnSurfaceMuted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Average" />
 
@@ -254,7 +242,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
-                            android:textColor="@color/color_on_surface_muted" />
+                            android:textColor="?attr/colorOnSurfaceMuted" />
                     </LinearLayout>
 
                     <TextView
@@ -265,7 +253,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/hanken_grotesk"
-                        android:textColor="@color/color_on_surface" />
+                        android:textColor="?attr/colorOnSurface" />
                 </LinearLayout>
             </com.example.expensetracker.ui.common.GlassCardView>
         </LinearLayout>
@@ -306,7 +294,7 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_category"
-                            android:tint="@color/color_on_surface_muted"
+                            android:tint="?attr/colorOnSurfaceMuted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="Top category" />
 
@@ -317,7 +305,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
-                            android:textColor="@color/color_on_surface_muted" />
+                            android:textColor="?attr/colorOnSurfaceMuted" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -330,7 +318,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:background="@drawable/shape_circle"
-                            android:backgroundTint="@color/color_glass_fill_l2"
+                            android:backgroundTint="?attr/colorGlassFillL2"
                             android:layout_marginEnd="8dp">
 
                             <ImageView
@@ -356,7 +344,7 @@
                                 android:text="Category"
                                 android:textSize="13sp"
                                 android:textStyle="bold"
-                                android:textColor="@color/color_on_surface"
+                                android:textColor="?attr/colorOnSurface"
                                 android:maxLines="1"
                                 android:ellipsize="end" />
 
@@ -366,7 +354,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="₹0"
                                 android:textSize="11sp"
-                                android:textColor="@color/color_on_surface_muted" />
+                                android:textColor="?attr/colorOnSurfaceMuted" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -401,7 +389,7 @@
                             android:layout_width="16dp"
                             android:layout_height="16dp"
                             android:src="@drawable/ic_trending_down"
-                            android:tint="@color/color_on_surface_muted"
+                            android:tint="?attr/colorOnSurfaceMuted"
                             android:layout_marginEnd="6dp"
                             android:contentDescription="vs Last Month" />
 
@@ -412,7 +400,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.08"
-                            android:textColor="@color/color_on_surface_muted" />
+                            android:textColor="?attr/colorOnSurfaceMuted" />
                     </LinearLayout>
 
                     <TextView
@@ -423,7 +411,7 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/hanken_grotesk"
-                        android:textColor="@color/color_on_surface" />
+                        android:textColor="?attr/colorOnSurface" />
                 </LinearLayout>
             </com.example.expensetracker.ui.common.GlassCardView>
         </LinearLayout>
@@ -451,7 +439,7 @@
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:fontFamily="@font/hanken_grotesk"
-                    android:textColor="@color/color_on_surface"
+                    android:textColor="?attr/colorOnSurface"
                     android:layout_marginBottom="16dp" />
 
                 <!-- Pie Chart -->
@@ -501,7 +489,7 @@
                         android:textSize="18sp"
                         android:textStyle="bold"
                         android:fontFamily="@font/hanken_grotesk"
-                        android:textColor="@color/color_on_surface" />
+                        android:textColor="?attr/colorOnSurface" />
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/chartToggleButton"
@@ -517,7 +505,7 @@
                         android:paddingStart="14dp"
                         android:paddingEnd="14dp"
                         android:textColor="@color/color_primary"
-                        app:backgroundTint="@color/color_glass_fill_l2"
+                        app:backgroundTint="?attr/colorGlassFillL2"
                         app:cornerRadius="999dp"
                         app:strokeWidth="0dp"
                         style="@style/Widget.MaterialComponents.Button" />
@@ -553,7 +541,7 @@
                     android:layout_height="match_parent"
                     android:src="@android:drawable/ic_menu_sort_by_size"
                     android:scaleType="centerInside"
-                    android:tint="@color/color_on_surface_faint"
+                    android:tint="?attr/colorOnSurfaceFaint"
                     android:padding="24dp"
                     android:contentDescription="No data" />
             </com.example.expensetracker.ui.common.GlassCardView>
@@ -564,7 +552,7 @@
                 android:text="No data yet"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="@color/color_on_surface"
+                android:textColor="?attr/colorOnSurface"
                 android:layout_marginBottom="8dp" />
 
             <TextView
@@ -573,7 +561,7 @@
                 android:layout_height="wrap_content"
                 android:text="Add transactions to see your spending analytics"
                 android:textSize="14sp"
-                android:textColor="@color/color_on_surface_muted"
+                android:textColor="?attr/colorOnSurfaceMuted"
                 android:gravity="center" />
         </LinearLayout>
     </LinearLayout>

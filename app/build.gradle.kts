@@ -66,6 +66,9 @@ dependencies {
     implementation("com.github.TomRoush:PdfBox-Android:2.0.7.0")
     // Pull-to-refresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    // Live backdrop blur for the bottom nav bar (real blur-behind, unlike GlassCardView's flat
+    // approximation — that trick only works for in-flow content, not a persistent overlay bar)
+    implementation("com.github.Dimezis:BlurView:version-3.2.0")
 
     // Compose support (for future upgrades)
     implementation(libs.androidx.core.ktx)

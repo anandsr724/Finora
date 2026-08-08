@@ -3,7 +3,7 @@
      bg-surface-container-highest/50 + border-white/10, fully rounded pill. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="@color/color_surface_high_50" />
+    <solid android:color="?attr/colorSurfaceHigh50" />
     <corners android:radius="999dp" />
-    <stroke android:width="1dp" android:color="@color/color_glass_border_bright" />
+    <stroke android:width="1dp" android:color="?attr/colorGlassBorderBright" />
 </shape>
