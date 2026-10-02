@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="24dp">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="32dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="4dp"
+        android:background="@drawable/shape_drag_handle" />
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Transaction Details"
+            android:textAppearance="@style/TextAppearance.Finora.BodyLg"
+            android:textStyle="bold"
+            android:textColor="?attr/colorOnSurface" />
+
+        <ImageButton
+            android:id="@+id/closeDetailSheetButton"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shape_circle"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:scaleType="fitCenter"
+            android:padding="8dp"
+            android:tint="?attr/colorOnSurfaceMuted"
+            android:contentDescription="Close" />
+    </LinearLayout>
+
+    <!-- Amount + Category badge (centered) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:paddingTop="4dp"
+        android:paddingBottom="20dp">
+
+        <TextView
+            android:id="@+id/detailAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Finora.NumericXl"
+            android:textSize="44sp"
+            android:letterSpacing="-0.02" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/category_badge_background"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <ImageView
+                android:id="@+id/detailCategoryIcon"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="6dp"
+                android:src="@drawable/shape_circle"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:id="@+id/detailCategoryBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Finora.LabelSm"
+                android:textColor="?attr/colorOnSurface" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Details List -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp">
+
+        <!-- Recipient -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Recipient"
+                android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+
+            <TextView
+                android:id="@+id/detailRecipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorGlassBorder" />
+
+        <!-- Note (conditional) -->
+        <LinearLayout
+            android:id="@+id/detailNoteRow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Note"
+                android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+
+            <TextView
+                android:id="@+id/detailNote"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"
+                android:maxLines="2"
+                android:ellipsize="end"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/detailNoteDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorGlassBorder"
+            android:visibility="gone" />
+
+        <!-- Date & Time -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Date &amp; Time"
+                android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+
+            <TextView
+                android:id="@+id/detailDateTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorGlassBorder" />
+
+        <!-- Payment Method -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Payment Method"
+                android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+
+            <TextView
+                android:id="@+id/detailPaymentMethod"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface"
+                android:gravity="end" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?attr/colorGlassBorder" />
+
+        <!-- Transaction ID -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Transaction ID"
+                android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+
+            <TextView
+                android:id="@+id/detailTransactionId"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:maxLines="1"
+                android:ellipsize="middle"
+                android:gravity="end" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:paddingTop="20dp">
+
+        <!-- Edit button (glass ghost pill) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/detailEditButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:text="Edit"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_edit"
+            app:iconGravity="textStart"
+            app:iconSize="18dp"
+            app:iconPadding="8dp"
+            app:iconTint="?attr/colorOnSurface" />
+
+        <!-- Delete button (dark maroon destructive pill, matching Stitch's error palette) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/detailDeleteButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Delete"
+            android:textColor="@color/color_delete_text"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_delete"
+            app:iconGravity="textStart"
+            app:iconSize="18dp"
+            app:iconPadding="8dp"
+            app:iconTint="@color/color_delete_text"
+            app:backgroundTint="@color/color_delete_container"
+            app:strokeColor="@color/color_delete_border"
+            app:strokeWidth="1dp"
+            app:cornerRadius="999dp" />
+    </LinearLayout>
+</LinearLayout>

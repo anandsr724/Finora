@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -85,4 +85,41 @@
             app:menu="@menu/bottom_nav_menu" />
     </eightbitlab.com.blurview.BlurView>
 
-</FrameLayout>
+    <!-- Dim scrim behind the in-window Transaction Details sheet below. Tapping it collapses
+         the sheet, matching a modal dialog's "tap outside to dismiss". -->
+    <View
+        android:id="@+id/detailSheetScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:alpha="0"
+        android:visibility="gone"
+        android:clickable="true"
+        android:focusable="true"
+        android:importantForAccessibility="no" />
+
+    <!-- Transaction Details sheet — lives in this window (not a separate Dialog window) so it
+         can share the nav bar's real BlurView instead of the unreliable cross-window
+         Window.setBackgroundBlurRadius API (confirmed to silently no-op on real hardware —
+         see MainActivity.setupDetailSheet()). GlassCardView here is used purely as a
+         rounded-top-corner clip container; the BlurView inside supplies the actual material. -->
+    <com.example.expensetracker.ui.common.GlassCardView
+        android:id="@+id/detailSheetContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/bottom_sheet_behavior"
+        app:glassLevel="level3"
+        app:glassCornerRadius="24dp"
+        app:glassTopCornersOnly="true">
+
+        <eightbitlab.com.blurview.BlurView
+            android:id="@+id/detailSheetBlurView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:blurOverlayColor="?attr/colorNavPillTranslucent">
+
+            <include layout="@layout/layout_transaction_detail_content" />
+        </eightbitlab.com.blurview.BlurView>
+    </com.example.expensetracker.ui.common.GlassCardView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

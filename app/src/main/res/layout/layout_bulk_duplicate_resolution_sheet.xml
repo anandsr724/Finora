@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp"
+    app:glassTopCornersOnly="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <!-- Drag handle -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/shape_drag_handle" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_warning"
+                android:tint="@color/color_expense"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Unresolved Duplicates"
+                android:textAppearance="@style/TextAppearance.Finora.BodyLg"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
+
+            <ImageButton
+                android:id="@+id/closeBulkDuplicateSheetButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/shape_circle"
+                android:src="@drawable/ic_close"
+                android:padding="8dp"
+                android:tint="?attr/colorOnSurfaceMuted"
+                android:contentDescription="Close" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/bulkDuplicateBodyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+            android:textColor="?attr/colorOnSurfaceMuted" />
+
+        <!-- Bulk actions -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bulkKeepBothButton"
+            style="@style/Widget.Finora.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Keep Both, For All"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bulkReplaceExistingButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Replace Existing With New, For All"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bulkDiscardNewButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="4dp"
+            android:text="Discard New, Keep Existing, For All"
+            android:textColor="?attr/colorOnSurfaceMuted"
+            android:textAllCaps="false"
+            android:textSize="13sp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/colorGlassBorder" />
+
+        <!-- Escape hatch — takes the user back to the review list untouched so they can tap
+             each duplicate badge and decide one at a time instead of applying one rule to all. -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/bulkReviewIndividuallyButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="Review Individually"
+            android:textSize="14sp" />
+    </LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

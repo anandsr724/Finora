@@ -93,6 +93,7 @@
                     <!-- Tilted glass window, matching Stitch's "Upload Receipt - Review
                          Details" screen -->
                     <com.example.expensetracker.ui.common.GlassCardView
+                        android:id="@+id/receiptPreviewCard"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:rotation="-6"

@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.activity.result.contract.ActivityResultContracts
 import android.graphics.Bitmap
 import android.graphics.ImageDecoder
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,23 +13,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.expensetracker.*
 import com.example.expensetracker.CurrencyManager
+import com.example.expensetracker.data.DuplicateDetector
 import com.example.expensetracker.data.OcrTrackingManager
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import android.content.DialogInterface
 import androidx.core.content.ContextCompat
+import com.example.expensetracker.ui.common.DuplicateResolution
 import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.applyGlassBlur
-import com.google.android.material.button.MaterialButtonToggleGroup
+import com.example.expensetracker.ui.common.applyVividGlow
+import com.example.expensetracker.ui.common.showDuplicateResolutionSheet
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.textfield.TextInputEditText
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -1188,6 +1196,40 @@ class AddFragment : Fragment() {
             type = type
         )
 
+        // Dedup check runs for every save here — this function handles both the OCR flow and
+        // the manual-entry flow (openManualEntryForm routes through the same editLauncher).
+        val matches = DuplicateDetector.findMatches(transaction, csvManager.getAllTransactions())
+        val bestMatch = matches.firstOrNull()
+        if (bestMatch == null) {
+            commitTransaction(transaction, amount, recipient, note, dateTime, transactionId, bankInfo, category, currency, type)
+            return
+        }
+        showDuplicateResolutionSheet(requireContext(), layoutInflater, transaction, bestMatch) { resolution ->
+            when (resolution) {
+                DuplicateResolution.KEEP_EXISTING -> {
+                    Toast.makeText(requireContext(), "Kept existing transaction — new entry discarded", Toast.LENGTH_SHORT).show()
+                    isOcrSession = false
+                    ocrSessionId = ""
+                    currentBitmap = null
+                    currentImageUri = null
+                    showHub()
+                }
+                DuplicateResolution.REPLACE_EXISTING -> {
+                    csvManager.deleteTransaction(bestMatch.existing.id)
+                    commitTransaction(transaction, amount, recipient, note, dateTime, transactionId, bankInfo, category, currency, type)
+                }
+                DuplicateResolution.KEEP_BOTH ->
+                    commitTransaction(transaction, amount, recipient, note, dateTime, transactionId, bankInfo, category, currency, type)
+            }
+        }
+    }
+
+    private fun commitTransaction(
+        transaction: PaymentTransaction,
+        amount: String, recipient: String, note: String,
+        dateTime: String, transactionId: String, bankInfo: String,
+        category: String, currency: String, type: String
+    ) {
         val success = csvManager.saveTransaction(transaction)
 
         if (success) {
@@ -1258,53 +1300,81 @@ class AddFragment : Fragment() {
         }
     }
 
+    private fun styleReactionButton(container: FrameLayout, icon: ImageView, selected: Boolean, accentColorRes: Int) {
+        val density = resources.displayMetrics.density
+        val accentColor = ContextCompat.getColor(requireContext(), accentColorRes)
+        container.background = GradientDrawable().apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = 16f * density
+            setColor(if (selected) (accentColor and 0x00FFFFFF) or (0x26 shl 24) else requireContext().themeColor(R.attr.colorGlassFillL2))
+            setStroke((1 * density).toInt(), if (selected) accentColor else requireContext().themeColor(R.attr.colorGlassBorder))
+        }
+        icon.setColorFilter(if (selected) accentColor else requireContext().themeColor(R.attr.colorOnSurfaceMuted))
+        if (selected) {
+            container.applyVividGlow(accentColor, cornerRadiusDp = 16f)
+        } else {
+            container.outlineProvider = null
+            container.elevation = 0f
+        }
+    }
+
     private fun showOcrFeedbackDialog(onResult: (Map<String, String>?) -> Unit) {
         val dialogView = layoutInflater.inflate(R.layout.layout_ocr_feedback_dialog, null)
-        val ratingGroup = dialogView.findViewById<MaterialButtonToggleGroup>(R.id.ratingToggleGroup)
-        val commentInput = dialogView.findViewById<TextInputEditText>(R.id.etFeedbackComment)
+        val thumbUpButton = dialogView.findViewById<FrameLayout>(R.id.thumbUpButton)
+        val thumbDownButton = dialogView.findViewById<FrameLayout>(R.id.thumbDownButton)
+        val thumbUpIcon = dialogView.findViewById<ImageView>(R.id.thumbUpIcon)
+        val thumbDownIcon = dialogView.findViewById<ImageView>(R.id.thumbDownIcon)
+        val expandedSection = dialogView.findViewById<LinearLayout>(R.id.expandedFeedbackSection)
+        val issueChipGroup = dialogView.findViewById<ChipGroup>(R.id.issueChipGroup)
+        val commentInput = dialogView.findViewById<EditText>(R.id.etFeedbackComment)
+        val skipButton = dialogView.findViewById<TextView>(R.id.btnFeedbackSkip)
+        val submitButton = dialogView.findViewById<MaterialButton>(R.id.btnFeedbackSubmit)
+
+        var rating: String? = null // "up" | "down"
+
+        fun refreshReactionButtons() {
+            styleReactionButton(thumbUpButton, thumbUpIcon, rating == "up", R.color.color_income)
+            styleReactionButton(thumbDownButton, thumbDownIcon, rating == "down", R.color.color_expense)
+            expandedSection.visibility = if (rating == "down") View.VISIBLE else View.GONE
+        }
+        refreshReactionButtons()
+
+        thumbUpButton.setOnClickListener {
+            rating = "up"
+            refreshReactionButtons()
+        }
+        thumbDownButton.setOnClickListener {
+            rating = "down"
+            refreshReactionButtons()
+        }
 
         var resultDelivered = false
 
         val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Quick Feedback")
             .setView(dialogView)
-            .setPositiveButton("Submit") { _, _ ->
-                resultDelivered = true
-                val rating = when (ratingGroup.checkedButtonId) {
-                    R.id.btnRatingCorrect -> "correct"
-                    R.id.btnRatingPartial -> "partial"
-                    R.id.btnRatingIncorrect -> "incorrect"
-                    else -> ""
-                }
-                onResult(mapOf(
-                    "rating" to rating,
-                    "comment" to (commentInput.text?.toString()?.trim() ?: "")
-                ))
-            }
-            .setNegativeButton("Skip") { _, _ ->
-                resultDelivered = true
-                onResult(null)
-            }
             .setOnDismissListener { if (!resultDelivered) onResult(null) }
             .create()
 
-        dialog.applyGlassBlur()
-
-        // Restyle the native action buttons to match the glass dialog: gradient pill for
-        // Submit, plain muted text for Skip. Visual-only — no submission logic touched.
-        dialog.setOnShowListener {
-            dialog.getButton(DialogInterface.BUTTON_POSITIVE)?.apply {
-                setBackgroundResource(R.drawable.balance_card_gradient)
-                setTextColor(ContextCompat.getColor(requireContext(), R.color.color_on_primary))
-                val hPad = (16 * resources.displayMetrics.density).toInt()
-                val vPad = (8 * resources.displayMetrics.density).toInt()
-                setPadding(hPad, vPad, hPad, vPad)
-            }
-            dialog.getButton(DialogInterface.BUTTON_NEGATIVE)?.apply {
-                setTextColor(requireContext().themeColor(R.attr.colorOnSurfaceMuted))
-            }
+        skipButton.setOnClickListener {
+            resultDelivered = true
+            dialog.dismiss()
+            onResult(null)
         }
 
+        submitButton.setOnClickListener {
+            resultDelivered = true
+            val issues = issueChipGroup.checkedChipIds.mapNotNull { id ->
+                dialogView.findViewById<Chip>(id)?.text?.toString()
+            }
+            dialog.dismiss()
+            onResult(mapOf(
+                "rating" to (rating ?: ""),
+                "issues" to issues.joinToString(", "),
+                "comment" to (commentInput.text?.toString()?.trim() ?: "")
+            ))
+        }
+
+        dialog.applyGlassBlur()
         dialog.show()
     }
 

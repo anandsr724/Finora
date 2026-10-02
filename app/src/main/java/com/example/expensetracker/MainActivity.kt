@@ -3,6 +3,8 @@ package com.example.expensetracker
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
@@ -15,12 +17,19 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
+import com.example.expensetracker.ui.common.bindTransactionDetail
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import eightbitlab.com.blurview.BlurTarget
 import eightbitlab.com.blurview.BlurView
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var detailSheetBehavior: BottomSheetBehavior<View>
+    private lateinit var detailSheetScrim: View
+    private lateinit var detailSheetContent: View
+    private lateinit var detailSheetBackPressCallback: OnBackPressedCallback
 
     override fun onCreate(savedInstanceState: Bundle?) {
         // Finora is dark-only (Luminous / Onyx are both dark glassmorphism themes) — no light
@@ -48,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         blurView.setupWith(blurTarget)
             .setFrameClearDrawable(window.decorView.background)
             .setBlurRadius(20f)
+
+        setupDetailSheet(blurTarget)
 
         // Push fragment content below the status bar using actual inset height
         val fragmentContainer = findViewById<android.view.View>(R.id.nav_host_fragment)
@@ -117,6 +128,78 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    // Docked Transaction Details sheet, shared by HomeFragment and HistoryFragment. This lives
+    // in the Activity's own window (not a separate BottomSheetDialog window) specifically so it
+    // can reuse the nav bar's real BlurView — Window.setBackgroundBlurRadius (the cross-window
+    // blur API BottomSheetDialog would otherwise need) was confirmed on real hardware (a
+    // Motorola running Android 12) to silently do nothing, leaving the sheet's translucent fill
+    // with no blur behind it at all. BlurView has no such dependency on OEM compositor support.
+    private fun setupDetailSheet(blurTarget: BlurTarget) {
+        val container = findViewById<View>(R.id.detailSheetContainer)
+        detailSheetScrim = findViewById(R.id.detailSheetScrim)
+        detailSheetContent = findViewById(R.id.detailSheetBlurView)
+
+        (detailSheetContent as BlurView).setupWith(blurTarget)
+            .setFrameClearDrawable(window.decorView.background)
+            .setBlurRadius(20f)
+
+        detailSheetBehavior = BottomSheetBehavior.from(container).apply {
+            isHideable = true
+            skipCollapsed = true
+            // Must be set after isHideable = true — STATE_HIDDEN is silently rejected while
+            // hideable is still false, which left the sheet showing at its default state
+            // (visible) on launch instead of hidden.
+            state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        detailSheetBackPressCallback = object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                detailSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
+        onBackPressedDispatcher.addCallback(this, detailSheetBackPressCallback)
+
+        detailSheetBehavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                val hidden = newState == BottomSheetBehavior.STATE_HIDDEN
+                detailSheetScrim.visibility = if (hidden) View.GONE else View.VISIBLE
+                detailSheetBackPressCallback.isEnabled = !hidden
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+                detailSheetScrim.alpha = slideOffset.coerceIn(0f, 1f)
+            }
+        })
+
+        detailSheetScrim.setOnClickListener {
+            detailSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(container) { view, insets ->
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+            view.updatePadding(bottom = navBars.bottom)
+            insets
+        }
+    }
+
+    /** Populates and expands the docked Transaction Details sheet for [transaction]. */
+    fun showTransactionDetailSheet(
+        transaction: PaymentTransaction,
+        categoryManager: CategoryManager,
+        onEdit: (PaymentTransaction) -> Unit,
+        onDelete: (PaymentTransaction) -> Unit
+    ) {
+        bindTransactionDetail(
+            detailSheetContent,
+            transaction,
+            categoryManager,
+            onClose = { detailSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN },
+            onEdit = onEdit,
+            onDelete = onDelete
+        )
+        detailSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
     }
 
     override fun onNewIntent(intent: Intent) {

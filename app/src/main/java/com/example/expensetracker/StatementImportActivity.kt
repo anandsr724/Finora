@@ -1,6 +1,7 @@
 package com.example.expensetracker
 
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
@@ -26,12 +27,16 @@ import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.expensetracker.data.CategoryGuesser
+import com.example.expensetracker.data.DuplicateDetector
 import com.example.expensetracker.data.GpayPdfParser
 import com.example.expensetracker.data.ParsedTransaction
 import com.example.expensetracker.data.SbiPdfParser
 import com.example.expensetracker.data.SbiXlsxParser
 import com.example.expensetracker.data.StatementFormat
 import com.example.expensetracker.data.StatementType
+import com.example.expensetracker.ui.common.DuplicateResolution
+import com.example.expensetracker.ui.common.showBulkDuplicateResolutionSheet
+import com.example.expensetracker.ui.common.showDuplicateResolutionSheet
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -260,7 +265,23 @@ class StatementImportActivity : AppCompatActivity() {
     private fun showReview(transactions: List<ParsedTransaction>) {
         parsedTransactions = transactions
 
-        reviewAdapter = ImportReviewAdapter(transactions) { selectedCount ->
+        // Flag transactions that look like they're already saved (added manually, via OCR, or
+        // by a previous import) so the review step can highlight them and skip them by default
+        // instead of silently re-adding them.
+        val existingTransactions = csvManager.getAllTransactions()
+        val duplicateMatches = transactions.withIndex().mapNotNull { (index, parsed) ->
+            val match = DuplicateDetector.findMatches(
+                amount = parsed.amount,
+                currency = "INR",
+                type = parsed.type,
+                dateTime = parsed.date,
+                transactionId = parsed.transactionId,
+                existing = existingTransactions
+            ).firstOrNull()
+            if (match != null) index to match else null
+        }.toMap()
+
+        reviewAdapter = ImportReviewAdapter(transactions, duplicateMatches) { selectedCount ->
             updateImportButtonLabel(selectedCount)
             // Sync "Select All" checkbox without triggering its own listener
             selectAllCheckbox.setOnCheckedChangeListener(null)
@@ -273,9 +294,12 @@ class StatementImportActivity : AppCompatActivity() {
         reviewList.layoutManager = LinearLayoutManager(this)
         reviewList.adapter = reviewAdapter
 
-        reviewSummaryText.text = "${transactions.size} transactions found"
-        selectAllCheckbox.isChecked = true
-        updateImportButtonLabel(transactions.size)
+        reviewSummaryText.text = if (duplicateMatches.isEmpty())
+            "${transactions.size} transactions found"
+        else
+            "${transactions.size} transactions found · ${duplicateMatches.size} possible duplicate${if (duplicateMatches.size != 1) "s" else ""}"
+        selectAllCheckbox.isChecked = duplicateMatches.isEmpty()
+        updateImportButtonLabel(reviewAdapter.selectedCount())
 
         showState(STATE_REVIEW)
     }
@@ -304,23 +328,40 @@ class StatementImportActivity : AppCompatActivity() {
         val selected = reviewAdapter.getSelectedTransactions()
         if (selected.isEmpty()) return
 
+        // Checking a flagged duplicate directly (or via "Select All") skips the per-transaction
+        // comparison sheet entirely — confirm once here rather than silently treating every one
+        // of those as "keep both". Transactions already resolved via the sheet (any choice,
+        // including a duplicate re-checked as "Keep Both") don't count again.
+        val unresolvedCount = reviewAdapter.unresolvedSelectedDuplicateCount()
+        if (unresolvedCount == 0) {
+            performImport(selected)
+            return
+        }
+
+        showBulkDuplicateResolutionSheet(this, layoutInflater, unresolvedCount) { bulkResolution ->
+            if (bulkResolution == null) return@showBulkDuplicateResolutionSheet // review individually / dismissed
+            // Applying the bulk choice can change which positions are selected (a bulk "keep
+            // existing" deselects them), so the import list has to be recomputed after — the
+            // `selected` snapshot captured above is stale the moment this resolves.
+            reviewAdapter.applyBulkResolutionToUnresolved(bulkResolution)
+            val updatedSelected = reviewAdapter.getSelectedTransactions()
+            if (updatedSelected.isNotEmpty()) performImport(updatedSelected)
+        }
+    }
+
+    private fun performImport(selected: List<Pair<Int, ParsedTransaction>>) {
         showState(STATE_PARSING)
         parsingStatusText.text = "Importing ${selected.size} transactions..."
 
         Thread {
-            // Build existing txnId set for dedup check
-            val existingIds = csvManager.getAllTransactions()
-                .map { it.transactionId }
-                .filter { it.isNotEmpty() }
-                .toHashSet()
-
             var imported = 0
-            var skipped  = 0
+            var replaced = 0
 
-            selected.forEach { parsed ->
-                if (parsed.transactionId.isNotEmpty() && parsed.transactionId in existingIds) {
-                    skipped++
-                    return@forEach
+            selected.forEach { (position, parsed) ->
+                val replaceExistingId = reviewAdapter.replacementExistingId(position)
+                if (replaceExistingId != null) {
+                    csvManager.deleteTransaction(replaceExistingId)
+                    replaced++
                 }
                 val tx = PaymentTransaction(
                     amount        = parsed.amount,
@@ -335,11 +376,11 @@ class StatementImportActivity : AppCompatActivity() {
                 if (csvManager.saveTransaction(tx)) imported++
             }
 
-            val imp = imported; val sk = skipped
+            val imp = imported; val rep = replaced
             runOnUiThread {
                 val msg = buildString {
                     append("Imported $imp transaction${if (imp != 1) "s" else ""}")
-                    if (sk > 0) append(" · $sk already existed")
+                    if (rep > 0) append(" · $rep replaced an existing entry")
                 }
                 Snackbar.make(
                     findViewById(android.R.id.content),
@@ -355,10 +396,16 @@ class StatementImportActivity : AppCompatActivity() {
 
     inner class ImportReviewAdapter(
         private val items: List<ParsedTransaction>,
+        private val duplicateMatches: Map<Int, DuplicateDetector.Match>,
         private val onSelectionChanged: (Int) -> Unit
     ) : RecyclerView.Adapter<ImportReviewAdapter.VH>() {
 
-        private val selectedPositions: MutableSet<Int> = (0 until items.size).toMutableSet()
+        // Items that look like duplicates of something already saved start unchecked — the
+        // user has to explicitly opt back in (or resolve them via the duplicate sheet) to
+        // avoid silently re-adding a transaction they already recorded manually or via OCR.
+        private val selectedPositions: MutableSet<Int> =
+            (0 until items.size).filterNot { it in duplicateMatches }.toMutableSet()
+        private val resolutions = mutableMapOf<Int, DuplicateResolution>()
 
         inner class VH(view: View) : RecyclerView.ViewHolder(view) {
             val checkbox:              CheckBox   = view.findViewById(R.id.importCheckbox)
@@ -368,6 +415,7 @@ class StatementImportActivity : AppCompatActivity() {
             val note:                  TextView   = view.findViewById(R.id.importNote)
             val date:                  TextView   = view.findViewById(R.id.importDate)
             val amount:                TextView   = view.findViewById(R.id.importAmount)
+            val duplicateBadge:        TextView   = view.findViewById(R.id.importDuplicateBadge)
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = VH(
@@ -406,6 +454,51 @@ class StatementImportActivity : AppCompatActivity() {
                 else holder.itemView.context.themeColor(R.attr.colorOnSurface)
             )
 
+            val match = duplicateMatches[position]
+            if (match != null) {
+                holder.duplicateBadge.visibility = View.VISIBLE
+                val resolution = resolutions[position]
+                holder.duplicateBadge.text = when (resolution) {
+                    DuplicateResolution.REPLACE_EXISTING -> "Will replace existing transaction"
+                    DuplicateResolution.KEEP_BOTH -> "Importing anyway (possible duplicate)"
+                    // Distinct from the unresolved label below — otherwise a user who just
+                    // reviewed the duplicate and chose to keep the existing one sees the same
+                    // "tap to review" warning still sitting there, as if their choice didn't
+                    // register.
+                    DuplicateResolution.KEEP_EXISTING -> "Skipped — keeping existing transaction"
+                    null -> "Possible duplicate — tap to review"
+                }
+                // A resolved "keep existing" is a settled, deliberate choice, not an open
+                // warning — read it as neutral/muted rather than the same alarming red used for
+                // an unreviewed or still-importing duplicate.
+                val badgeColor = if (resolution == DuplicateResolution.KEEP_EXISTING) {
+                    holder.itemView.context.themeColor(R.attr.colorOnSurfaceMuted)
+                } else {
+                    ContextCompat.getColor(holder.itemView.context, R.color.color_expense)
+                }
+                holder.duplicateBadge.setTextColor(badgeColor)
+                holder.duplicateBadge.compoundDrawableTintList = ColorStateList.valueOf(badgeColor)
+                holder.duplicateBadge.setOnClickListener {
+                    val newTx = PaymentTransaction(
+                        amount = item.amount, recipient = item.recipient, note = item.note,
+                        dateTime = item.date, transactionId = item.transactionId,
+                        bankInfo = item.bankInfo, category = item.category, type = item.type
+                    )
+                    showDuplicateResolutionSheet(holder.itemView.context, layoutInflater, newTx, match) { resolution ->
+                        resolutions[position] = resolution
+                        when (resolution) {
+                            DuplicateResolution.KEEP_EXISTING -> selectedPositions.remove(position)
+                            DuplicateResolution.KEEP_BOTH, DuplicateResolution.REPLACE_EXISTING -> selectedPositions.add(position)
+                        }
+                        notifyItemChanged(position)
+                        onSelectionChanged(selectedPositions.size)
+                    }
+                }
+            } else {
+                holder.duplicateBadge.visibility = View.GONE
+                holder.duplicateBadge.setOnClickListener(null)
+            }
+
             holder.itemView.setOnClickListener {
                 val pos = holder.adapterPosition
                 if (pos == RecyclerView.NO_ID.toInt()) return@setOnClickListener
@@ -419,7 +512,34 @@ class StatementImportActivity : AppCompatActivity() {
 
         fun selectedCount() = selectedPositions.size
 
-        fun getSelectedTransactions() = items.filterIndexed { i, _ -> i in selectedPositions }
+        fun getSelectedTransactions(): List<Pair<Int, ParsedTransaction>> =
+            items.withIndex().filter { it.index in selectedPositions }.map { it.index to it.value }
+
+        // Only set for items the user explicitly chose "Replace Existing With New" for in the
+        // duplicate sheet — the matched existing transaction is deleted right before this one
+        // is saved.
+        fun replacementExistingId(position: Int): String? =
+            if (resolutions[position] == DuplicateResolution.REPLACE_EXISTING) duplicateMatches[position]?.existing?.id else null
+
+        // Selected items flagged as possible duplicates that were never opened in the
+        // comparison sheet — e.g. checked directly, or swept up by "Select All" — as opposed
+        // to ones the user already made an explicit call on (any resolution counts, including
+        // a duplicate re-confirmed as "Keep Both").
+        fun unresolvedSelectedDuplicateCount(): Int =
+            selectedPositions.count { it in duplicateMatches && it !in resolutions }
+
+        // Applies one bulk choice to every selected-but-never-reviewed duplicate at once — the
+        // "for all" path out of the unresolved-duplicates prompt. A bulk "keep existing"
+        // deselects those rows the same way resolving one individually would.
+        fun applyBulkResolutionToUnresolved(resolution: DuplicateResolution) {
+            val targets = selectedPositions.filter { it in duplicateMatches && it !in resolutions }
+            targets.forEach { position ->
+                resolutions[position] = resolution
+                if (resolution == DuplicateResolution.KEEP_EXISTING) selectedPositions.remove(position)
+            }
+            notifyDataSetChanged()
+            onSelectionChanged(selectedPositions.size)
+        }
 
         fun toggleSelectAll(selectAll: Boolean) {
             if (selectAll) selectedPositions.addAll(0 until items.size) else selectedPositions.clear()

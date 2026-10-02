@@ -30,15 +30,14 @@ import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.CurrencyManager
 import com.example.expensetracker.EditPaymentActivity
+import com.example.expensetracker.MainActivity
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
-import com.example.expensetracker.ui.common.applyCategoryDotGlow
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -427,82 +426,12 @@ class HistoryFragment : Fragment() {
     }
 
     private fun showTransactionDetailSheet(transaction: PaymentTransaction) {
-        val sheet = BottomSheetDialog(requireContext())
-        val sheetView = layoutInflater.inflate(R.layout.layout_transaction_detail_sheet, null)
-        sheet.setContentView(sheetView)
-
-        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
-
-        val categoryColor = ContextCompat.getColor(
-            requireContext(),
-            CategoryIconHelper.getIconTintColorRes(transaction.category)
+        (requireActivity() as MainActivity).showTransactionDetailSheet(
+            transaction,
+            categoryManager,
+            onEdit = { editTransaction(it) },
+            onDelete = { confirmDeleteTransaction(it) }
         )
-        sheetView.findViewById<ImageView>(R.id.detailCategoryIcon).apply {
-            setImageResource(R.drawable.shape_dot_solid)
-            setColorFilter(categoryColor)
-            applyCategoryDotGlow(categoryColor)
-        }
-
-        val isIncome = transaction.type == "income"
-        val numericAmount = CurrencyManager.parseAmount(transaction.amount)
-        val currencySymbol = CurrencyManager.getSymbol(transaction.currency)
-        sheetView.findViewById<TextView>(R.id.detailAmount).apply {
-            text = "${if (isIncome) "+" else "-"}$currencySymbol${fmt.format(numericAmount)}"
-            setTextColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    if (isIncome) R.color.color_income else R.color.color_expense
-                )
-            )
-        }
-
-        sheetView.findViewById<TextView>(R.id.detailCategoryBadge).text =
-            categoryManager.getCategoryDisplayName(transaction.category)
-
-        sheetView.findViewById<TextView>(R.id.detailRecipient).text = transaction.recipient
-
-        val noteRow = sheetView.findViewById<LinearLayout>(R.id.detailNoteRow)
-        val noteDivider = sheetView.findViewById<View>(R.id.detailNoteDivider)
-        if (transaction.note.isNotEmpty()) {
-            sheetView.findViewById<TextView>(R.id.detailNote).text = transaction.note
-            noteRow.visibility = View.VISIBLE
-            noteDivider.visibility = View.VISIBLE
-        } else {
-            noteRow.visibility = View.GONE
-            noteDivider.visibility = View.GONE
-        }
-
-        try {
-            val date = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).parse(transaction.dateTime)
-            sheetView.findViewById<TextView>(R.id.detailDateTime).text =
-                if (date != null) SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.ENGLISH).format(date)
-                else transaction.dateTime
-        } catch (e: Exception) {
-            sheetView.findViewById<TextView>(R.id.detailDateTime).text = transaction.dateTime
-        }
-
-        sheetView.findViewById<TextView>(R.id.detailPaymentMethod).text =
-            transaction.bankInfo.ifEmpty { "N/A" }
-
-        sheetView.findViewById<TextView>(R.id.detailTransactionId).text =
-            transaction.transactionId.ifEmpty { "N/A" }
-
-        sheetView.findViewById<ImageButton>(R.id.closeDetailSheetButton).setOnClickListener {
-            sheet.dismiss()
-        }
-
-        sheetView.findViewById<MaterialButton>(R.id.detailEditButton).setOnClickListener {
-            sheet.dismiss()
-            editTransaction(transaction)
-        }
-
-        sheetView.findViewById<MaterialButton>(R.id.detailDeleteButton).setOnClickListener {
-            sheet.dismiss()
-            confirmDeleteTransaction(transaction)
-        }
-
-        sheet.show()
-        sheet.applyGlassBlur()
     }
 
     private fun editTransaction(transaction: PaymentTransaction) {

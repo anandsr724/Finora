@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- No background here — the root stays fully transparent so the real app screen behind it
+     (not a solid black window background) is what the scrim below dims/reveals. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clickable="true"
+    android:focusable="true">
+
+    <!-- Dedicated dimming layer, separate from the image below — its alpha is what fades
+         during a drag/entrance/exit, so the image itself never has to change opacity. -->
+    <View
+        android:id="@+id/viewerScrim"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E6000000" />
+
+    <com.example.expensetracker.ui.common.ZoomableImageView
+        android:id="@+id/fullImageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="Scanned receipt, full size" />
+
+    <ImageButton
+        android:id="@+id/closeFullImageButton"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="16dp"
+        android:background="@drawable/shape_circle"
+        android:src="@drawable/ic_close"
+        android:padding="10dp"
+        android:tint="@android:color/white"
+        android:contentDescription="Close" />
+</FrameLayout>

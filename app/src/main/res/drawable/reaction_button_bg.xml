@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default (unselected) state for the thumbs-up/down reaction buttons in the feedback dialog.
+     The selected state is applied at runtime (AddFragment.styleReactionButton) since its stroke/
+     fill color depends on which button was picked (emerald for up, coral for down) — a single
+     static drawable can't express that. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="?attr/colorGlassFillL2" />
+    <corners android:radius="16dp" />
+    <stroke android:width="1dp" android:color="?attr/colorGlassBorder" />
+</shape>

@@ -1,7 +1,9 @@
 package com.example.expensetracker
 
 import android.app.DatePickerDialog
+import android.app.Dialog
 import android.app.TimePickerDialog
+import android.graphics.Bitmap
 import android.content.Intent
 import android.graphics.Color
 import android.graphics.ImageDecoder
@@ -32,6 +34,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +42,7 @@ import androidx.core.content.ContextCompat
 import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.example.expensetracker.ui.common.applyVividGlow
+import com.example.expensetracker.ui.common.ZoomableImageView
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -134,10 +138,159 @@ class EditPaymentActivity : AppCompatActivity() {
                 }
             }
             findViewById<ImageView>(R.id.receiptPreviewImage).setImageBitmap(bitmap)
+            findViewById<View>(R.id.receiptPreviewCard).setOnClickListener {
+                showFullImageViewer(bitmap, it)
+            }
             findViewById<View>(R.id.receiptPreviewHeader).visibility = View.VISIBLE
         } catch (e: Exception) {
             // Image failed to load — the form still works fine without the preview, so just
             // leave receiptPreviewHeader hidden rather than blocking the review flow.
+        }
+    }
+
+    // Full-screen, pinch-zoomable viewer for the scanned receipt thumbnail — the tilted preview
+    // card is small enough that OCR-relevant details (small print, amounts) aren't reliably
+    // legible in it. Opens with a Google Photos–style expand: the full image starts scaled/
+    // positioned/rotated to exactly overlay [sourceView] (the tilted thumbnail card the user
+    // tapped) and animates out to fill the screen and un-tilt; closing reverses this.
+    private fun showFullImageViewer(bitmap: Bitmap, sourceView: View) {
+        val startRect = android.graphics.Rect()
+        sourceView.getGlobalVisibleRect(startRect)
+        val startRotation = sourceView.rotation
+
+        // Deliberately NOT the ".Fullscreen" variant of this theme — that flag hides the status
+        // bar for as long as the dialog is shown, then it snaps back the instant it's dismissed,
+        // which read as a jarring layout pop. Theme_Black_NoTitleBar alone still fills the whole
+        // screen (it isn't a floating dialog theme) without touching the status bar at all.
+        val dialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar)
+        dialog.window?.apply {
+            // This theme's default windowBackground is opaque black, which would show as a
+            // solid black backdrop no matter how transparent our own scrim view gets — making
+            // TRANSLUCENT explicit lets the real Activity behind the dialog show through
+            // wherever the scrim doesn't cover it (same technique as GlassBlur.kt's dialogs).
+            setBackgroundDrawableResource(android.R.color.transparent)
+            setFormat(android.graphics.PixelFormat.TRANSLUCENT)
+            setDimAmount(0f) // the scrim view below is our own, fully-controlled dim instead
+            setWindowAnimations(0) // the view-level animation below replaces this
+            // Matches the Activity's own edge-to-edge display so the image can still extend
+            // under the status bar without the (now visible, unhidden) status bar reserving a
+            // gap at the top that would offset our content down from what the Activity shows.
+            androidx.core.view.WindowCompat.setDecorFitsSystemWindows(this, false)
+        }
+        // Showing a Dialog synchronously inside the click that triggered it can let that same
+        // tap's leftover touch-up register as a "touch outside" on the brand-new dialog window,
+        // dismissing it within the same frame it opened. setCanceledOnTouchOutside(false) is the
+        // primary fix (dismissal is handled explicitly below); show() is also deferred a frame
+        // as a second guard against the stray event.
+        dialog.setCanceledOnTouchOutside(false)
+
+        val root = layoutInflater.inflate(R.layout.dialog_image_viewer, null)
+        val scrim = root.findViewById<View>(R.id.viewerScrim)
+        val imageView = root.findViewById<ZoomableImageView>(R.id.fullImageView)
+        val closeButton = root.findViewById<ImageButton>(R.id.closeFullImageButton)
+        imageView.setImageBitmap(bitmap)
+
+        // The image itself should still extend edge-to-edge under the status bar, but the
+        // close button's fixed 16dp top margin would otherwise land right underneath the
+        // (now-visible) status bar icons — push it down by the actual status bar height too.
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(closeButton) { view, insets ->
+            val statusBarInset = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.statusBars()).top
+            val baseMarginPx = (16 * resources.displayMetrics.density).toInt()
+            (view.layoutParams as ViewGroup.MarginLayoutParams).topMargin = statusBarInset + baseMarginPx
+            view.requestLayout()
+            insets
+        }
+        imageView.alpha = 1f // the image itself never fades — only the scrim behind it does
+
+        fun close() {
+            // Collapse back to a plain 1x fit before shrinking — reversing from a pinch-zoomed/
+            // panned state would shrink the wrong (cropped) region into the thumbnail's bounds.
+            imageView.resetTransform()
+            // The entrance animation's translationX/Y = startRect.left/top math assumes a
+            // (0,0) pivot; it's recentered after entrance for a centered drag-to-dismiss shrink,
+            // so it must be put back here before reusing that same math to collapse away.
+            imageView.pivotX = 0f
+            imageView.pivotY = 0f
+            val vw = imageView.width.toFloat()
+            val vh = imageView.height.toFloat()
+            scrim.animate().alpha(0f).setDuration(200).start()
+            closeButton.animate().alpha(0f).setDuration(120).start()
+            imageView.animate()
+                .scaleX(if (vw > 0f) startRect.width() / vw else 1f)
+                .scaleY(if (vh > 0f) startRect.height() / vh else 1f)
+                .translationX(startRect.left.toFloat())
+                .translationY(startRect.top.toFloat())
+                .rotation(startRotation)
+                .setDuration(220)
+                .setInterpolator(android.view.animation.AccelerateInterpolator())
+                .withEndAction { dialog.dismiss() }
+                .start()
+        }
+
+        imageView.onSingleTap = { close() }
+        // Swipe-to-dismiss (any direction, Photos-app style) is handled entirely inside
+        // ZoomableImageView — it drags/shrinks itself directly to track the finger (never
+        // fading); these callbacks just keep the scrim and close button in sync with that
+        // same motion, revealing the real screen behind rather than a solid black backdrop.
+        imageView.onDragProgress = { progress ->
+            val factor = 1f - progress
+            scrim.alpha = factor
+            closeButton.alpha = factor
+        }
+        imageView.onDragCancelled = { durationMs ->
+            scrim.animate().alpha(1f).setDuration(durationMs).start()
+            closeButton.animate().alpha(1f).setDuration(durationMs).start()
+        }
+        imageView.onDragCommitted = { durationMs ->
+            scrim.animate().alpha(0f).setDuration(durationMs).start()
+            closeButton.animate().alpha(0f).setDuration(durationMs).start()
+        }
+        imageView.onDismiss = { dialog.dismiss() }
+        closeButton.setOnClickListener { close() }
+        dialog.setOnCancelListener { close() }
+        dialog.setContentView(root)
+
+        // Hides everything for the one frame between show() and the entrance transform below
+        // being applied — otherwise the image would flash at full size/position first.
+        root.alpha = 0f
+        closeButton.alpha = 0f
+        sourceView.post { dialog.show() }
+
+        imageView.doOnPreDraw {
+            val vw = imageView.width.toFloat()
+            val vh = imageView.height.toFloat()
+            if (vw <= 0f || vh <= 0f || startRect.width() <= 0 || startRect.height() <= 0) {
+                // No usable source rect (e.g. thumbnail scrolled off-screen) — just fade in.
+                root.alpha = 1f
+                closeButton.alpha = 1f
+                return@doOnPreDraw
+            }
+            imageView.pivotX = 0f
+            imageView.pivotY = 0f
+            imageView.scaleX = startRect.width() / vw
+            imageView.scaleY = startRect.height() / vh
+            imageView.translationX = startRect.left.toFloat()
+            imageView.translationY = startRect.top.toFloat()
+            imageView.rotation = startRotation
+            scrim.alpha = 0f
+            root.alpha = 1f // reveal now that the correct starting transform is in place
+
+            scrim.animate().alpha(1f).setDuration(220).start()
+            imageView.animate()
+                .scaleX(1f).scaleY(1f)
+                .translationX(0f).translationY(0f)
+                .rotation(0f)
+                .setDuration(320)
+                .setInterpolator(android.view.animation.DecelerateInterpolator())
+                // The entrance animation pivots around (0,0) to grow from the thumbnail's
+                // top-left corner; recentering afterwards means a later swipe-to-dismiss drag
+                // shrinks around the image's own center instead of that same corner.
+                .withEndAction {
+                    imageView.pivotX = imageView.width / 2f
+                    imageView.pivotY = imageView.height / 2f
+                }
+                .start()
+            closeButton.animate().alpha(1f).setDuration(250).setStartDelay(150).start()
         }
     }
 

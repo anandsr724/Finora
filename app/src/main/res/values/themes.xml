@@ -173,4 +173,20 @@
         <item name="fontFamily">@font/inter</item>
         <item name="android:textAllCaps">false</item>
     </style>
+
+    <!-- Multi-select "what went wrong" tag in the OCR feedback dialog — glass pill, checked
+         state tints toward primary instead of showing Material's default check icon (Stitch's
+         reference has no checkmark, just a border/text color change). -->
+    <style name="Widget.Finora.Chip.Feedback" parent="Widget.MaterialComponents.Chip.Filter">
+        <item name="chipBackgroundColor">@color/feedback_chip_bg</item>
+        <item name="chipStrokeColor">@color/feedback_chip_stroke</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="chipCornerRadius">999dp</item>
+        <item name="android:textColor">@color/feedback_chip_text</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="rippleColor">@android:color/transparent</item>
+        <item name="android:textSize">12sp</item>
+        <item name="fontFamily">@font/inter</item>
+        <item name="chipMinHeight">36dp</item>
+    </style>
 </resources>

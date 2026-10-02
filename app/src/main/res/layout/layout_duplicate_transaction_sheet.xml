@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:glassLevel="level3"
+    app:glassCornerRadius="24dp"
+    app:glassTopCornersOnly="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="24dp">
+
+        <!-- Drag handle -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="4dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/shape_drag_handle" />
+
+        <!-- Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="4dp">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_warning"
+                android:tint="@color/color_expense"
+                android:contentDescription="@null" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Possible Duplicate"
+                android:textAppearance="@style/TextAppearance.Finora.BodyLg"
+                android:textStyle="bold"
+                android:textColor="?attr/colorOnSurface" />
+
+            <ImageButton
+                android:id="@+id/closeDuplicateSheetButton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/shape_circle"
+                android:src="@drawable/ic_close"
+                android:padding="8dp"
+                android:tint="?attr/colorOnSurfaceMuted"
+                android:contentDescription="Close" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/duplicateReasonText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+            android:textColor="?attr/colorOnSurfaceMuted" />
+
+        <!-- Already-saved transaction -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="16dp"
+            android:padding="14dp"
+            android:background="@drawable/neutral_surface_background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ALREADY SAVED"
+                android:textAppearance="@style/TextAppearance.Finora.LabelSm"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/existingAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/hanken_grotesk"
+                android:textColor="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/existingRecipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/existingMeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+        </LinearLayout>
+
+        <!-- New transaction -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="12dp"
+            android:padding="14dp"
+            android:background="@drawable/info_box_background">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NEW"
+                android:textAppearance="@style/TextAppearance.Finora.LabelSm"
+                android:textColor="@color/color_primary"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:id="@+id/newAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:fontFamily="@font/hanken_grotesk"
+                android:textColor="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/newRecipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurface" />
+
+            <TextView
+                android:id="@+id/newMeta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:textSize="12sp"
+                android:textColor="?attr/colorOnSurfaceMuted" />
+        </LinearLayout>
+
+        <!-- Actions -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/keepBothButton"
+            style="@style/Widget.Finora.Button.Primary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="20dp"
+            android:text="Keep Both"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/replaceExistingButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="10dp"
+            android:text="Replace Existing With New"
+            android:textSize="14sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/discardNewButton"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="4dp"
+            android:text="Discard New (Keep Existing Only)"
+            android:textColor="?attr/colorOnSurfaceMuted"
+            android:textAllCaps="false"
+            android:textSize="13sp" />
+    </LinearLayout>
+</com.example.expensetracker.ui.common.GlassCardView>

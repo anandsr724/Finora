@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Matches Stitch's "Feedback Dialog - Refined Flow" (Finora_v2 Dark project): a thumbs-up/
+     thumbs-down reaction pair, with a "what went wrong" chip picker + comment box that only
+     appears after thumbs-down is selected. See AddFragment.showOcrFeedbackDialog() for the
+     show/hide wiring — the expanded section starts GONE and is only revealed on a down vote. -->
 <com.example.expensetracker.ui.common.GlassCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -10,103 +14,188 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:padding="24dp">
+
+        <!-- Header -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How did we do?"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:fontFamily="@font/hanken_grotesk"
+            android:textColor="?attr/colorOnSurface" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Rate the accuracy of the extracted details"
-            android:textAppearance="@style/TextAppearance.Finora.BodyMd"
+            android:gravity="center"
+            android:textSize="13sp"
             android:textColor="?attr/colorOnSurfaceMuted"
-            android:layout_marginBottom="16dp" />
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="24dp" />
 
-        <com.google.android.material.button.MaterialButtonToggleGroup
-            android:id="@+id/ratingToggleGroup"
+        <!-- Reaction buttons -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:singleSelection="true"
-            app:selectionRequired="false"
-            android:layout_marginBottom="16dp">
+            android:orientation="horizontal">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRatingCorrect"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            <FrameLayout
+                android:id="@+id/thumbUpButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_weight="1"
-                android:text="Correct"
-                android:textSize="12sp"
-                android:textColor="@color/color_income"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:icon="@drawable/ic_check"
-                app:iconTint="@color/color_income"
-                app:iconSize="16dp"
-                app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:backgroundTint="@color/color_income_container"
-                app:strokeColor="@color/color_income"
-                app:strokeWidth="1dp" />
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/reaction_button_bg"
+                android:clickable="true"
+                android:focusable="true">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRatingPartial"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                <ImageView
+                    android:id="@+id/thumbUpIcon"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_thumb_up"
+                    android:tint="?attr/colorOnSurfaceMuted"
+                    android:contentDescription="Good" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:id="@+id/thumbDownButton"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="64dp"
                 android:layout_weight="1"
-                android:text="Partial"
-                android:textSize="12sp"
-                android:textColor="?attr/colorOnSurface"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:backgroundTint="?attr/colorGlassFillL2"
-                app:strokeColor="?attr/colorGlassBorderBright"
-                app:strokeWidth="1dp" />
+                android:layout_marginStart="8dp"
+                android:background="@drawable/reaction_button_bg"
+                android:clickable="true"
+                android:focusable="true">
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnRatingIncorrect"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Incorrect"
-                android:textSize="12sp"
-                android:textColor="@color/color_expense"
-                android:insetTop="0dp"
-                android:insetBottom="0dp"
-                app:icon="@drawable/ic_close"
-                app:iconTint="@color/color_expense"
-                app:iconSize="16dp"
-                app:iconGravity="textStart"
-                app:iconPadding="4dp"
-                app:backgroundTint="@color/color_expense_container"
-                app:strokeColor="@color/color_expense"
-                app:strokeWidth="1dp" />
+                <ImageView
+                    android:id="@+id/thumbDownIcon"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_thumb_down"
+                    android:tint="?attr/colorOnSurfaceMuted"
+                    android:contentDescription="Needs work" />
+            </FrameLayout>
+        </LinearLayout>
 
-        </com.google.android.material.button.MaterialButtonToggleGroup>
-
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Expanded feedback state — shown only after thumbs-down -->
+        <LinearLayout
+            android:id="@+id/expandedFeedbackSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Comments (optional)"
-            android:textColorHint="?attr/colorOnSurfaceFaint"
-            app:hintTextColor="?attr/colorOnSurfaceFaint"
-            app:boxBackgroundMode="none">
+            android:orientation="vertical"
+            android:layout_marginTop="20dp"
+            android:visibility="gone">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="What went wrong?"
+                android:textSize="13sp"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:layout_marginBottom="12dp" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/issueChipGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:singleLine="false"
+                app:chipSpacingHorizontal="8dp"
+                app:chipSpacingVertical="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWrongAmount"
+                    style="@style/Widget.Finora.Chip.Feedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wrong transaction amount" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWrongRecipient"
+                    style="@style/Widget.Finora.Chip.Feedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Wrong recipient" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipWrongCategory"
+                    style="@style/Widget.Finora.Chip.Feedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Incorrect category" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipOther"
+                    style="@style/Widget.Finora.Chip.Feedback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Other" />
+            </com.google.android.material.chip.ChipGroup>
+
+            <EditText
                 android:id="@+id/etFeedbackComment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/glass_input_well_background"
-                android:padding="12dp"
+                android:padding="14dp"
                 android:inputType="textMultiLine"
                 android:minLines="2"
                 android:maxLines="4"
                 android:gravity="top"
+                android:hint="Additional details (optional)"
+                android:textSize="13sp"
                 android:textColor="?attr/colorOnSurface"
                 android:textColorHint="?attr/colorOnSurfaceFaint" />
+        </LinearLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+        <!-- Footer -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="24dp">
 
+            <TextView
+                android:id="@+id/btnFeedbackSkip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Skip"
+                android:textSize="14sp"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:background="?attr/selectableItemBackground"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:clickable="true"
+                android:focusable="true" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnFeedbackSubmit"
+                style="@style/Widget.Finora.Button.Primary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:insetTop="0dp"
+                android:insetBottom="0dp"
+                android:paddingStart="28dp"
+                android:paddingEnd="28dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:text="Submit"
+                android:textSize="14sp" />
+        </LinearLayout>
     </LinearLayout>
 </com.example.expensetracker.ui.common.GlassCardView>
