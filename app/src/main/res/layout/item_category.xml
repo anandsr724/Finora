@@ -19,6 +19,7 @@
 
         <!-- Category Icon -->
         <com.google.android.material.card.MaterialCardView
+            android:id="@+id/categoryEmojiCard"
             android:layout_width="48dp"
             android:layout_height="48dp"
             app:cardCornerRadius="24dp"

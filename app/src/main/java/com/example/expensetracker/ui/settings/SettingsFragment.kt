@@ -30,10 +30,10 @@ import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.R
 import com.example.expensetracker.ui.common.applyGlassBlur
-import com.example.expensetracker.ui.common.applyVividGlow
 import com.example.expensetracker.ui.common.themeColor
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class SettingsFragment : Fragment() {
@@ -236,21 +236,13 @@ class SettingsFragment : Fragment() {
         preview.forEachIndexed { index, category ->
             val cell = layoutInflater.inflate(R.layout.item_settings_category_preview, categoryPreviewContainer, false)
             val tint = ContextCompat.getColor(requireContext(), CategoryIconHelper.getIconTintColorRes(category.id))
-            // Icon must contrast against its own badge fill, not match it — using the same
-            // `tint` for both (as before) made the icon glyph disappear into its background.
-            val previewIcon = cell.findViewById<ImageView>(R.id.previewIcon).apply {
+            // Same circular/~15%-alpha-background/colored-icon treatment as TransactionHistoryAdapter,
+            // so a category's badge looks identical here and in History.
+            cell.findViewById<ImageView>(R.id.previewIcon).apply {
                 setImageResource(CategoryIconHelper.getIconResId(category))
-                setColorFilter(Color.WHITE)
+                setColorFilter(tint)
             }
-            cell.findViewById<View>(R.id.previewIconBg).apply {
-                (background as? GradientDrawable)?.setColor(withAlpha(tint, 0xFF))
-                applyVividGlow(tint, cornerRadiusDp = 12f)
-                // Elevation affects draw order between siblings regardless of XML declaration
-                // order — giving this background View elevation (for the glow shadow) made it
-                // draw on top of the icon ImageView, hiding the glyph entirely. Bump the icon's
-                // own elevation just above it so it stays on top.
-                previewIcon.elevation = elevation + 1f
-            }
+            (cell.findViewById<View>(R.id.previewIconBg).background as? GradientDrawable)?.setColor(withAlpha(tint, 0x26))
             cell.findViewById<android.widget.TextView>(R.id.previewName).text = category.name
             if (index < preview.size - 1) {
                 (cell.layoutParams as? LinearLayout.LayoutParams)?.marginEnd = (8 * resources.displayMetrics.density).toInt()
@@ -611,6 +603,7 @@ class SettingsFragment : Fragment() {
 
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             val emoji: ImageView = itemView.findViewById(R.id.categoryEmoji)
+            val emojiCard: MaterialCardView = itemView.findViewById(R.id.categoryEmojiCard)
             val name: TextView = itemView.findViewById(R.id.categoryNameText)
             val type: TextView = itemView.findViewById(R.id.categoryTypeText)
             val editButton: ImageButton = itemView.findViewById(R.id.editButton)
@@ -625,10 +618,11 @@ class SettingsFragment : Fragment() {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val category = categories[position]
+            val tint = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(category.id))
             holder.emoji.setImageResource(CategoryIconHelper.getIconResId(category))
-            holder.emoji.setColorFilter(
-                ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(category.id))
-            )
+            holder.emoji.setColorFilter(tint)
+            // Same circular/~15%-alpha-background/colored-icon treatment as TransactionHistoryAdapter.
+            holder.emojiCard.setCardBackgroundColor(withAlpha(tint, 0x26))
             holder.name.text = category.name
             holder.type.text = "DEFAULT"
             holder.type.visibility = if (category.isPredefined) View.VISIBLE else View.GONE

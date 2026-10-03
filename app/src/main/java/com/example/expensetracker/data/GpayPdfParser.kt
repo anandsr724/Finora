@@ -25,12 +25,12 @@ class GpayPdfParser : StatementParser {
         IDLE, HAVE_DATE, HAVE_TIME, HAVE_DIRECTION, HAVE_TXNID, HAVE_PAYBY
     }
 
-    override fun parse(context: Context, uri: Uri): List<ParsedTransaction> {
+    override fun parse(context: Context, uri: Uri, password: String?): List<ParsedTransaction> {
         PDFBoxResourceLoader.init(context)
         val result = mutableListOf<ParsedTransaction>()
 
         context.contentResolver.openInputStream(uri)?.use { stream ->
-            val doc  = PDDocument.load(stream)
+            val doc  = PDDocument.load(stream, password ?: "")
             val text = PDFTextStripper().getText(doc)
             doc.close()
 

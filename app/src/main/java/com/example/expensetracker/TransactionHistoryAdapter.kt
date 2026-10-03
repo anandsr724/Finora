@@ -37,6 +37,7 @@ class TransactionHistoryAdapter(
         val bankTextView: TextView = itemView.findViewById(R.id.transaction_bank)
         val categoryBadgeContainer: LinearLayout = itemView.findViewById(R.id.category_badge_container)
         val categoryIcon: ImageView = itemView.findViewById(R.id.category_icon)
+        val categoryIconGrid: LinearLayout = itemView.findViewById(R.id.category_icon_grid)
         val categoryIconContainer: FrameLayout = itemView.findViewById(R.id.category_icon_container)
         val noteTextView: TextView = itemView.findViewById(R.id.transaction_note)
     }
@@ -102,10 +103,23 @@ class TransactionHistoryAdapter(
             holder.bankTextView.text = formattedDate
         }
 
-        // Category icon — colored circular badge tinted to the category's semantic color
-        holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(iconCategoryId))
-        holder.categoryIcon.setColorFilter(categoryColor)
-        (holder.categoryIconContainer.background as? GradientDrawable)?.setColor(withAlpha(categoryColor, 0x26))
+        // Category icon — a single colored icon normally; for a split, a folder-style cluster of
+        // up to 4 of its own category icons (Android home-screen folder preview style) instead
+        // of one generic "Other" icon.
+        if (isSplitRow) {
+            holder.categoryIcon.visibility = View.GONE
+            holder.categoryIconGrid.visibility = View.VISIBLE
+            val clusterIds = tx.categoryAmountBreakdown().map { it.first }.take(4)
+            layoutCategoryIconCluster(holder.categoryIconGrid, clusterIds)
+            (holder.categoryIconContainer.background as? GradientDrawable)
+                ?.setColor(holder.itemView.context.themeColor(R.attr.colorGlassFillL2))
+        } else {
+            holder.categoryIcon.visibility = View.VISIBLE
+            holder.categoryIconGrid.visibility = View.GONE
+            holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(iconCategoryId))
+            holder.categoryIcon.setColorFilter(categoryColor)
+            (holder.categoryIconContainer.background as? GradientDrawable)?.setColor(withAlpha(categoryColor, 0x26))
+        }
 
         // Note
         if (tx.note.isNotEmpty()) {
@@ -197,4 +211,59 @@ class TransactionHistoryAdapter(
 
     private fun makeOverflowPill(ctx: android.content.Context, count: Int): TextView =
         makeCategoryPill(ctx, "+$count", ctx.themeColor(R.attr.colorOnSurfaceMuted))
+
+    /**
+     * Fills [container] with a fixed 2x2 cluster of small per-category icon badges — the row
+     * icon's "folder preview" for a split transaction, mirroring the Android home-screen folder
+     * icon's preview of the apps inside it. At most 4 of [categoryIds] are shown (callers should
+     * already have capped the list); fewer than 4 leaves the remaining cell(s) empty rather than
+     * reflowing, same as a folder preview with fewer than 4 apps.
+     */
+    private fun layoutCategoryIconCluster(container: LinearLayout, categoryIds: List<String>) {
+        container.removeAllViews()
+        val ctx = container.context
+        val density = ctx.resources.displayMetrics.density
+        val cellSize = (17 * density).toInt()
+        val cellMargin = (1.5f * density).toInt()
+
+        fun makeCell(catId: String?): View {
+            val cell = FrameLayout(ctx).apply {
+                layoutParams = LinearLayout.LayoutParams(cellSize, cellSize).apply {
+                    marginStart = cellMargin
+                    marginEnd = cellMargin
+                    topMargin = cellMargin
+                    bottomMargin = cellMargin
+                }
+            }
+            if (catId == null) {
+                cell.visibility = View.INVISIBLE
+                return cell
+            }
+            val color = ContextCompat.getColor(ctx, CategoryIconHelper.getIconTintColorRes(catId))
+            cell.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(withAlpha(color, 0x33))
+            }
+            cell.addView(ImageView(ctx).apply {
+                layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT)
+                val pad = (3 * density).toInt()
+                setPadding(pad, pad, pad, pad)
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                setImageResource(CategoryIconHelper.getIconResId(catId))
+                setColorFilter(color)
+            })
+            return cell
+        }
+
+        val padded: List<String?> = categoryIds + List((4 - categoryIds.size).coerceAtLeast(0)) { null }
+        val row1 = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL }
+        row1.addView(makeCell(padded.getOrNull(0)))
+        row1.addView(makeCell(padded.getOrNull(1)))
+        val row2 = LinearLayout(ctx).apply { orientation = LinearLayout.HORIZONTAL }
+        row2.addView(makeCell(padded.getOrNull(2)))
+        row2.addView(makeCell(padded.getOrNull(3)))
+
+        container.addView(row1)
+        container.addView(row2)
+    }
 }

@@ -18,7 +18,7 @@ class SbiXlsxParser : StatementParser {
         private const val TAG = "SbiXlsxParser"
     }
 
-    override fun parse(context: Context, uri: Uri): List<ParsedTransaction> {
+    override fun parse(context: Context, uri: Uri, password: String?): List<ParsedTransaction> {
         val stream = context.contentResolver.openInputStream(uri)
             ?: throw IllegalStateException("Cannot open URI: $uri")
         return stream.use { parseZip(it) }

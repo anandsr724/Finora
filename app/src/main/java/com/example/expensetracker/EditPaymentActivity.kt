@@ -45,6 +45,7 @@ import com.example.expensetracker.ui.common.showCategoryPickerSheet
 import com.example.expensetracker.data.SplitBreakdownCodec
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -342,6 +343,46 @@ class EditPaymentActivity : AppCompatActivity() {
         dateTimeEditText.setOnClickListener { showDateTimePicker() }
 
         categorySelector.setOnClickListener { showCategoryPicker() }
+
+        setupAmountFormatting()
+    }
+
+    /** Live-formats [amountEditText] with Indian-style thousands separators (e.g. "2,00,000") as
+     *  the user types, matching the grouping used everywhere else amounts are displayed in this
+     *  app. Only cosmetic — [saveAndReturn] already strips commas back out before persisting. */
+    private fun setupAmountFormatting() {
+        // inputType="numberDecimal" attaches a digits-only key listener that silently strips any
+        // character outside 0-9/"." — including commas inserted programmatically by the
+        // TextWatcher below, not just ones typed by the user. Widen it to allow ",".
+        amountEditText.keyListener = android.text.method.DigitsKeyListener.getInstance("0123456789.,")
+
+        val fmt = NumberFormat.getNumberInstance(Locale("en", "IN"))
+        amountEditText.addTextChangedListener(object : android.text.TextWatcher {
+            private var isFormatting = false
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (isFormatting || s == null) return
+                isFormatting = true
+
+                val raw = s.toString()
+                val digitsOnly = raw.replace(",", "")
+                val dotIndex = digitsOnly.indexOf('.')
+                val intPart = if (dotIndex >= 0) digitsOnly.substring(0, dotIndex) else digitsOnly
+                val fracPart = if (dotIndex >= 0) digitsOnly.substring(dotIndex) else ""
+
+                val formatted = (intPart.toLongOrNull()?.let { fmt.format(it) } ?: intPart) + fracPart
+
+                if (formatted != raw) {
+                    val cursorFromEnd = raw.length - amountEditText.selectionStart
+                    s.replace(0, s.length, formatted)
+                    amountEditText.setSelection((formatted.length - cursorFromEnd).coerceIn(0, formatted.length))
+                }
+                isFormatting = false
+            }
+        })
     }
 
     private fun loadCategories() {

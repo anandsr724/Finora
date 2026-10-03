@@ -23,12 +23,12 @@ class SbiPdfParser : StatementParser {
         private val AMOUNT_START = Regex("""\s{2,}-\s""")
     }
 
-    override fun parse(context: Context, uri: Uri): List<ParsedTransaction> {
+    override fun parse(context: Context, uri: Uri, password: String?): List<ParsedTransaction> {
         PDFBoxResourceLoader.init(context)
         val result = mutableListOf<ParsedTransaction>()
 
         context.contentResolver.openInputStream(uri)?.use { stream ->
-            val doc  = PDDocument.load(stream)
+            val doc  = PDDocument.load(stream, password ?: "")
             // sortByPosition=true produces row-by-row layout (like pdftotext -layout)
             // rather than column-by-column which is the default for generated table PDFs
             val stripper = PDFTextStripper().apply { sortByPosition = true }

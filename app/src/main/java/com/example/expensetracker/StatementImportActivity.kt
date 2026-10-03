@@ -37,6 +37,8 @@ import com.example.expensetracker.data.StatementType
 import com.example.expensetracker.ui.common.DuplicateResolution
 import com.example.expensetracker.ui.common.showBulkDuplicateResolutionSheet
 import com.example.expensetracker.ui.common.showDuplicateResolutionSheet
+import com.example.expensetracker.ui.common.showStatementPasswordSheet
+import com.tom_roush.pdfbox.pdmodel.encryption.InvalidPasswordException
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -220,13 +222,13 @@ class StatementImportActivity : AppCompatActivity() {
 
     // ── Parsing ─────────────────────────────────────────────────────────────────
 
-    private fun parseStatementAsync(uri: Uri) {
+    private fun parseStatementAsync(uri: Uri, password: String? = null) {
         showState(STATE_PARSING)
         parsingStatusText.text = "Reading statement..."
 
         Thread {
             try {
-                val format = StatementFormat.detect(this, uri)
+                val format = StatementFormat.detect(this, uri, password)
 
                 if (format == StatementType.UNKNOWN) {
                     runOnUiThread {
@@ -242,7 +244,7 @@ class StatementImportActivity : AppCompatActivity() {
                     else -> { runOnUiThread { showError("Unrecognized format") }; return@Thread }
                 }
 
-                val transactions = parser.parse(this, uri)
+                val transactions = parser.parse(this, uri, password)
                 Log.d(TAG, "Parsed ${transactions.size} transactions (format=$format)")
 
                 runOnUiThread {
@@ -252,6 +254,10 @@ class StatementImportActivity : AppCompatActivity() {
                         showReview(transactions)
                     }
                 }
+            } catch (e: InvalidPasswordException) {
+                // A wrong password lands here too (same exception) — isRetry distinguishes the
+                // sheet's wording between "this file needs a password" and "that one was wrong".
+                runOnUiThread { showPasswordPrompt(uri, isRetry = password != null) }
             } catch (e: OutOfMemoryError) {
                 Log.e(TAG, "OOM during parsing", e)
                 runOnUiThread { showError("File too large to process.\nTry a statement with a shorter date range.") }
@@ -260,6 +266,17 @@ class StatementImportActivity : AppCompatActivity() {
                 runOnUiThread { showError("Could not read file:\n${e.localizedMessage}") }
             }
         }.start()
+    }
+
+    private fun showPasswordPrompt(uri: Uri, isRetry: Boolean) {
+        // Back to the upload screen (the file stays selected) so the sheet floats over something
+        // sensible rather than a parsing spinner, since parsing has in fact stopped.
+        showState(STATE_UPLOAD)
+        showStatementPasswordSheet(
+            this, layoutInflater, selectedFileName.text.toString(), isIncorrectRetry = isRetry,
+            onSubmit = { password -> parseStatementAsync(uri, password) },
+            onPickDifferentFile = { pickFile() }
+        )
     }
 
     private fun showReview(transactions: List<ParsedTransaction>) {
