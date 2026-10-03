@@ -494,12 +494,24 @@
                                 android:textColor="?attr/colorOnSurfaceFaint" />
 
                             <ImageView
+                                android:id="@+id/categorySelectorChevron"
                                 android:layout_width="20dp"
                                 android:layout_height="20dp"
                                 android:src="@drawable/ic_chevron_down"
                                 android:contentDescription="Select"
                                 android:tint="?attr/colorOnSurfaceFaint" />
                         </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/categorySplitHintText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:layout_marginStart="4dp"
+                            android:text="This transaction is split across categories — use Edit Split to change categories."
+                            android:textSize="12sp"
+                            android:textColor="?attr/colorOnSurfaceMuted"
+                            android:visibility="gone" />
                     </LinearLayout>
 
                     <!-- Payment Method -->

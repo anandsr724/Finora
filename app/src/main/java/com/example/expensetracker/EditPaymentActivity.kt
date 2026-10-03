@@ -36,16 +36,15 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.core.content.ContextCompat
 import com.example.expensetracker.ui.common.themeColor
 import com.example.expensetracker.ui.common.applyGlassBlur
 import com.example.expensetracker.ui.common.applyVividGlow
 import com.example.expensetracker.ui.common.ZoomableImageView
+import com.example.expensetracker.ui.common.showCategoryPickerSheet
+import com.example.expensetracker.data.SplitBreakdownCodec
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
-import com.google.android.material.card.MaterialCardView
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -62,6 +61,8 @@ class EditPaymentActivity : AppCompatActivity() {
     private lateinit var categorySelectorIconBg: View
     private lateinit var categorySelectorEmoji: ImageView
     private lateinit var categorySelectorName: TextView
+    private lateinit var categorySelectorChevron: ImageView
+    private lateinit var categorySplitHintText: TextView
     private lateinit var currencyButton: TextView
     private lateinit var saveButton: Button
     private lateinit var backButton: ImageButton
@@ -71,6 +72,8 @@ class EditPaymentActivity : AppCompatActivity() {
     private var selectedCategoryId = "cat_other"
     private var selectedCurrency = "INR"
     private var selectedType = "expense" // "expense" or "income"
+    private var originalAmount = ""
+    private var originalSplitBreakdown = ""
     private lateinit var typeExpenseButton: MaterialButton
     private lateinit var typeIncomeButton: MaterialButton
 
@@ -306,6 +309,8 @@ class EditPaymentActivity : AppCompatActivity() {
         categorySelectorIconBg = findViewById(R.id.categorySelectorIconBg)
         categorySelectorEmoji = findViewById(R.id.categorySelectorEmoji)
         categorySelectorName = findViewById(R.id.categorySelectorName)
+        categorySelectorChevron = findViewById(R.id.categorySelectorChevron)
+        categorySplitHintText = findViewById(R.id.categorySplitHintText)
         currencyButton = findViewById(R.id.currencyButton)
         saveButton = findViewById(R.id.saveButton)
         backButton = findViewById(R.id.backButton)
@@ -365,38 +370,13 @@ class EditPaymentActivity : AppCompatActivity() {
     }
 
     private fun showCategoryPicker() {
-        val sheet = BottomSheetDialog(this)
-        val sheetView = layoutInflater.inflate(R.layout.layout_category_picker_sheet, null)
-        sheet.setContentView(sheetView)
-
-        val recycler = sheetView.findViewById<RecyclerView>(R.id.categoryPickerRecyclerView)
-        recycler.layoutManager = GridLayoutManager(this, 3)
-        val adapter = CategoryPickerAdapter(categories, selectedCategoryId) { category ->
+        showCategoryPickerSheet(
+            this, layoutInflater, categories, selectedCategoryId,
+            onCreateNewCategory = { showAddNewCategoryDialog() }
+        ) { category ->
             selectedCategoryId = category.id
             updateCategorySelectorDisplay()
-            sheet.dismiss()
         }
-        recycler.adapter = adapter
-
-        sheetView.findViewById<EditText>(R.id.categoryPickerSearchInput).addTextChangedListener(object : android.text.TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                adapter.filter(s?.toString().orEmpty())
-            }
-            override fun afterTextChanged(s: android.text.Editable?) {}
-        })
-
-        sheetView.findViewById<ImageButton>(R.id.closePickerButton).setOnClickListener {
-            sheet.dismiss()
-        }
-
-        sheetView.findViewById<MaterialButton>(R.id.createCategoryButton).setOnClickListener {
-            sheet.dismiss()
-            showAddNewCategoryDialog()
-        }
-
-        sheet.applyGlassBlur()
-        sheet.show()
     }
 
     private fun showAddNewCategoryDialog() {
@@ -485,9 +465,11 @@ class EditPaymentActivity : AppCompatActivity() {
         val note = intent.getStringExtra("note") ?: ""
         val bankInfo = intent.getStringExtra("bankInfo") ?: ""
         selectedCategoryId = intent.getStringExtra("category") ?: "cat_other"
+        originalAmount = amount.replace("₹", "").replace(",", "").trim()
+        originalSplitBreakdown = intent.getStringExtra("splitBreakdown") ?: ""
         // currency already loaded in initializeViews(); button already shows correct symbol
 
-        amountEditText.setText(amount.replace("₹", "").replace(",", "").trim())
+        amountEditText.setText(originalAmount)
         recipientEditText.setText(recipient)
         noteEditText.setText(note)
         transactionIdEditText.setText(transactionId)
@@ -495,6 +477,13 @@ class EditPaymentActivity : AppCompatActivity() {
         val paymentMethods = arrayOf("Google Pay", "PhonePe", "ICICI Bank", "HDFC Bank", "Paytm", "Other")
         val paymentIndex = paymentMethods.indexOfFirst { it.equals(bankInfo, ignoreCase = true) }
         bankEditText.setSelection(if (paymentIndex != -1) paymentIndex else paymentMethods.size - 1)
+
+        if (SplitBreakdownCodec.decode(originalSplitBreakdown).size >= 2) {
+            categorySelector.isEnabled = false
+            categorySelector.alpha = 0.6f
+            categorySelectorChevron.visibility = View.GONE
+            categorySplitHintText.visibility = View.VISIBLE
+        }
 
         updateCategorySelectorDisplay()
 
@@ -537,6 +526,12 @@ class EditPaymentActivity : AppCompatActivity() {
             return
         }
 
+        val wasSplit = SplitBreakdownCodec.decode(originalSplitBreakdown).size >= 2
+        val originalNumericAmount = originalAmount.toDoubleOrNull() ?: numericAmount
+        val amountChanged = Math.round(numericAmount * 100) != Math.round(originalNumericAmount * 100)
+        val splitCleared = wasSplit && amountChanged
+        val resultSplitBreakdown = if (splitCleared) "" else originalSplitBreakdown
+
         val resultIntent = Intent().apply {
             putExtra("amount", updatedAmount)
             putExtra("recipient", updatedRecipient)
@@ -547,6 +542,8 @@ class EditPaymentActivity : AppCompatActivity() {
             putExtra("category", updatedCategory)
             putExtra("currency", selectedCurrency)
             putExtra("type", selectedType)
+            putExtra("splitBreakdown", resultSplitBreakdown)
+            putExtra("splitCleared", splitCleared)
             val editingId = intent.getStringExtra("editingId")
             if (editingId != null) putExtra("editingId", editingId)
         }
@@ -664,67 +661,4 @@ class EditPaymentActivity : AppCompatActivity() {
         } catch (e: Exception) { /* keep defaults */ }
     }
 
-    // Adapter for the category picker grid (single-select, with local name search/filter)
-    private class CategoryPickerAdapter(
-        private val allCategories: List<Category>,
-        private val selectedId: String,
-        private val onSelect: (Category) -> Unit
-    ) : RecyclerView.Adapter<CategoryPickerAdapter.ViewHolder>() {
-
-        private var categories: List<Category> = allCategories
-
-        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            val card: MaterialCardView = itemView.findViewById(R.id.categoryPickerCard)
-            val iconCard: MaterialCardView = itemView.findViewById(R.id.categoryIconCard)
-            val icon: ImageView = itemView.findViewById(R.id.categoryPickerIcon)
-            val name: TextView = itemView.findViewById(R.id.categoryPickerName)
-        }
-
-        fun filter(query: String) {
-            categories = if (query.isBlank()) allCategories
-                else allCategories.filter { it.name.contains(query, ignoreCase = true) }
-            notifyDataSetChanged()
-        }
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-            val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_category_picker, parent, false)
-            return ViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val category = categories[position]
-            val isSelected = category.id == selectedId
-            val ctx = holder.itemView.context
-            val tint = ContextCompat.getColor(ctx, CategoryIconHelper.getIconTintColorRes(category.id))
-
-            holder.icon.setImageResource(CategoryIconHelper.getIconResId(category.id))
-            holder.name.text = category.name
-
-            if (isSelected) {
-                holder.card.strokeColor = tint
-                holder.card.strokeWidth = (2 * ctx.resources.displayMetrics.density).toInt()
-                holder.card.setCardBackgroundColor(ctx.themeColor(R.attr.colorGlassFillL3))
-                holder.iconCard.setCardBackgroundColor(tint)
-                holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(
-                    ContextCompat.getColor(ctx, R.color.color_on_primary)
-                )
-                holder.name.setTextColor(ctx.themeColor(R.attr.colorOnSurface))
-            } else {
-                holder.card.strokeColor = ctx.themeColor(R.attr.colorGlassBorder)
-                holder.card.strokeWidth = (1 * ctx.resources.displayMetrics.density).toInt()
-                holder.card.setCardBackgroundColor(ctx.themeColor(R.attr.colorGlassFillL2))
-                holder.iconCard.setCardBackgroundColor(withAlpha(tint, 0x26))
-                holder.icon.imageTintList = android.content.res.ColorStateList.valueOf(tint)
-                holder.name.setTextColor(ctx.themeColor(R.attr.colorOnSurface))
-            }
-
-            holder.card.setOnClickListener { onSelect(category) }
-        }
-
-        override fun getItemCount() = categories.size
-
-        private fun withAlpha(color: Int, alpha: Int): Int =
-            (color and 0x00FFFFFF) or (alpha shl 24)
-    }
 }

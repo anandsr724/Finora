@@ -43,20 +43,15 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <!-- Category Badge -->
-            <TextView
-                android:id="@+id/category_badge"
-                android:layout_width="wrap_content"
+            <!-- Category Badge(s) — a single pill normally, or one pill per split category
+                 (plus a "+N" overflow pill if they don't all fit) when the transaction is split.
+                 Populated in code; see TransactionHistoryAdapter. -->
+            <LinearLayout
+                android:id="@+id/category_badge_container"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/color_primary"
-                android:background="@drawable/category_badge_background"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
-                android:layout_marginBottom="4dp"
-                android:text="Category" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="4dp" />
 
             <!-- Recipient -->
             <TextView

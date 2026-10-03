@@ -21,11 +21,12 @@ data class PaymentTransaction(
     val category: String = "cat_other",
     val createdAt: String = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
     val currency: String = "INR",
-    val type: String = "expense" // "expense" or "income"
+    val type: String = "expense", // "expense" or "income"
+    val splitBreakdown: String = "" // "" = not split; else a JSON array of {category, amount} — see data/TransactionSplit.kt
 ) {
     // Convert to CSV row
     fun toCsvRow(): String {
-        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt, currency, type)
+        return listOf(id, amount, recipient, note, dateTime, transactionId, bankInfo, category, createdAt, currency, type, splitBreakdown)
             .joinToString(",") { escapeCsvField(it) }
     }
 
@@ -55,7 +56,8 @@ data class PaymentTransaction(
                         category = if (fields.size > 7) fields[7] else "cat_other",
                         createdAt = if (fields.size > 8) fields[8] else SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date()),
                         currency = if (fields.size > 9) fields[9] else "INR",
-                        type = if (fields.size > 10) fields[10] else "expense"
+                        type = if (fields.size > 10) fields[10] else "expense",
+                        splitBreakdown = if (fields.size > 11) fields[11] else ""
                     )
                 } else null
             } catch (e: Exception) {
@@ -111,7 +113,7 @@ data class PaymentTransaction(
         }
 
         fun getCsvHeader(): String {
-            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt,Currency,Type"
+            return "ID,Amount,Recipient,Note,DateTime,TransactionID,BankInfo,Category,CreatedAt,Currency,Type,SplitBreakdown"
         }
     }
 }

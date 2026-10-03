@@ -29,6 +29,7 @@ import com.example.expensetracker.data.DuplicateDetector
 import com.example.expensetracker.ui.common.DuplicateResolution
 import com.example.expensetracker.ui.common.GlassCardView
 import com.example.expensetracker.ui.common.showDuplicateResolutionSheet
+import com.example.expensetracker.ui.common.showSplitTransactionSheet
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -63,12 +64,17 @@ class HomeFragment : Fragment() {
             val editingId = data.getStringExtra("editingId")
 
             if (editingId != null) {
+                val splitBreakdown = data.getStringExtra("splitBreakdown") ?: ""
                 val updatedTransaction = com.example.expensetracker.PaymentTransaction(
                     id = editingId, amount = amount, recipient = recipient, note = note,
                     dateTime = dateTime, transactionId = transactionId, bankInfo = bankInfo,
-                    category = category, currency = currency, type = type
+                    category = category, currency = currency, type = type,
+                    splitBreakdown = splitBreakdown
                 )
                 csvManager.updateTransaction(updatedTransaction)
+                if (data.getBooleanExtra("splitCleared", false)) {
+                    Toast.makeText(requireContext(), "Split removed — amount changed", Toast.LENGTH_SHORT).show()
+                }
                 view?.let { loadData(it) }
             } else {
                 val transaction = com.example.expensetracker.PaymentTransaction(
@@ -349,8 +355,21 @@ class HomeFragment : Fragment() {
             transaction,
             categoryManager,
             onEdit = { editTransaction(it) },
+            onSplit = { showSplitTransactionSheetFor(it) },
             onDelete = { confirmDeleteTransaction(it) }
         )
+    }
+
+    private fun showSplitTransactionSheetFor(transaction: PaymentTransaction) {
+        showSplitTransactionSheet(requireContext(), layoutInflater, transaction, categoryManager) { newBreakdown ->
+            csvManager.updateTransaction(transaction.copy(splitBreakdown = newBreakdown))
+            Toast.makeText(
+                requireContext(),
+                if (newBreakdown.isEmpty()) "Split removed" else "Split saved",
+                Toast.LENGTH_SHORT
+            ).show()
+            view?.let { loadData(it) }
+        }
     }
 
     private fun editTransaction(transaction: PaymentTransaction) {
@@ -365,6 +384,7 @@ class HomeFragment : Fragment() {
             putExtra("editingId", transaction.id)
             putExtra("currency", transaction.currency)
             putExtra("type", transaction.type)
+            putExtra("splitBreakdown", transaction.splitBreakdown)
         }
         editLauncher.launch(intent)
     }

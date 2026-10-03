@@ -65,6 +65,7 @@
             android:letterSpacing="-0.02" />
 
         <LinearLayout
+            android:id="@+id/detailCategoryBadgeContainer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -90,6 +91,35 @@
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextAppearance.Finora.LabelSm"
                 android:textColor="?attr/colorOnSurface" />
+        </LinearLayout>
+
+        <!-- Split category breakdown — shown instead of the single badge above when the
+             transaction has 2+ split category lines; rows populated in code. -->
+        <LinearLayout
+            android:id="@+id/detailSplitBreakdownContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="12dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/detailSplitBreakdownHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.Finora.LabelSm"
+                android:textColor="?attr/colorOnSurfaceMuted"
+                android:layout_marginBottom="8dp" />
+
+            <LinearLayout
+                android:id="@+id/detailSplitBreakdownList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/neutral_surface_background"
+                android:padding="14dp" />
         </LinearLayout>
     </LinearLayout>
 
@@ -277,15 +307,32 @@
             android:id="@+id/detailEditButton"
             style="@style/Widget.Finora.Button.Secondary"
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="6dp"
             android:text="Edit"
-            android:textSize="14sp"
+            android:textSize="12sp"
             app:icon="@drawable/ic_edit"
             app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconPadding="8dp"
+            app:iconSize="16dp"
+            app:iconPadding="6dp"
+            app:iconTint="?attr/colorOnSurface" />
+
+        <!-- Split / Edit Split button (glass ghost pill, label set dynamically in code) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/detailSplitButton"
+            style="@style/Widget.Finora.Button.Secondary"
+            android:layout_width="0dp"
+            android:layout_height="52dp"
+            android:layout_weight="1"
+            android:layout_marginStart="6dp"
+            android:layout_marginEnd="6dp"
+            android:text="Split"
+            android:textSize="12sp"
+            app:icon="@android:drawable/ic_menu_sort_by_size"
+            app:iconGravity="textStart"
+            app:iconSize="16dp"
+            app:iconPadding="6dp"
             app:iconTint="?attr/colorOnSurface" />
 
         <!-- Delete button (dark maroon destructive pill, matching Stitch's error palette) -->
@@ -293,17 +340,17 @@
             android:id="@+id/detailDeleteButton"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="52dp"
             android:layout_weight="1"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="6dp"
             android:text="Delete"
             android:textColor="@color/color_delete_text"
-            android:textSize="14sp"
+            android:textSize="12sp"
             android:textAllCaps="false"
             app:icon="@drawable/ic_delete"
             app:iconGravity="textStart"
-            app:iconSize="18dp"
-            app:iconPadding="8dp"
+            app:iconSize="16dp"
+            app:iconPadding="6dp"
             app:iconTint="@color/color_delete_text"
             app:backgroundTint="@color/color_delete_container"
             app:strokeColor="@color/color_delete_border"

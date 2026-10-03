@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_marginBottom="10dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="10dp"
+    android:paddingEnd="8dp"
+    android:background="@drawable/rounded_input_background">
+
+    <!-- Category chip — tap to reopen the category picker for this line -->
+    <LinearLayout
+        android:id="@+id/splitLineCategoryChip"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true">
+
+        <FrameLayout
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="10dp">
+
+            <View
+                android:id="@+id/splitLineIconBg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_rounded_square" />
+
+            <ImageView
+                android:id="@+id/splitLineIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="6dp"
+                android:scaleType="centerInside"
+                android:contentDescription="Category icon" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/splitLineCategoryName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Select category"
+            android:textSize="14sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="?attr/colorOnSurfaceFaint" />
+
+        <ImageView
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_marginStart="4dp"
+            android:src="@drawable/ic_chevron_down"
+            android:contentDescription="Change category"
+            android:tint="?attr/colorOnSurfaceFaint" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="1dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        android:background="?attr/colorGlassBorderBright" />
+
+    <EditText
+        android:id="@+id/splitLineAmountInput"
+        android:layout_width="78dp"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical|end"
+        android:hint="0.00"
+        android:background="@null"
+        android:inputType="numberDecimal"
+        android:maxLines="1"
+        android:textSize="15sp"
+        android:textColor="?attr/colorOnSurface"
+        android:textColorHint="?attr/colorOnSurfaceFaint" />
+
+    <ImageButton
+        android:id="@+id/splitLineRemoveButton"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="4dp"
+        android:background="@drawable/shape_circle"
+        android:src="@drawable/ic_close"
+        android:padding="6dp"
+        android:tint="?attr/colorOnSurfaceMuted"
+        android:contentDescription="Remove this category line" />
+</LinearLayout>

@@ -16,6 +16,7 @@ import com.example.expensetracker.CSVManager
 import com.example.expensetracker.CategoryIconHelper
 import com.example.expensetracker.CategoryManager
 import com.example.expensetracker.CurrencyManager
+import com.example.expensetracker.data.categoryAmountBreakdown
 import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.github.mikephil.charting.charts.LineChart
@@ -331,10 +332,10 @@ class AnalyticsFragment : Fragment() {
             momCard.visibility = View.GONE
         }
 
-        val categoryTotals = filteredTransactions.groupBy { it.category }
-            .mapValues { (_, txns) ->
-                txns.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
-            }
+        val categoryTotals = filteredTransactions
+            .flatMap { tx -> tx.categoryAmountBreakdown().map { (cat, amt) -> cat to CurrencyManager.convert(amt, tx.currency, defaultCurrency) } }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, amounts) -> amounts.sum() }
 
         val topCat = categoryTotals.maxByOrNull { it.value }
         if (topCat != null) {
@@ -351,10 +352,10 @@ class AnalyticsFragment : Fragment() {
 
     private fun updateCategoryChart(transactions: List<PaymentTransaction>) {
         val defaultCurrency = CurrencyManager.getDefault(requireContext())
-        val categoryTotals = transactions.groupBy { it.category }
-            .mapValues { (_, txns) ->
-                txns.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
-            }
+        val categoryTotals = transactions
+            .flatMap { tx -> tx.categoryAmountBreakdown().map { (cat, amt) -> cat to CurrencyManager.convert(amt, tx.currency, defaultCurrency) } }
+            .groupBy({ it.first }, { it.second })
+            .mapValues { (_, amounts) -> amounts.sum() }
             .toList().sortedByDescending { it.second }
 
         if (categoryTotals.isEmpty()) { categoryChartCard.visibility = View.GONE; return }
@@ -520,16 +521,22 @@ class AnalyticsFragment : Fragment() {
         }
 
         if (showByCategory) {
-            val categoryIds = allTransactions.map { it.category }.distinct()
+            val categoryIds = allTransactions.flatMap { it.categoryAmountBreakdown().map { p -> p.first } }.distinct()
             val dataSets = categoryIds.map { catId ->
                 val entries = monthRanges.mapIndexed { mIdx, (_, month, year) ->
-                    val total = allTransactions.filter { t ->
-                        t.category == catId && try {
-                            val d = dateFormat.parse(t.dateTime)
-                            d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
-                                    && calendar.get(Calendar.YEAR) == year
-                        } catch (e: Exception) { false }
-                    }.sumOf { CurrencyManager.convert(CurrencyManager.parseAmount(it.amount), it.currency, defaultCurrency) }
+                    val total = allTransactions
+                        .filter { t ->
+                            try {
+                                val d = dateFormat.parse(t.dateTime)
+                                d != null && calendar.apply { time = d }.get(Calendar.MONTH) == month
+                                        && calendar.get(Calendar.YEAR) == year
+                            } catch (e: Exception) { false }
+                        }
+                        .sumOf { t ->
+                            t.categoryAmountBreakdown()
+                                .filter { it.first == catId }
+                                .sumOf { (_, amt) -> CurrencyManager.convert(amt, t.currency, defaultCurrency) }
+                        }
                     Entry(mIdx.toFloat(), total.toFloat())
                 }
                 LineDataSet(entries, categoryManager.getCategoryById(catId)?.name ?: catId).apply {

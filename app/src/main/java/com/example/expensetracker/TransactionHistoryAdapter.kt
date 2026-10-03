@@ -1,14 +1,19 @@
 package com.example.expensetracker
 
 import android.graphics.drawable.GradientDrawable
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.example.expensetracker.data.SplitBreakdownCodec
+import com.example.expensetracker.data.categoryAmountBreakdown
+import com.example.expensetracker.data.isSplit
 import com.example.expensetracker.ui.common.themeColor
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -30,7 +35,7 @@ class TransactionHistoryAdapter(
         val recipientTextView: TextView = itemView.findViewById(R.id.transaction_recipient)
         val dateTextView: TextView = itemView.findViewById(R.id.transaction_time)
         val bankTextView: TextView = itemView.findViewById(R.id.transaction_bank)
-        val categoryBadge: TextView = itemView.findViewById(R.id.category_badge)
+        val categoryBadgeContainer: LinearLayout = itemView.findViewById(R.id.category_badge_container)
         val categoryIcon: ImageView = itemView.findViewById(R.id.category_icon)
         val categoryIconContainer: FrameLayout = itemView.findViewById(R.id.category_icon_container)
         val noteTextView: TextView = itemView.findViewById(R.id.transaction_note)
@@ -69,23 +74,36 @@ class TransactionHistoryAdapter(
             tx.dateTime
         }
 
-        val categoryDisplayName = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
-        val categoryColor = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(tx.category))
+        val isSplitRow = tx.isSplit()
+        val iconCategoryId = if (isSplitRow) "cat_other" else tx.category
+        val categoryColor = ContextCompat.getColor(holder.itemView.context, CategoryIconHelper.getIconTintColorRes(iconCategoryId))
 
         if (showCategoryBadge) {
-            holder.categoryBadge.visibility = View.VISIBLE
-            holder.categoryBadge.text = categoryDisplayName
-            holder.categoryBadge.setTextColor(categoryColor)
+            holder.categoryBadgeContainer.visibility = View.VISIBLE
+            val ctx = holder.itemView.context
+            if (isSplitRow) {
+                val pills = tx.categoryAmountBreakdown().map { (catId, _) ->
+                    val name = categoryManager?.getCategoryDisplayName(catId) ?: catId
+                    val color = ContextCompat.getColor(ctx, CategoryIconHelper.getIconTintColorRes(catId))
+                    name to color
+                }
+                layoutCategoryBadges(holder.categoryBadgeContainer, pills)
+            } else {
+                val name = categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
+                layoutCategoryBadges(holder.categoryBadgeContainer, listOf(name to categoryColor))
+            }
             holder.dateTextView.text = formattedDate
             holder.bankTextView.text = tx.bankInfo.ifEmpty { "N/A" }
         } else {
-            holder.categoryBadge.visibility = View.GONE
+            holder.categoryBadgeContainer.visibility = View.GONE
+            val categoryDisplayName = if (isSplitRow) "Split · ${SplitBreakdownCodec.decode(tx.splitBreakdown).size} categories"
+                else categoryManager?.getCategoryDisplayName(tx.category) ?: tx.category
             holder.dateTextView.text = categoryDisplayName
             holder.bankTextView.text = formattedDate
         }
 
         // Category icon — colored circular badge tinted to the category's semantic color
-        holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(tx.category))
+        holder.categoryIcon.setImageResource(CategoryIconHelper.getIconResId(iconCategoryId))
         holder.categoryIcon.setColorFilter(categoryColor)
         (holder.categoryIconContainer.background as? GradientDrawable)?.setColor(withAlpha(categoryColor, 0x26))
 
@@ -105,4 +123,78 @@ class TransactionHistoryAdapter(
 
     private fun withAlpha(color: Int, alpha: Int): Int =
         (color and 0x00FFFFFF) or (alpha shl 24)
+
+    /**
+     * Fills [container] with one pill per (name, color) in [items]. For a single item this is
+     * just today's single category badge. For several (a split transaction), all pills are
+     * added first, then — once the row has actually been laid out, so real measured widths are
+     * known — trimmed to however many fit the container's width, replacing the rest with a
+     * single "+N" overflow pill. A tag-based token guards against a stale trim running after the
+     * holder has been recycled and rebound to different data.
+     */
+    private fun layoutCategoryBadges(container: LinearLayout, items: List<Pair<String, Int>>) {
+        container.removeAllViews()
+        val ctx = container.context
+
+        if (items.size <= 1) {
+            items.forEach { (name, color) -> container.addView(makeCategoryPill(ctx, name, color)) }
+            container.tag = null
+            return
+        }
+
+        val token = Any()
+        container.tag = token
+        val pills = items.map { (name, color) -> makeCategoryPill(ctx, name, color) }
+        pills.forEach { container.addView(it) }
+
+        container.post {
+            if (container.tag !== token) return@post // a newer bind has since taken over this row
+            val available = container.width
+            if (available <= 0) return@post
+
+            fun pillSpan(p: TextView) = p.width + (p.layoutParams as LinearLayout.LayoutParams).marginEnd
+
+            var fitCount = 0
+            var used = 0
+            for (p in pills) {
+                used += pillSpan(p)
+                if (used > available) break
+                fitCount++
+            }
+            if (fitCount >= items.size) return@post // everything fit as-is, nothing to trim
+
+            var visibleCount = fitCount.coerceAtLeast(1)
+            while (visibleCount > 1) {
+                val overflow = makeOverflowPill(ctx, items.size - visibleCount)
+                overflow.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
+                val chipSpan = overflow.measuredWidth + (overflow.layoutParams as LinearLayout.LayoutParams).marginEnd
+                val visibleSpan = (0 until visibleCount).sumOf { pillSpan(pills[it]) }
+                if (visibleSpan + chipSpan <= available) break
+                visibleCount--
+            }
+
+            container.removeAllViews()
+            for (i in 0 until visibleCount) container.addView(pills[i])
+            container.addView(makeOverflowPill(ctx, items.size - visibleCount))
+        }
+    }
+
+    private fun makeCategoryPill(ctx: android.content.Context, text: String, color: Int): TextView {
+        val density = ctx.resources.displayMetrics.density
+        return TextView(ctx).apply {
+            this.text = text
+            textSize = 12f
+            setTextColor(color)
+            background = ContextCompat.getDrawable(ctx, R.drawable.category_badge_background)
+            setPadding((8 * density).toInt(), (3 * density).toInt(), (8 * density).toInt(), (3 * density).toInt())
+            maxLines = 1
+            ellipsize = TextUtils.TruncateAt.END
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { marginEnd = (6 * density).toInt() }
+        }
+    }
+
+    private fun makeOverflowPill(ctx: android.content.Context, count: Int): TextView =
+        makeCategoryPill(ctx, "+$count", ctx.themeColor(R.attr.colorOnSurfaceMuted))
 }

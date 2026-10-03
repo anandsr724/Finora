@@ -35,6 +35,7 @@ import com.example.expensetracker.PaymentTransaction
 import com.example.expensetracker.R
 import com.example.expensetracker.TransactionHistoryAdapter
 import com.example.expensetracker.ui.common.applyGlassBlur
+import com.example.expensetracker.ui.common.showSplitTransactionSheet
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
@@ -87,10 +88,14 @@ class HistoryFragment : Fragment() {
                 bankInfo = data.getStringExtra("bankInfo") ?: "",
                 category = data.getStringExtra("category") ?: "cat_other",
                 currency = data.getStringExtra("currency") ?: CurrencyManager.getDefault(requireContext()),
-                type = data.getStringExtra("type") ?: "expense"
+                type = data.getStringExtra("type") ?: "expense",
+                splitBreakdown = data.getStringExtra("splitBreakdown") ?: ""
             )
             csvManager.updateTransaction(updatedTransaction)
             Toast.makeText(requireContext(), "Transaction updated", Toast.LENGTH_SHORT).show()
+            if (data.getBooleanExtra("splitCleared", false)) {
+                Toast.makeText(requireContext(), "Split removed — amount changed", Toast.LENGTH_SHORT).show()
+            }
             loadTransactions()
         }
     }
@@ -430,8 +435,21 @@ class HistoryFragment : Fragment() {
             transaction,
             categoryManager,
             onEdit = { editTransaction(it) },
+            onSplit = { showSplitTransactionSheetFor(it) },
             onDelete = { confirmDeleteTransaction(it) }
         )
+    }
+
+    private fun showSplitTransactionSheetFor(transaction: PaymentTransaction) {
+        showSplitTransactionSheet(requireContext(), layoutInflater, transaction, categoryManager) { newBreakdown ->
+            csvManager.updateTransaction(transaction.copy(splitBreakdown = newBreakdown))
+            Toast.makeText(
+                requireContext(),
+                if (newBreakdown.isEmpty()) "Split removed" else "Split saved",
+                Toast.LENGTH_SHORT
+            ).show()
+            loadTransactions()
+        }
     }
 
     private fun editTransaction(transaction: PaymentTransaction) {
@@ -446,6 +464,7 @@ class HistoryFragment : Fragment() {
             putExtra("editingId", transaction.id)
             putExtra("currency", transaction.currency)
             putExtra("type", transaction.type)
+            putExtra("splitBreakdown", transaction.splitBreakdown)
         }
         editLauncher.launch(intent)
     }

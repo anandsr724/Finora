@@ -189,6 +189,7 @@ class MainActivity : AppCompatActivity() {
         transaction: PaymentTransaction,
         categoryManager: CategoryManager,
         onEdit: (PaymentTransaction) -> Unit,
+        onSplit: (PaymentTransaction) -> Unit,
         onDelete: (PaymentTransaction) -> Unit
     ) {
         bindTransactionDetail(
@@ -197,6 +198,7 @@ class MainActivity : AppCompatActivity() {
             categoryManager,
             onClose = { detailSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN },
             onEdit = onEdit,
+            onSplit = onSplit,
             onDelete = onDelete
         )
         detailSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
